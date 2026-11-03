@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hash Map Cheatsheet</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Reference</p>
+  <h1>Hash map cheatsheet</h1>
+  <p class="meta">Learned in <a href="../lessons/0001-two-sum-seen-map.html">Lesson 1</a>, <a href="../lessons/0002-ransom-note-counting.html">Lesson 2</a>, <a href="../lessons/0003-valid-anagram.html">Lesson 3</a> and <a href="../lessons/0004-first-unique-character.html">Lesson 4</a> · Terms in the <a href="glossary.html">glossary</a></p>
+
+  <h2>When to reach for one</h2>
+  <p>You keep searching for a value you may already have passed. Spend O(n) memory to make each lookup O(1) on average.</p>
+
+  <h2>The seen-map pattern</h2>
+  <pre><code>def two_sum(nums, target):
+    seen = {}  # number -> its index
+    for i, x in enumerate(nums):
+        complement = target - x
+        if complement in seen:      # check first
+            return [seen[complement], i]
+        seen[x] = i                 # then store</code></pre>
+  <p>Check before you store, so an element can't pair with itself. Time O(n), space O(n).</p>
+
+  <h2>The frequency-count pattern</h2>
+  <pre><code>def can_construct(ransom_note, magazine):
+    counts = {}  # letter -> how many are left
+    for c in magazine:
+        counts[c] = counts.get(c, 0) + 1
+    for c in ransom_note:
+        if counts.get(c, 0) == 0:
+            return False
+        counts[c] -= 1
+    return True</code></pre>
+  <p>Use it when "how many" matters, not just "is it present". <code>d.get(key, 0)</code> treats a missing key as 0, while <code>d[key]</code> raises a <code>KeyError</code>. Time O(n + m). Space O(1) here, because there are only 26 letters. A dict's space is the number of distinct keys it can hold, so counting arbitrary words would be O(n).</p>
+
+  <h2>Three ways to ask a dict</h2>
+  <table>
+    <tr><th>Your question</th><th>Write</th><th>If the key is missing</th></tr>
+    <tr><td>Is this key here at all?</td><td><code>k in d</code></td><td><code>False</code></td></tr>
+    <tr><td>What's the value, or a default?</td><td><code>d.get(k, 0)</code></td><td><code>0</code></td></tr>
+    <tr><td>What's the value of a key I know exists?</td><td><code>d[k]</code></td><td><code>KeyError</code></td></tr>
+  </table>
+  <p><code>d.get(k, 0) += 1</code> is a <code>SyntaxError</code>. Write <code>d[k] = d.get(k, 0) + 1</code>.</p>
+
+  <h2>Working out a dict's space</h2>
+  <ol>
+    <li>What is one key?</li>
+    <li>How many different keys are possible?</li>
+    <li>Does that number grow with the input? A fixed limit means O(1). No limit means O(n).</li>
+  </ol>
+  <p>One letter: at most 26 keys, so O(1). A whole word or a number: all n could differ, so O(n).</p>
+
+  <h2>Python costs</h2>
+  <table>
+    <thead><tr><th>Operation</th><th>Average cost</th></tr></thead>
+    <tbody>
+      <tr><td><code>x in my_list</code></td><td>O(n)</td></tr>
+      <tr><td><code>key in my_dict</code></td><td>O(1)</td></tr>
+      <tr><td><code>my_dict[key]</code></td><td>O(1)</td></tr>
+      <tr><td><code>my_dict[key] = value</code></td><td>O(1) amortized</td></tr>
+      <tr><td><code>x in my_set</code></td><td>O(1)</td></tr>
+      <tr><td><code>my_set.add(x)</code></td><td>O(1) amortized</td></tr>
+    </tbody>
+  </table>
+  <p class="small">Dict and set operations can reach O(n) in the worst case, when many keys collide. Source: <a href="https://docs.python.org/3/builtins/time-complexity.html">Python docs</a>.</p>
+
+  <h2>Practice</h2>
+  <p><a href="https://leetcode.com/problems/two-sum/">Two Sum</a> and <a href="https://leetcode.com/problems/ransom-note/">Ransom Note</a> are the handbook's <a href="https://www.techinterviewhandbook.org/algorithms/hash-table/">essential hash table questions</a>.</p>
+</main>
+</body>
+</html>

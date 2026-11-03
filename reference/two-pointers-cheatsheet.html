@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two Pointers Cheatsheet</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Reference</p>
+  <h1>Two pointers cheatsheet</h1>
+  <p class="meta">Learned in <a href="../lessons/0006-two-pointers-valid-palindrome.html">Lesson 6</a> and <a href="../lessons/0007-two-sum-sorted.html">Lesson 7</a> · Terms in the <a href="glossary.html">glossary</a> · See also the <a href="hash-map-cheatsheet.html">hash map cheatsheet</a></p>
+
+  <h2>When to reach for it</h2>
+  <p>You're comparing or swapping items from both ends of a list or string, and you'd like O(1) extra space. Layouts where both pointers start at the same end are covered in the <a href="https://www.techinterviewhandbook.org/algorithms/array/">Tech Interview Handbook's array guide</a>.</p>
+
+  <h2>The template: walk in from both ends</h2>
+  <pre><code>left = 0
+right = len(s) - 1
+while left &lt; right:
+    # use s[left] and s[right]
+    left += 1
+    right -= 1</code></pre>
+  <p>Time O(n), space O(1). On an odd length, the pointers meet on the middle item. On an even length, they cross. Empty and one-item inputs skip the loop.</p>
+
+  <h2>Valid Palindrome</h2>
+  <pre><code>def is_valid(s):
+    left = 0
+    right = len(s) - 1
+    while left &lt; right:
+        if not s[left].isalnum():
+            left += 1
+        elif not s[right].isalnum():
+            right -= 1
+        elif s[left].lower() != s[right].lower():
+            return False
+        else:
+            left += 1
+            right -= 1
+    return True</code></pre>
+  <p>Each pass moves at least one pointer or returns, so there are at most n passes.</p>
+
+  <h2>Two Sum II: sorted input</h2>
+  <pre><code>def two_sum_sorted(numbers, target):
+    left = 0
+    right = len(numbers) - 1
+    while left &lt; right:
+        total = numbers[left] + numbers[right]
+        if total == target:
+            return [left + 1, right + 1]   # positions count from 1
+        if total &lt; target:
+            left += 1     # left is too small even with the largest
+        else:
+            right -= 1    # right is too big even with the smallest</code></pre>
+  <p>Each comparison rules out one number for good. Time O(n), space O(1), compared with O(n) space for a seen map. It relies on sorted input.</p>
+
+  <h2>Which pattern?</h2>
+  <table>
+    <tr><th>Clue</th><th>Pattern</th></tr>
+    <tr><td>Sorted input, or comparing from both ends, with O(1) space wanted</td><td>Two pointers</td></tr>
+    <tr><td>Unsorted input, "have I seen this?", or original indices needed</td><td>Seen map</td></tr>
+    <tr><td>"How many" of each item matters</td><td>Frequency count</td></tr>
+  </table>
+
+  <h2>Traps</h2>
+  <table>
+    <tr><th>Trap</th><th>Fix</th></tr>
+    <tr><td>An inner skipping loop runs off the end of <code>"..."</code></td><td><code>while left &lt; right and not s[left].isalnum():</code></td></tr>
+    <tr><td><code>s[::-1]</code> or a cleaned copy looks free</td><td>It's short, but it uses O(n) space. Say so if you use it.</td></tr>
+    <tr><td><code>right = len(s)</code></td><td>The last index is <code>len(s) - 1</code>.</td></tr>
+  </table>
+</main>
+</body>
+</html>

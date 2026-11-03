@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two Sum: Remember What You've Seen</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 1 · Hash maps</p>
+  <h1>Remember what you've seen</h1>
+  <p class="meta">About 15 minutes · Your win: solve Two Sum in linear time, with no solution to copy</p>
+
+  <p class="lede">Your first big interview idea is to spend a little memory so you don't have to repeat work. Interviewers often follow a working answer with “can we do better?”, and <a href="https://www.techinterviewhandbook.org/coding-interview-techniques/">trying a different data structure</a> is a standard response. The Tech Interview Handbook lists hash maps first among the structures to try.</p>
+
+  <h2>The problem</h2>
+  <p><a href="https://leetcode.com/problems/two-sum/">Two Sum</a>: given a list <code>nums</code> and an integer <code>target</code>, return the indices of the two numbers that add up to <code>target</code>. Exactly one answer exists, and you can't use the same element twice. The list can hold up to 10,000 numbers.</p>
+  <p>The obvious approach checks every pair. Make a guess before reading on.</p>
+
+  <div class="quiz" data-skill="complexity-estimation">
+    <p class="q">With 10,000 numbers, how many pairs might the obvious approach check?</p>
+    <div class="options">
+      <button data-why="That is one check per number, which is the goal of this lesson.">About 10 thousand</button>
+      <button data-why="Pairs grow much faster than the list does.">About 50 thousand</button>
+      <button data-correct data-why="10,000 × 9,999 ÷ 2 is 49,995,000 pairs. Growth like this is written O(n²).">About 50 million</button>
+      <button data-why="That is too high. Even 10,000 × 10,000 is only 100 million, and each pair needs checking only once.">About 10 billion</button>
+    </div>
+  </div>
+
+  <h2>Ask a better question</h2>
+  <p>Don't ask “which pair works?” Walk through the list once. At each number <code>x</code>, the only partner that can work is <code>target - x</code>. This value is called the <em>complement</em>. So ask: <strong>have I already seen the complement?</strong></p>
+  <p>A Python <code>dict</code> can answer that in one step. Searching a list with <code>in</code> costs <a href="https://docs.python.org/3/builtins/time-complexity.html">O(n), while a dict lookup costs O(1) on average</a>. Rare collisions can make a dict slower, but <a href="https://www.techinterviewhandbook.org/algorithms/hash-table/">the average case is what matters in interviews</a>.</p>
+  <p>Step through <code>nums = [3, 2, 4]</code>, <code>target = 6</code>. Predict each result before pressing Next.</p>
+  <div id="trace"></div>
+
+  <div class="quiz" data-skill="seen-map-idea">
+    <p class="q">At each number <code>x</code>, what question does the algorithm ask?</p>
+    <div class="options">
+      <button data-correct data-why="That single question replaces the search through all the pairs.">Have I already seen target minus x?</button>
+      <button data-why="Order of size plays no part, and the list need not be sorted.">Is x larger than every earlier value?</button>
+      <button data-why="Nothing gets sorted, because sorting would also lose the original indices.">Does the sorted list contain target x?</button>
+      <button data-why="That only helps in the rare case where both numbers are equal.">Is x equal to half the target?</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="check-before-store">
+    <p class="q">The order of the two steps matters. If you <em>store x first and then check</em>, what comes back for <code>[3, 2, 4]</code>, target 6?</p>
+    <div class="options">
+      <button data-correct data-why="At index 0, 3 is stored, then its complement 3 is found: the same element used twice. Check first, then store.">[0, 0]</button>
+      <button data-why="That is the right answer, but this version returns earlier, at index 0.">[1, 2]</button>
+      <button data-why="3 + 4 is 7, so this pair can't be returned.">[0, 2]</button>
+      <button data-why="Trace index 0 first, because the function returns before it gets here.">[2, 1]</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">Assuming average-case lookups, what does the seen-map approach cost?</p>
+    <div class="options">
+      <button data-correct data-why="One pass with O(1) lookups is O(n) time, and the dict can grow to hold nearly every number. This is the space-time trade-off.">O(n) time, O(n) space</button>
+      <button data-why="The dict grows with the input, so it isn't constant space.">O(n) time, O(1) space</button>
+      <button data-why="That describes checking every pair with no extra memory.">O(n²) time, O(1) space</button>
+      <button data-why="You may have to visit every number, so it can't be constant time.">O(1) time, O(n) space</button>
+    </div>
+  </div>
+
+  <h2>Now write it</h2>
+  <p>Close your notes and write it from the idea alone. The struggle is what makes it stick. The tests accept the two indices in either order and include one large list that catches slow solutions.</p>
+  <div id="exercise"></div>
+  <p class="small" id="pass-message" hidden><strong>Nice work.</strong> Now do it once for real, below.</p>
+
+  <details data-solution>
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def two_sum(nums, target):
+    seen = {}  # number -> its index
+    for i, x in enumerate(nums):
+        complement = target - x
+        if complement in seen:
+            return [seen[complement], i]
+        seen[x] = i</code></pre>
+    <p class="small">If you open this, close it again and rewrite the function from memory.</p>
+  </details>
+
+  <h2>Do it the interview way</h2>
+  <ol>
+    <li>Open <a href="https://leetcode.com/problems/two-sum/">Two Sum on LeetCode</a>. Explain the brute force and its cost out loud.</li>
+    <li>Explain the seen map, then code it while still talking. <a href="https://www.techinterviewhandbook.org/coding-interview-prep/">Interviewers assess communication, problem solving, technical competency and testing</a>.</li>
+    <li>Trace <code>[3, 3]</code>, target 6, by hand before you submit. State the time and space cost.</li>
+  </ol>
+  <p><strong>In about 3 days:</strong> rewrite it from a blank editor. Spacing it out is what moves this into long-term memory.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/algorithms/hash-table/">Tech Interview Handbook, Hash table cheatsheet</a>. For the same idea on video, watch <a href="https://www.youtube.com/watch?v=KLlXCFG5TnA">NeetCode's Two Sum walkthrough</a>.</p>
+  <p>Keep these for review: <a href="../reference/hash-map-cheatsheet.html">hash map cheatsheet</a> and <a href="../reference/glossary.html">glossary</a>.</p>
+
+  <h2>Your results</h2>
+  <p>This records your first answer to each question, so finish the lesson honestly and then paste this into the chat. Your teacher agent uses it to track your weak spots and choose what you practise next. Add anything that felt shaky, even if you got it right.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a step is unclear, or your code fails and you can't see why, paste it into the chat with your teacher agent.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/trace.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 1: Two Sum" });
+
+  mountTrace(document.getElementById("trace"), {
+    cells: [3, 2, 4],
+    steps: [
+      { active: 0, state: "seen = {}", note: "x = 3, so the complement is 6 - 3 = 3. Is 3 in seen?" },
+      { active: 0, state: "seen = {3: 0}", note: "No, seen is empty. Store 3 with its index, 0, and move on." },
+      { active: 1, state: "seen = {3: 0}", note: "x = 2, so the complement is 6 - 2 = 4. Is 4 in seen?" },
+      { active: 1, state: "seen = {3: 0, 2: 1}", note: "No. Store 2 with its index, 1, and move on." },
+      { active: 2, state: "seen = {3: 0, 2: 1}", note: "x = 4, so the complement is 6 - 4 = 2. Is 2 in seen?" },
+      { active: 2, state: "return [1, 2]", note: "Yes, at index 1. The current index is 2, so the answer is [1, 2]. Done in one pass." },
+    ],
+  });
+
+  const evens = Array.from({ length: 3000 }, (_, i) => i * 2);
+  mountExercise(document.getElementById("exercise"), {
+    starter: "def two_sum(nums, target):\n    # Your code here\n    pass\n",
+    skill: "implement-seen-map",
+    fn: "two_sum",
+    sortResult: true,
+    cases: [
+      { label: "[2, 7, 11, 15], target 9", args: [[2, 7, 11, 15], 9], expected: [0, 1] },
+      { label: "[3, 2, 4], target 6", args: [[3, 2, 4], 6], expected: [1, 2] },
+      { label: "[3, 3], target 6", args: [[3, 3], 6], expected: [0, 1] },
+      { label: "negative numbers", args: [[-4, 9, -1, 5], -5], expected: [0, 2] },
+      { label: "zeros", args: [[0, 4, 3, 0], 0], expected: [0, 3] },
+      { label: "3,000 numbers, answer at the end", args: [evens, evens[2998] + evens[2999]], expected: [2998, 2999], maxMs: 150 },
+    ],
+    onPass: () => { document.getElementById("pass-message").hidden = false; },
+  });
+</script>
+</body>
+</html>

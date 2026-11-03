@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ransom Note: Count, Don't Just Remember</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 2 · Hash maps</p>
+  <h1>Count, don't just remember</h1>
+  <p class="meta">About 20 minutes · Your win: write dict-counting code from memory and solve Ransom Note</p>
+
+  <p class="lede">In Lesson 1 a dict remembered <em>where</em> you saw something. This time it remembers <em>how many</em> you have. You told me the idea was fine but the syntax was harder, so this lesson has you typing more and includes the exact Python you need.</p>
+
+  <h2>Warm-up: from memory</h2>
+  <p>Before anything else, write this with no notes or autocomplete. Getting stuck is useful here: your first attempt and any errors appear in your results, which shows me which syntax to practise.</p>
+  <p>Return a dict mapping each word to the index where it <em>first</em> appears. For example, <code>["cat", "dog", "cat"]</code> gives <code>{"cat": 0, "dog": 1}</code>.</p>
+  <div id="warmup"></div>
+  <details data-solution="warm-up">
+    <summary>Stuck for 5 minutes? Show one solution</summary>
+    <pre><code>def first_positions(words):
+    first = {}
+    for i, word in enumerate(words):
+        if word not in first:
+            first[word] = i
+    return first</code></pre>
+    <p class="small">If you open this, close it again and rewrite the function from memory.</p>
+  </details>
+
+  <h2>The problem</h2>
+  <p><a href="https://leetcode.com/problems/ransom-note/">Ransom Note</a>: given two strings, <code>ransom_note</code> and <code>magazine</code>, return <code>True</code> if you can build the note using letters cut from the magazine. Each magazine letter can be used only once. Both strings hold lowercase English letters, up to 100,000 of them.</p>
+
+  <div class="quiz" data-skill="count-vs-membership">
+    <p class="q">Suppose you only check that each note letter appears <em>somewhere</em> in the magazine. What does that return for note <code>"aa"</code>, magazine <code>"ab"</code>, and is it right?</p>
+    <div class="options">
+      <button data-correct data-why="Both checks find an a, but the magazine only has one to cut out. Presence isn't enough, so you need to know how many.">True, which is wrong</button>
+      <button data-why="The check does return True, but the real answer is False, because the magazine has only one a.">True, which is right</button>
+      <button data-why="Each check asks only whether a is present, and it is, so this approach returns True.">False, which is right</button>
+      <button data-why="Each check asks only whether a is present, and it is, so this approach returns True.">False, which is wrong</button>
+    </div>
+  </div>
+
+  <h2>The idea: a frequency count</h2>
+  <p>A <em>frequency count</em> is a dict from each item to the number of times it appears. Solve the problem in two passes:</p>
+  <ol>
+    <li>Count every letter in the magazine. This is your stock.</li>
+    <li>Walk through the note and spend one letter each time. If the letter you need has none left, return <code>False</code>. If you reach the end, return <code>True</code>.</li>
+  </ol>
+  <p>Step through note <code>"aab"</code>, magazine <code>"abc"</code>. The boxes show the note. Predict each result before pressing Next.</p>
+  <div id="trace"></div>
+
+  <h2>The syntax you need</h2>
+  <p>There's one line to learn here, because a key has to exist before you can add to it:</p>
+  <pre><code>counts = {}
+counts["a"] += 1                     # KeyError: "a" isn't in the dict yet
+
+counts["a"] = counts.get("a", 0) + 1 # works: a missing key counts as 0</code></pre>
+  <p><a href="https://docs.python.org/3/library/stdtypes.html#dict.get"><code>d.get(key, default)</code></a> returns the value for <code>key</code>, or <code>default</code> if the key is missing. It doesn't add the key to the dict.</p>
+
+  <div class="quiz" data-skill="dict-get-syntax">
+    <p class="q">With <code>counts = {"a": 2}</code>, what does <code>counts.get("z", 0)</code> do?</p>
+    <div class="options">
+      <button data-correct data-why="z is missing, so you get the default. The dict is unchanged, so this is a safe way to look.">Returns 0 and leaves counts unchanged</button>
+      <button data-why="get only reads. Assigning with counts[&quot;z&quot;] = ... is what adds a key.">Returns 0 and adds z to counts</button>
+      <button data-why="That is what counts[&quot;z&quot;] does. get exists to avoid that error.">Raises a KeyError</button>
+      <button data-why="It would return None if you left out the default, but here the default is 0.">Returns None</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="spend-check">
+    <p class="q">In the second pass, which line correctly stops when the letter <code>c</code> has run out, even if it was never in the magazine?</p>
+    <div class="options">
+      <button data-correct data-why="A letter that was never counted gets the default 0, and one that was used up is also 0. Both cases return False.">if counts.get(c, 0) == 0: return False</button>
+      <button data-why="This raises a KeyError when c was never in the magazine.">if counts[c] == 0: return False</button>
+      <button data-why="A key stays in the dict after its count reaches 0, so this misses used-up letters.">if c not in counts: return False</button>
+      <button data-why="The default 0 makes this condition true for a missing letter, so the code would carry on and never return False for it.">if counts.get(c, 0) &gt;= 0: return True</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">The note has length n and the magazine has length m. What does this approach cost, given only lowercase English letters?</p>
+    <div class="options">
+      <button data-correct data-why="Each string is walked once. The dict never holds more than 26 keys, however long the input is, so its size is constant.">O(n + m) time, O(1) space</button>
+      <button data-why="The dict holds one key per distinct letter, not one per character, and there are only 26 letters.">O(n + m) time, O(m) space</button>
+      <button data-why="The passes run one after the other, not one inside the other, so you add the costs.">O(n × m) time, O(1) space</button>
+      <button data-why="You still have to read the input, so the time can't be constant.">O(1) time, O(1) space</button>
+    </div>
+  </div>
+
+  <h2>Now write it</h2>
+  <p>Scroll so you can't see the code above, then write it from the two-pass idea. The tests include one large input that catches slow solutions, such as removing letters from a list.</p>
+  <div id="exercise"></div>
+  <p class="small" id="pass-message" hidden><strong>Nice work.</strong> Now do it once for real, below.</p>
+
+  <details data-solution="ransom-note">
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def can_construct(ransom_note, magazine):
+    counts = {}  # letter -> how many are left
+    for c in magazine:
+        counts[c] = counts.get(c, 0) + 1
+    for c in ransom_note:
+        if counts.get(c, 0) == 0:
+            return False
+        counts[c] -= 1
+    return True</code></pre>
+    <p class="small">If you open this, close it again and rewrite the function from memory.</p>
+  </details>
+
+  <h2>Do it the interview way</h2>
+  <ol>
+    <li>Open <a href="https://leetcode.com/problems/ransom-note/">Ransom Note on LeetCode</a>. Its function is named <code>canConstruct</code> and sits inside a class, so write your code in its template.</li>
+    <li>Explain the frequency count out loud, then code it while still talking.</li>
+    <li>Trace note <code>"aa"</code>, magazine <code>"ab"</code> by hand before you submit. State the time and space cost.</li>
+  </ol>
+  <p><strong>In about 3 days:</strong> rewrite this and Two Sum from a blank editor, without saying which comes first. Having to choose the pattern is part of the practice.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/algorithms/hash-table/">Tech Interview Handbook, Hash table cheatsheet</a>. Python also has a ready-made counter, <a href="https://docs.python.org/3/library/collections.html#collections.Counter"><code>collections.Counter</code></a>. It's fine to use in interviews, but get the hand-written version solid first.</p>
+  <p>Keep these for review: <a href="../reference/hash-map-cheatsheet.html">hash map cheatsheet</a> and <a href="../reference/glossary.html">glossary</a>.</p>
+
+  <h2>Your results</h2>
+  <p>This records your first answer to each question, plus your first and final code, and it survives a refresh. When you finish, paste it into the chat. Your teacher agent uses it to track your weak spots and choose what you practise next. Add anything that felt shaky, even if you got it right.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a step is unclear, or your code fails and you can't see why, paste it into the chat with your teacher agent.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/trace.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 2: Ransom Note" });
+
+  mountExercise(document.getElementById("warmup"), {
+    starter: "def first_positions(words):\n    # Your code here\n    pass\n",
+    skill: "implement-seen-map",
+    fn: "first_positions",
+    cases: [
+      { label: '["cat", "dog", "cat"]', args: [["cat", "dog", "cat"]], expected: { cat: 0, dog: 1 } },
+      { label: "all different", args: [["x", "y", "z"]], expected: { x: 0, y: 1, z: 2 } },
+      { label: "all the same", args: [["a", "a", "a"]], expected: { a: 0 } },
+      { label: "empty list", args: [[]], expected: {} },
+    ],
+  });
+
+  mountTrace(document.getElementById("trace"), {
+    cells: ["a", "a", "b"],
+    steps: [
+      { active: -1, state: "counts = {}", note: "First pass: count the magazine, \"abc\"." },
+      { active: -1, state: "counts = {a: 1, b: 1, c: 1}", note: "One of each letter. Now walk through the note. What happens at the first a?" },
+      { active: 0, state: "counts = {a: 0, b: 1, c: 1}", note: "The count for a is 1, so there is one to spend. It drops to 0. What about the next a?" },
+      { active: 1, state: "return False", note: "The count for a is now 0, so there are none left. Return False without looking at the b." },
+    ],
+  });
+
+  mountExercise(document.getElementById("exercise"), {
+    starter: "def can_construct(ransom_note, magazine):\n    # Your code here\n    pass\n",
+    skill: "implement-frequency-count",
+    fn: "can_construct",
+    cases: [
+      { label: 'note "a", magazine "b"', args: ["a", "b"], expected: false },
+      { label: 'note "aa", magazine "ab"', args: ["aa", "ab"], expected: false },
+      { label: 'note "aa", magazine "aab"', args: ["aa", "aab"], expected: true },
+      { label: 'note "abc", magazine "cba"', args: ["abc", "cba"], expected: true },
+      { label: 'note "aab", magazine "abc"', args: ["aab", "abc"], expected: false },
+      { label: "16,000-letter magazine", args: ["a".repeat(8000), "b".repeat(8000) + "a".repeat(8000)], expected: true, maxMs: 300 },
+    ],
+    onPass: () => { document.getElementById("pass-message").hidden = false; },
+  });
+</script>
+</body>
+</html>

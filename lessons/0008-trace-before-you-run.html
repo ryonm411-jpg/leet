@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trace Before You Run: First Repeat and Closest Sum</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 8 · Choosing and checking</p>
+  <h1>Trace before you run</h1>
+  <p class="meta">About 30 minutes · Your win: pass two new problems in at most two runs each, by checking one example by hand first</p>
+
+  <p class="lede">Last time you passed both problems, but it took 6 runs and 5. In a live interview, nobody runs tests for you, so you have to catch those bugs by reading your own code. Today's goal is fewer runs, not more speed.</p>
+
+  <h2>The habit</h2>
+  <p>Before each first Run, take the first example and walk through your code line by line, on paper or out loud. Write down the variables and what gets returned. Fix anything that disagrees with the expected answer, then run it. <a href="https://www.techinterviewhandbook.org/coding-interview-techniques/">The Tech Interview Handbook's interview techniques</a> suggest using your examples as test cases when you verify a solution. Tracing by hand is how you do that when nothing can run your code.</p>
+  <p>One piece of syntax to carry in: Python writes <code>elif</code>. The <code>else if</code> form from your last lesson is a <code>SyntaxError</code> here.</p>
+
+  <h2>Which pattern?</h2>
+  <p>Last time, you chose two pointers for an unsorted list, right after a lesson on two pointers. The pattern you just used always feels like the right one. So check the input first: is it sorted, and what must you return?</p>
+
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">A list of n prices in random order and a budget. Return the original positions of two prices that add up to exactly the budget.</p>
+    <div class="options">
+      <button data-correct data-why="The list isn't sorted, and you need original positions. Sorting would scramble those, so a dict from price to position fits.">Seen map</button>
+      <button data-why="Two pointers relies on sorted input, and sorting this list would lose the original positions.">Two pointers</button>
+      <button data-why="You need the position of an earlier price, not how many times each price appears.">Frequency count</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">A string. Swap its vowels so they appear in reverse order, while every other character stays where it is.</p>
+    <div class="options">
+      <button data-correct data-why="Swapping from both ends and skipping what doesn't count is the Valid Palindrome walk, with a swap instead of a comparison. Sorted input isn't needed when the job is about the two ends.">Two pointers</button>
+      <button data-why="Nothing here needs a lookup of earlier values. You're swapping pairs from the two ends.">Seen map</button>
+      <button data-why="The number of each vowel never changes. Only their positions do.">Frequency count</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">A list of n words. Return the word that appears most often.</p>
+    <div class="options">
+      <button data-correct data-why="&quot;Most often&quot; is a question about how many, so count each word, then find the largest count.">Frequency count</button>
+      <button data-why="Knowing that a word appeared isn't enough. You have to compare how many times each one did.">Seen map</button>
+      <button data-why="The list isn't sorted, and nothing here is about the two ends. Equal words could be anywhere.">Two pointers</button>
+    </div>
+  </div>
+
+  <h2>Cold problem: First Repeat</h2>
+  <p>Given a list of integers, return the first value whose second appearance comes earliest as you read from the left. If nothing repeats, return <code>None</code>. So <code>[2, 1, 3, 1, 2]</code> gives <code>1</code>, because the second <code>1</code> comes before the second <code>2</code>. It has to take O(n) time on average. Trace that example by hand before your first Run.</p>
+  <div id="first-repeat"></div>
+  <details data-solution="first-repeat">
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def first_repeat(nums):
+    seen = {}
+    for x in nums:
+        if x in seen:
+            return x
+        seen[x] = True
+    return None</code></pre>
+  </details>
+
+  <h2>Three ways to ask a dict</h2>
+  <p>Now that you've tried it cold, here's what connects your last two <code>KeyError</code>s. Each form answers a different question, so choose by the question you're asking.</p>
+  <table>
+    <tr><th>Your question</th><th>Write</th><th>If the key is missing</th></tr>
+    <tr><td>Is this key here at all?</td><td><code>k in d</code></td><td><code>False</code></td></tr>
+    <tr><td>What's the value, or a default?</td><td><code>d.get(k, 0)</code></td><td><code>0</code></td></tr>
+    <tr><td>What's the value of a key I know exists?</td><td><code>d[k]</code></td><td><code>KeyError</code></td></tr>
+  </table>
+  <p><code>d.get</code> only reads, so it can't be the target of an assignment. <code>d.get(k, 0) += 1</code> is a <code>SyntaxError</code>. The official wording is in the <a href="https://docs.python.org/3/library/stdtypes.html#mapping-types-dict">Python docs on dict</a>.</p>
+
+  <div class="quiz" data-skill="spend-check">
+    <p class="q">You're walking a list with an empty dict called <code>seen</code>, and you only need to know whether <code>x</code> appeared before. Which check fits best?</p>
+    <div class="options">
+      <button data-correct data-why="The question is &quot;is it here at all?&quot;, so this is the direct form, and a missing key just gives False.">if x in seen:</button>
+      <button data-why="This raises a KeyError the first time x is missing, and every new value starts out missing.">if seen[x]:</button>
+      <button data-why="This asks for the value of x, not whether x is a key. It raises a KeyError the first time too.">if seen[x] == 1:</button>
+      <button data-why="This works only if every stored value is exactly 1, and it's a longer way to ask a yes-or-no question. Reach for get when you need the value.">if seen.get(x) == 1:</button>
+    </div>
+  </div>
+
+  <h2>Which pointer moves?</h2>
+  <p>You answered this correctly in last lesson's quiz, then wrote it the other way round in code. That's normal, because knowing a rule and typing it are separate skills. So this time you'll write the rule down first.</p>
+
+  <h3>Closest Sum</h3>
+  <p>Given <code>numbers</code>, sorted from smallest to largest, with at least two elements, and a <code>target</code>, return the sum of two different elements that's closest to <code>target</code>. The tests never have a tie between two different sums. So <code>[1, 3, 8, 12]</code> with target <code>7</code> gives <code>9</code>. Use two pointers and O(1) extra space. <code>abs(x)</code> gives the size of a number without its sign, so <code>abs(total - target)</code> is how far off a sum is.</p>
+  <p>Start with these two comments, filled in from your own reasoning, then trace <code>[1, 3, 8, 12]</code> with target <code>7</code> by hand before your first Run.</p>
+  <div id="closest-sum"></div>
+  <details data-solution="closest-sum">
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def closest_sum(numbers, target):
+    left = 0
+    right = len(numbers) - 1
+    best = numbers[left] + numbers[right]
+    while left &lt; right:
+        total = numbers[left] + numbers[right]
+        if abs(total - target) &lt; abs(best - target):
+            best = total
+        if total &lt; target:
+            left += 1
+        else:
+            right -= 1
+    return best</code></pre>
+  </details>
+
+  <h3>Read this bug</h3>
+  <p>Here's the moves-reversed version, traced by hand with <code>numbers = [2, 7, 11, 15]</code> and <code>target = 9</code>.</p>
+  <pre><code>left = 0
+right = len(numbers) - 1
+while left &lt; right:
+    total = numbers[left] + numbers[right]
+    if total == target:
+        return [left + 1, right + 1]
+    elif total &gt; target:
+        left += 1
+    else:
+        right -= 1
+return False</code></pre>
+  <div class="quiz" data-skill="two-pointers-move-rule">
+    <p class="q">What does this return?</p>
+    <div class="options">
+      <button data-correct data-why="The sums go 17, 22, 26, each too big, so left keeps rising until it reaches right at index 3. The loop stops and returns False. Making a too-big sum bigger can never reach the target.">False</button>
+      <button data-why="That's the right answer to the problem, but this code moves left up on a too-big sum, so it never reaches 2 + 7.">[1, 2]</button>
+      <button data-why="left only ever rises and right never moves here, because every sum is too big. The loop ends when they meet, without returning a pair.">[3, 4]</button>
+      <button data-why="The loop stops when left reaches right, at index 3, which is still a valid index, so nothing is out of range.">IndexError</button>
+    </div>
+  </div>
+
+  <h2>Do it the interview way</h2>
+  <ol>
+    <li>Open <a href="https://leetcode.com/problems/contains-duplicate/">Contains Duplicate</a> or <a href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/">Two Sum II</a> on LeetCode. The function sits inside a class, in the template LeetCode gives you.</li>
+    <li>Say the plan out loud, code from memory, and trace one example before you submit.</li>
+    <li>Tell me whether it was accepted, and how many submissions it took. A failed one is useful evidence too.</li>
+  </ol>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/coding-interview-techniques/">Tech Interview Handbook, coding interview techniques</a>. Read its sections on solving the problem by hand and on coming up with more examples.</p>
+  <p>For review: <a href="../reference/hash-map-cheatsheet.html">hash map cheatsheet</a>, <a href="../reference/two-pointers-cheatsheet.html">two pointers cheatsheet</a>, <a href="../reference/glossary.html">glossary</a>, and the previous lesson, <a href="0007-two-sum-sorted.html">Two Sum II</a>.</p>
+
+  <h2>Your results</h2>
+  <p>This records your first answer to each question, plus your first and final code, and it survives a refresh. When you finish, paste it into the chat with three things added:</p>
+  <ul>
+    <li>Your LeetCode result.</li>
+    <li>Which other programming languages you've used, if any. <code>else if</code> suggests you may have written C, Java or JavaScript.</li>
+    <li>Whether you really traced by hand before running, because I can't see that in the results.</li>
+  </ul>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a step is unclear, or your code fails and you can't see why, paste it into the chat with your teacher agent.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 8: Trace Before You Run" });
+
+  const odds = Array.from({ length: 5000 }, (_, i) => i * 2 + 1);
+
+  mountExercise(document.getElementById("first-repeat"), {
+    starter: "def first_repeat(nums):\n    ",
+    skill: "implement-seen-map",
+    fn: "first_repeat",
+    cases: [
+      { label: "[2, 1, 3, 1, 2]", args: [[2, 1, 3, 1, 2]], expected: 1 },
+      { label: "[1, 2, 3]", args: [[1, 2, 3]], expected: null },
+      { label: "[5, 5]", args: [[5, 5]], expected: 5 },
+      { label: "[3, 1, 4, 1, 3]", args: [[3, 1, 4, 1, 3]], expected: 1 },
+      { label: "empty list", args: [[]], expected: null },
+      { label: "5,000 different numbers", args: [odds], expected: null, maxMs: 300 },
+    ],
+  });
+
+  mountExercise(document.getElementById("closest-sum"), {
+    starter: "def closest_sum(numbers, target):\n    # sum too big: move ...\n    # sum too small: move ...\n    ",
+    skill: "implement-two-pointers-move",
+    fn: "closest_sum",
+    cases: [
+      { label: "[1, 3, 8, 12], target 7", args: [[1, 3, 8, 12], 7], expected: 9 },
+      { label: "[1, 2, 4, 8, 16], target 13", args: [[1, 2, 4, 8, 16], 13], expected: 12 },
+      { label: "[-4, -1, 2, 5], target 0", args: [[-4, -1, 2, 5], 0], expected: 1 },
+      { label: "[2, 5], target 100", args: [[2, 5], 100], expected: 7 },
+      { label: "[1, 2, 3, 4], target 7", args: [[1, 2, 3, 4], 7], expected: 7 },
+      { label: "5,000 numbers, target 20000", args: [odds, 20000], expected: 19996, maxMs: 300 },
+    ],
+  });
+</script>
+</body>
+</html>

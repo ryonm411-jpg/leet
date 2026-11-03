@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Prep Glossary</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Reference</p>
+  <h1>Glossary</h1>
+  <p class="meta">Every lesson uses these terms the same way. New terms are added as lessons introduce them.</p>
+  <dl>
+    <dt>Alphanumeric</dt>
+    <dd>A letter or a digit. Python's <code>c.isalnum()</code> checks for this.</dd>
+    <dt>Anagram</dt>
+    <dd>A string with exactly the same letters as another, each the same number of times, possibly in a different order.</dd>
+    <dt>Average case</dt>
+    <dd>The typical cost of an operation, rather than its rare worst outcome. Dict lookups are O(1) on average.</dd>
+    <dt>Big O</dt>
+    <dd>A way to describe how cost grows as the input size, n, grows. O(n²) means that doubling n roughly quadruples the work.</dd>
+    <dt>Brute force</dt>
+    <dd>The direct approach that tries every possibility. It's a good starting point to state aloud before you improve on it.</dd>
+    <dt>Collision</dt>
+    <dd>When two different keys land in the same hash table bucket. Many collisions make lookups slower.</dd>
+    <dt>Complement</dt>
+    <dd>In Two Sum, the value that completes the target: <code>target - x</code>.</dd>
+    <dt>Constant space</dt>
+    <dd>O(1) space: memory use stays under a fixed limit however large the input gets. It doesn't mean only one item is stored.</dd>
+    <dt>Frequency count</dt>
+    <dd>A dict from each item to the number of times it appears.</dd>
+    <dt>Hash map</dt>
+    <dd>A structure that stores key-value pairs and finds a key quickly using a hash function. Python's version is <code>dict</code>.</dd>
+    <dt>Palindrome</dt>
+    <dd>A string that reads the same forwards and backwards, like <code>"racecar"</code>.</dd>
+    <dt>Pointer</dt>
+    <dd>In this course, a variable holding an index into a list or string. It isn't a memory address, as it would be in C.</dd>
+    <dt>Scope</dt>
+    <dd>The part of a program where a name exists. In Python, a function creates a scope, but a <code>for</code> loop or an <code>if</code> block doesn't, so a loop variable still exists after its loop.</dd>
+    <dt>Seen map</dt>
+    <dd>This course's name for a hash map that records values from earlier in a single pass, so later steps can look them up.</dd>
+    <dt>Space-time trade-off</dt>
+    <dd>Using more memory to reduce running time, or the reverse.</dd>
+    <dt>Two pointers</dt>
+    <dd>A technique that keeps two indices and moves them by a rule, for example inward from both ends of a string.</dd>
+  </dl>
+</main>
+</body>
+</html>

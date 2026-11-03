@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cold Rewrites: Loop Variables, Dict Space, Two Sum and Ransom Note</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 5 · Hash maps review</p>
+  <h1>From a blank editor</h1>
+  <p class="meta">About 30 minutes · Your win: write two earlier solutions with no code in sight, and explain why a loop variable outlives its loop</p>
+
+  <p class="lede">Last time your First Unique Character passed on the first run, and <code>len</code> and <code>enumerate</code> both came out right. This lesson checks whether that holds with no similar code on the page. It also takes a new approach to the loop variable question, because repeating the feedback hasn't helped.</p>
+
+  <h2>Start cold</h2>
+  <p>Work this out by hand, with no notes.</p>
+  <pre><code>total = 0
+for n in [2, 5, 8]:
+    total = total + n
+print(n, total)</code></pre>
+
+  <div class="quiz" data-skill="trace-loop-variables">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="After the loop, n still holds its last value, 8, and total is 2 + 5 + 8.">8 15</button>
+      <button data-why="total is right, but n changes on every pass, so it ends on 8.">2 15</button>
+      <button data-why="n still exists after the loop. The next section explains why.">NameError</button>
+      <button data-why="total is 15, but n holds a value from the list, so it ends on 8.">15 15</button>
+    </div>
+  </div>
+
+  <h2>Why the loop variable survives</h2>
+  <p>You've chosen <code>NameError</code> in two lessons running, and that belief is correct in some languages. In Java, in C++, and in JavaScript with <code>let</code>, a variable declared in a loop's header disappears when the loop ends. The part of a program where a name exists is called its <strong>scope</strong>.</p>
+  <p>Python's rule is different: <strong>a <code>for</code> loop doesn't create a scope. It just assigns to a normal variable, again and again.</strong> So <code>for x in [4, 7, 9]</code> behaves much like this:</p>
+  <pre><code>x = 4
+# loop body runs
+x = 7
+# loop body runs
+x = 9
+# loop body runs
+# loop over: nothing removes x</code></pre>
+  <p>The same goes for <code>if</code> blocks. Of the structures you've used so far, only a function creates a scope.</p>
+
+  <h3>Prove it yourself</h3>
+  <p>Write a function that returns the last item of a non-empty list, without using indexing like <code>items[-1]</code> and without creating any variable except the loop variable. The loop body can be <code>pass</code>, which means "do nothing".</p>
+  <div id="last-item"></div>
+  <details data-solution="last-item">
+    <summary>Stuck for 5 minutes? Show one solution</summary>
+    <pre><code>def last_item(items):
+    for item in items:
+        pass
+    return item</code></pre>
+  </details>
+
+  <h3>Why interviewers would care</h3>
+  <p>In Lesson 2 you used <code>m</code> inside the <code>n</code> loop. Python raised no error, because <code>m</code> still existed. You just got a wrong answer, which is harder to spot than a crash. Here's the same kind of bug:</p>
+  <pre><code>counts = {}
+for w in ["a", "b", "c"]:
+    counts[w] = 1
+for v in ["a", "z"]:
+    counts[w] = counts[w] + 1   # meant v, typed w
+print(counts)</code></pre>
+
+  <div class="quiz" data-skill="trace-loop-variables">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="w stays &quot;c&quot; after the first loop. The second loop runs twice and adds 1 to counts[&quot;c&quot;] each time, while v is never used. No error appears, and the answer is simply wrong.">{'a': 1, 'b': 1, 'c': 3}</button>
+      <button data-why="That's closer to what the author meant, but the line uses w, and w stays &quot;c&quot; for the whole second loop.">{'a': 2, 'b': 1, 'c': 1}</button>
+      <button data-why="w still exists after its loop, so there's no NameError.">NameError</button>
+      <button data-why="A KeyError needs a missing key, but this line only ever uses counts[&quot;c&quot;], which exists. Using v would have raised one at &quot;z&quot;.">KeyError</button>
+    </div>
+  </div>
+
+  <p>One more, and don't just reuse the last answer. This is a whole program, with no <code>x</code> anywhere earlier.</p>
+  <pre><code>for x in []:
+    pass
+print(x)</code></pre>
+
+  <div class="quiz" data-skill="trace-loop-variables">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="The list is empty, so the loop never assigns to x, and x was never created. It's the assignment that creates the variable, not the word for. That's why last_item only works on a non-empty list.">NameError</button>
+      <button data-why="Python doesn't give an unassigned name a default value. x was never assigned, so it doesn't exist.">None</button>
+      <button data-why="x would hold items from the list, never the list itself. And this list has no items, so x was never assigned.">[]</button>
+      <button data-why="Python doesn't start variables at 0. x was never assigned, so it doesn't exist.">0</button>
+    </div>
+  </div>
+
+  <h2>Dict space, from memory</h2>
+  <p>Last time you got the letters question right, but the table just above it showed that answer. Then you chose O(n) for digits. I also made a mistake: the right answers all began with "the key is", so after the first feedback the wording could give them away. This time the answers carry no reasons, and the two sides are mixed.</p>
+  <p>First, say the three questions of the method from memory. Then check them:</p>
+  <details>
+    <summary>Show the three questions</summary>
+    <ol>
+      <li>What is one key?</li>
+      <li>How many different keys are possible?</li>
+      <li>Does that number grow with the input? A fixed limit means O(1), and no limit means O(n).</li>
+    </ol>
+  </details>
+  <p>For each task below, say the key and how many are possible <em>before</em> you click. Each task builds one dict, and n is the number of items in the input.</p>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">A list of n exam scores, each a whole number from 0 to 100. Count how many students got each score.</p>
+    <div class="options">
+      <button data-correct data-why="The key is one score. Only 101 are possible, however many students there are. Being a number doesn't make a key unlimited, and here the problem sets a limit.">O(1)</button>
+      <button data-why="The list has n scores, but they share at most 101 keys. Having 101 keys is still a fixed limit.">O(n)</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="space-distinct-keys">
+    <p class="q">A call log of n entries, each holding a phone number. Count the calls per phone number.</p>
+    <div class="options">
+      <button data-correct data-why="The key is a whole phone number. All n entries could be different numbers, so the dict can grow with n.">O(n)</button>
+      <button data-why="Digits are limited to 10, but the key is the whole phone number. The problem sets no limit that stays fixed as the log grows.">O(1)</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">A list of n sentences, each starting with a lowercase letter. Count how many sentences start with each letter.</p>
+    <div class="options">
+      <button data-correct data-why="The input is sentences, but the key is only the first letter, so there are at most 26 keys. Look at what the dict stores, not at how big the input items are.">O(1)</button>
+      <button data-why="Each sentence adds to a count, but no sentence is stored. The key is its first letter, and there are at most 26 of those.">O(n)</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="space-distinct-keys">
+    <p class="q">A list of n orders, each holding a product ID. The IDs can be any string. Count the orders per product ID.</p>
+    <div class="options">
+      <button data-correct data-why="The key is a whole ID. Nothing limits how many IDs exist, and all n orders could differ, so the dict can grow with n.">O(n)</button>
+      <button data-why="Orders might repeat a product, but Big O here takes the worst case, where every order has a different ID.">O(1)</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">A list of n timestamps, all from the year 2026. Count how many fall on each calendar date.</p>
+    <div class="options">
+      <button data-correct data-why="The key is one date, and 2026 has 365 of them. A billion timestamps would still fit in 365 keys. A large limit still counts, as long as it doesn't grow with n.">O(1)</button>
+      <button data-why="There are n timestamps, but the key is the date, and they share at most 365 of those.">O(n)</button>
+    </div>
+  </div>
+
+  <h2>Two rewrites from a blank editor</h2>
+  <p>You last wrote these two days or more ago, and this page shows none of the code, so it's a real test of your memory. Keep the cheatsheet closed. Before each Run, read every line once. The editor doesn't indent for you after Enter, so press Tab for each level. Hand-typed spaces caused your only error last time.</p>
+
+  <h3>Two Sum</h3>
+  <p>Given a list of integers <code>nums</code> and an integer <code>target</code>, return the indices of the two different elements that add up to <code>target</code>, in any order. Exactly one answer exists. For example, <code>[2, 7, 11, 15]</code> with target <code>9</code> gives <code>[0, 1]</code>. It has to take O(n) time.</p>
+  <div id="two-sum"></div>
+  <details data-solution="two-sum">
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def two_sum(nums, target):
+    seen = {}  # number -> its index
+    for i, x in enumerate(nums):
+        complement = target - x
+        if complement in seen:
+            return [seen[complement], i]
+        seen[x] = i</code></pre>
+    <p class="small">If you open this, close it again and rewrite the function from memory. It won't count as an unaided pass, and that's fine: we'll come back to it.</p>
+  </details>
+
+  <h3>Ransom Note</h3>
+  <p>Given two strings of lowercase letters, return <code>True</code> if <code>ransom_note</code> can be built from the letters of <code>magazine</code>, using each magazine letter at most once. Otherwise return <code>False</code>. For example, <code>"aa"</code> from <code>"ab"</code> gives <code>False</code>.</p>
+  <div id="ransom-note"></div>
+  <details data-solution="ransom-note">
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def can_construct(ransom_note, magazine):
+    counts = {}  # letter -> how many are left
+    for c in magazine:
+        counts[c] = counts.get(c, 0) + 1
+    for c in ransom_note:
+        if counts.get(c, 0) == 0:
+            return False
+        counts[c] -= 1
+    return True</code></pre>
+    <p class="small">If you open this, close it again and rewrite the function from memory.</p>
+  </details>
+
+  <h2>Do it the interview way</h2>
+  <ol>
+    <li>Open <a href="https://leetcode.com/problems/two-sum/">Two Sum on LeetCode</a>. Its function is named <code>twoSum</code> and sits inside a class, so write your code in its template.</li>
+    <li>Say the plan out loud, then code it while still talking.</li>
+    <li>Before you submit, say the time and space cost, using the key to justify the space.</li>
+  </ol>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://docs.python.org/3/tutorial/classes.html#python-scopes-and-namespaces">Python tutorial, Scopes and Namespaces</a>. It's more than you need right now, so read only if you're curious.</p>
+  <p>After you finish, keep these for review: <a href="../reference/hash-map-cheatsheet.html">hash map cheatsheet</a> and <a href="../reference/glossary.html">glossary</a>.</p>
+
+  <h2>Your results</h2>
+  <p>This records your first answer to each question, plus your first and final code, and it survives a refresh. When you finish, paste it into the chat with three things added:</p>
+  <ul>
+    <li>Which other programming languages you've used, if any. This tells me whether block scope explains the <code>NameError</code> answers.</li>
+    <li>How the LeetCode submission went, including any trouble with the class template.</li>
+    <li>Anything that felt shaky, even if you got it right.</li>
+  </ul>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a step is unclear, or your code fails and you can't see why, paste it into the chat with your teacher agent.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 5: Cold Rewrites" });
+
+  mountExercise(document.getElementById("last-item"), {
+    starter: "def last_item(items):\n    ",
+    skill: "trace-loop-variables",
+    fn: "last_item",
+    cases: [
+      { label: "[4, 7, 9]", args: [[4, 7, 9]], expected: 9 },
+      { label: '["a"]', args: [["a"]], expected: "a" },
+      { label: '["x", "y"]', args: [["x", "y"]], expected: "y" },
+    ],
+  });
+
+  mountExercise(document.getElementById("two-sum"), {
+    starter: "def two_sum(nums, target):\n    ",
+    skill: "implement-seen-map",
+    fn: "two_sum",
+    sortResult: true,
+    cases: [
+      { label: "[2, 7, 11, 15], target 9", args: [[2, 7, 11, 15], 9], expected: [0, 1] },
+      { label: "[3, 2, 4], target 6", args: [[3, 2, 4], 6], expected: [1, 2] },
+      { label: "[3, 3], target 6", args: [[3, 3], 6], expected: [0, 1] },
+      { label: "[-1, 5, 8], target 7", args: [[-1, 5, 8], 7], expected: [0, 2] },
+      { label: "5,000 numbers", args: [Array.from({ length: 5000 }, (_, i) => i * 2 + 1), 19996], expected: [4998, 4999], maxMs: 300 },
+    ],
+  });
+
+  mountExercise(document.getElementById("ransom-note"), {
+    starter: "def can_construct(ransom_note, magazine):\n    ",
+    skill: "implement-frequency-count",
+    fn: "can_construct",
+    cases: [
+      { label: '"a" from "b"', args: ["a", "b"], expected: false },
+      { label: '"aa" from "ab"', args: ["aa", "ab"], expected: false },
+      { label: '"aa" from "aab"', args: ["aa", "aab"], expected: true },
+      { label: '"abc" from "cba"', args: ["abc", "cba"], expected: true },
+      { label: '"z" from "abc"', args: ["z", "abc"], expected: false },
+    ],
+  });
+</script>
+</body>
+</html>

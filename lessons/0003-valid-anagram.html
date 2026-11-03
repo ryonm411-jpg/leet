@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valid Anagram: Write It Without the Prompt</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 3 · Hash maps</p>
+  <h1>Write it without the prompt</h1>
+  <p class="meta">About 20 minutes · Your win: write a frequency count from memory and work out what it costs in space</p>
+
+  <p class="lede">Your Lesson 2 code ended up correct, and you fixed it yourself without opening the solution. The errors you hit were specific, so this lesson practises those. This time the page doesn't show you the counting line, because you need to be able to produce it from memory.</p>
+
+  <h2>Warm-up: a new seen map</h2>
+  <p>Last time your first attempt stored <code>dict[i] = w</code>, with the key and value swapped. Here's a habit that catches this: before the loop, write a comment saying what the dict maps, such as <code># word -> index</code>. The thing you want to look up is the key.</p>
+  <p>Walk through a list of words. The first time you reach a word you've already seen, return how many positions back you saw it. If no word repeats, return <code>-1</code>. For example, <code>["a", "b", "c", "b", "a"]</code> gives <code>2</code>, because the <code>"b"</code> at index 3 was last seen at index 1.</p>
+  <div id="warmup"></div>
+  <details data-solution="warm-up">
+    <summary>Stuck for 5 minutes? Show one solution</summary>
+    <pre><code>def repeat_gap(words):
+    seen = {}  # word -> its index
+    for i, word in enumerate(words):
+        if word in seen:
+            return i - seen[word]
+        seen[word] = i
+    return -1</code></pre>
+    <p class="small">If you open this, close it again and rewrite the function from memory.</p>
+  </details>
+
+  <h2>The problem</h2>
+  <p><a href="https://leetcode.com/problems/valid-anagram/">Valid Anagram</a>: given two strings, <code>s</code> and <code>t</code>, return <code>True</code> if <code>t</code> is an <em>anagram</em> of <code>s</code>. That means it has exactly the same letters, each the same number of times, possibly in a different order. Both strings hold lowercase English letters.</p>
+
+  <div class="quiz" data-skill="count-vs-membership">
+    <p class="q">Someone suggests <code>return set(s) == set(t)</code>. A <code>set</code> keeps each distinct letter once. Take <code>s = "aab"</code> and <code>t = "abb"</code>. What does the function return, and does that match the correct answer?</p>
+    <div class="options">
+      <button data-correct data-why="Both sets are {a, b}, so it returns True. But s has two a's and t has one, so they aren't anagrams. The set threw away the counts.">Returns True, but the correct answer is False</button>
+      <button data-why="It does return True, but look at how many a's each string has: two in s and one in t.">Returns True, and the correct answer is True</button>
+      <button data-why="Both sets contain exactly a and b, so the comparison is True.">Returns False, and the correct answer is False</button>
+      <button data-why="Both sets contain exactly a and b, so the comparison is True. The correct answer is False.">Returns False, but the correct answer is True</button>
+    </div>
+  </div>
+
+  <h2>The plan</h2>
+  <p>This is Ransom Note with one extra rule. Count every letter in <code>s</code>, then walk through <code>t</code> and spend one letter each time. If a letter has none left, return <code>False</code>.</p>
+  <p>The extra rule is needed because Ransom Note allowed leftover magazine letters, while an anagram allows none.</p>
+
+  <div class="quiz" data-skill="anagram-length-check">
+    <p class="q">Suppose you count <code>s</code> and spend <code>t</code>, with no other checks. Which input gets the wrong answer?</p>
+    <div class="options">
+      <button data-correct data-why="The a is spent successfully and the loop ends, so it returns True, but the b was left over. Returning False when the lengths differ fixes this. With equal lengths, a leftover letter would force a shortage somewhere, so no other check is needed.">s = "ab", t = "a"</button>
+      <button data-why="b was never counted, so spending it fails and the code correctly returns False.">s = "a", t = "ab"</button>
+      <button data-why="The second b has none left, so the code correctly returns False.">s = "aab", t = "abb"</button>
+      <button data-why="c was never counted, so spending it fails and the code correctly returns False.">s = "rat", t = "car"</button>
+    </div>
+  </div>
+
+  <h2>Now write it</h2>
+  <p>Don't scroll up to Lesson 2 or open the cheatsheet. Two things to watch for, both from your last attempt: a key has to exist before you can add to it, and if you don't use the index, <code>for c in s</code> is simpler than <code>enumerate</code>. The tests include a large input that catches slow solutions.</p>
+  <div id="exercise"></div>
+  <p class="small" id="pass-message" hidden><strong>Nice work.</strong> Answer the next two sections, then do it once for real.</p>
+
+  <details data-solution="valid-anagram">
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def is_anagram(s, t):
+    if len(s) != len(t):
+        return False
+    counts = {}  # letter -> how many are left
+    for c in s:
+        counts[c] = counts.get(c, 0) + 1
+    for c in t:
+        if counts.get(c, 0) == 0:
+            return False
+        counts[c] -= 1
+    return True</code></pre>
+    <p class="small">If you open this, close it again and rewrite the function from memory.</p>
+  </details>
+
+  <h2>Read the code you wrote</h2>
+  <p>Your Lesson 2 code had this bug, and the tests showed <code>got True</code> where they expected <code>False</code>. Trace it by hand, without running it.</p>
+  <pre><code>def can_construct(note, magazine):
+    counts = {}
+    for m in magazine:
+        counts[m] = counts.get(m, 0) + 1
+    for n in note:
+        if counts.get(m, 0) == 0:
+            return False
+        counts[m] -= 1
+    return True</code></pre>
+
+  <div class="quiz" data-skill="trace-loop-variables">
+    <p class="q">What does this return for note <code>"a"</code>, magazine <code>"b"</code>?</p>
+    <div class="options">
+      <button data-correct data-why="A Python loop variable keeps its last value after the loop, so m is still b. The second loop checks and spends b, never a, and returns True. After writing a loop, check that its body uses that loop's variable.">True, because m is still "b" in the second loop</button>
+      <button data-why="False would be the right answer, but the check looks up m, which is b, and b has a count of 1.">False, because "a" isn't in counts</button>
+      <button data-why="Python doesn't remove a loop variable when the loop ends, so m still exists.">NameError, because m no longer exists</button>
+      <button data-why="get never raises a KeyError, and counts[m] uses b, which is in the dict.">KeyError, because "a" isn't in counts</button>
+    </div>
+  </div>
+
+  <h2>What does it cost?</h2>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">For your Valid Anagram solution, with strings of length n holding only lowercase English letters, what are the time and space costs?</p>
+    <div class="options">
+      <button data-correct data-why="Each string is walked once. The dict can't hold more than 26 keys, however long the strings are, so its size doesn't grow with n.">O(n) time, O(1) space</button>
+      <button data-why="Space depends on how many keys the dict holds, not how many characters you read, and there are only 26 possible keys.">O(n) time, O(n) space</button>
+      <button data-why="The loops run one after the other, not one inside the other, so you add their costs.">O(n²) time, O(1) space</button>
+      <button data-why="You still have to read every character, so the time grows with n.">O(1) time, O(1) space</button>
+    </div>
+  </div>
+
+  <p>The rule to carry forward: <strong>a dict's space is the number of distinct keys it can hold.</strong> So ask how many different keys are possible. Sometimes the problem caps that number, and sometimes it doesn't.</p>
+
+  <div class="quiz" data-skill="space-distinct-keys">
+    <p class="q">Now you count how often each word appears in a list of n words, and the words can be anything. What space does the dict use?</p>
+    <div class="options">
+      <button data-correct data-why="Nothing caps the possible words. In the worst case all n are different, which gives n keys.">O(n), because every word could be different</button>
+      <button data-why="26 limits single lowercase letters. Whole words have no such limit.">O(1), because there are only 26 letters</button>
+      <button data-why="The dict holds one key per distinct word, and at most n words appear.">O(n²), because each word is compared to the others</button>
+      <button data-why="Duplicates do share a key, but Big O describes the worst case here, when nothing repeats.">O(1), because repeated words share a key</button>
+    </div>
+  </div>
+
+  <h2>Do it the interview way</h2>
+  <ol>
+    <li>Open <a href="https://leetcode.com/problems/valid-anagram/">Valid Anagram on LeetCode</a>. Its function is named <code>isAnagram</code> and sits inside a class, so write your code in its template.</li>
+    <li>Say the plan out loud, including the length check, then code it from a blank template while still talking.</li>
+    <li>Before you submit, trace <code>s = "ab"</code>, <code>t = "a"</code> by hand and state the time and space cost.</li>
+  </ol>
+  <p>You may be asked for another way to solve this. <code>sorted(s) == sorted(t)</code> is shorter, but it costs O(n log n) time and O(n) space, because it sorts both strings into new lists. Saying that trade-off aloud is the kind of thing interviewers listen for.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/algorithms/hash-table/">Tech Interview Handbook, Hash table cheatsheet</a>. For the sorting alternative, see Python's <a href="https://docs.python.org/3/library/functions.html#sorted"><code>sorted</code></a>.</p>
+  <p>Keep these for review: <a href="../reference/hash-map-cheatsheet.html">hash map cheatsheet</a> and <a href="../reference/glossary.html">glossary</a>.</p>
+
+  <h2>Your results</h2>
+  <p>This records your first answer to each question, plus your first and final code, and it survives a refresh. When you finish, paste it into the chat. Your teacher agent uses it to track your weak spots and choose what you practise next. Add anything that felt shaky, even if you got it right.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a step is unclear, or your code fails and you can't see why, paste it into the chat with your teacher agent.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 3: Valid Anagram" });
+
+  mountExercise(document.getElementById("warmup"), {
+    starter: "def repeat_gap(words):\n    # Your code here\n    pass\n",
+    skill: "implement-seen-map",
+    fn: "repeat_gap",
+    cases: [
+      { label: '["a", "b", "c", "b", "a"]', args: [["a", "b", "c", "b", "a"]], expected: 2 },
+      { label: '["a", "a"]', args: [["a", "a"]], expected: 1 },
+      { label: '["p", "q", "r", "p", "q"]', args: [["p", "q", "r", "p", "q"]], expected: 3 },
+      { label: "no repeats", args: [["x", "y", "z"]], expected: -1 },
+      { label: "empty list", args: [[]], expected: -1 },
+    ],
+  });
+
+  mountExercise(document.getElementById("exercise"), {
+    starter: "def is_anagram(s, t):\n    # Your code here\n    pass\n",
+    skill: "implement-frequency-count",
+    fn: "is_anagram",
+    cases: [
+      { label: 's "anagram", t "nagaram"', args: ["anagram", "nagaram"], expected: true },
+      { label: 's "rat", t "car"', args: ["rat", "car"], expected: false },
+      { label: 's "aab", t "abb"', args: ["aab", "abb"], expected: false },
+      { label: 's "ab", t "a"', args: ["ab", "a"], expected: false },
+      { label: 's "a", t "ab"', args: ["a", "ab"], expected: false },
+      { label: "16,000-letter strings", args: ["a".repeat(8000) + "b".repeat(8000), "b".repeat(8000) + "a".repeat(8000)], expected: true, maxMs: 300 },
+    ],
+    onPass: () => { document.getElementById("pass-message").hidden = false; },
+  });
+</script>
+</body>
+</html>

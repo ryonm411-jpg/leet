@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two Pointers: Valid Palindrome</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 6 · Two pointers</p>
+  <h1>Walk in from both ends</h1>
+  <p class="meta">About 30 minutes · Your win: use a new pattern to solve Valid Palindrome, with O(1) extra space and no dict</p>
+
+  <p class="lede">Hash maps spend memory to save time. This lesson's pattern often needs almost no memory, because it uses the order the data is already in.</p>
+
+  <h2>Warm up: three old weak spots</h2>
+  <p>Answer these from memory. Say what the key is before you click.</p>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">A list of n people's ages, each a whole number from 0 to 120. Count how many people have each age. How much space does the dict use?</p>
+    <div class="options">
+      <button data-correct data-why="The key is one age, and only 121 are possible, however many people there are. A fixed limit means O(1).">O(1)</button>
+      <button data-why="There are n people, but they share at most 121 keys. A fixed limit means O(1).">O(n)</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="space-distinct-keys">
+    <p class="q">A list of n email addresses, which can be any strings. Count how many times each address appears. How much space does the dict use?</p>
+    <div class="options">
+      <button data-correct data-why="The key is a whole address, and all n could be different, so the dict can grow with n.">O(n)</button>
+      <button data-why="Characters are limited, but the key is the whole address. Nothing limits how many different addresses appear.">O(1)</button>
+    </div>
+  </div>
+
+  <pre><code>counts = {"a": 1}
+print(counts["z"] == 0)</code></pre>
+  <div class="quiz" data-skill="spend-check">
+    <p class="q">What happens? This is the check that failed on your first working Ransom Note run.</p>
+    <div class="options">
+      <button data-correct data-why="Square brackets raise a KeyError for a missing key, before the comparison happens. counts.get(&quot;z&quot;, 0) == 0 would give True.">KeyError</button>
+      <button data-why="The comparison never runs. Reading a missing key with square brackets raises a KeyError first.">False</button>
+      <button data-why="That's what counts.get(&quot;z&quot;, 0) == 0 would give. Square brackets raise a KeyError instead.">True</button>
+      <button data-why="Square brackets don't return None for a missing key. They raise a KeyError.">None</button>
+    </div>
+  </div>
+
+  <h2>The idea</h2>
+  <p>A <strong>pointer</strong> here is just a variable holding an index. With <strong>two pointers</strong>, you keep two indices and move them according to a rule, which <a href="https://www.techinterviewhandbook.org/algorithms/array/">the Tech Interview Handbook's array guide</a> lists among its core techniques. This lesson uses the most common layout: one pointer starts at each end, and they walk toward each other until they meet.</p>
+  <p>Here it is reversing a list, with no second list:</p>
+  <pre><code>def reverse_list(items):
+    left = 0
+    right = len(items) - 1
+    while left &lt; right:
+        items[left], items[right] = items[right], items[left]   # swap
+        left += 1
+        right -= 1</code></pre>
+  <p>Each pass finishes one pair, so the loop runs about n/2 times, which is O(n) time. The only extra memory is two integers, however long the list is, so the space is O(1). Nothing needs doing when the pointers meet on a middle element, because it's already in place.</p>
+
+  <pre><code>items = [1, 2, 3, 4]    # run reverse_list(items)</code></pre>
+  <div class="quiz" data-skill="two-pointers-trace">
+    <p class="q">When the loop stops, what are <code>left</code> and <code>right</code>? Trace it by hand.</p>
+    <div class="options">
+      <button data-correct data-why="They start at 0 and 3, then become 1 and 2, then 2 and 1. Now left &lt; right is false, so the loop stops. On an even length, the pointers cross.">left 2, right 1</button>
+      <button data-why="They start at 0 and 3, then become 1 and 2. That pair still passes left &lt; right, so one more pass gives 2 and 1.">left 1, right 2</button>
+      <button data-why="Both pointers move on every pass, so on an even length they never land on the same index. They go 0 and 3, 1 and 2, 2 and 1.">left 2, right 2</button>
+      <button data-why="The loop stops as soon as left &lt; right is false, which happens at 2 and 1. It doesn't take another pass.">left 3, right 0</button>
+    </div>
+  </div>
+
+  <h2>Your turn: a plain palindrome</h2>
+  <p>A <strong>palindrome</strong> reads the same forwards and backwards, like <code>"racecar"</code>. Write <code>is_palindrome</code> with two pointers. It's the same walk as above, but you compare instead of swapping. Decide what should happen when a pair doesn't match, and what an empty string should give.</p>
+  <p class="small">The editor doesn't indent after Enter, so press Tab for each level. Read every line once before you run it.</p>
+  <div id="plain-palindrome"></div>
+  <details data-solution="plain-palindrome">
+    <summary>Stuck for 5 minutes? Show one solution</summary>
+    <pre><code>def is_palindrome(s):
+    left = 0
+    right = len(s) - 1
+    while left &lt; right:
+        if s[left] != s[right]:
+            return False
+        left += 1
+        right -= 1
+    return True</code></pre>
+  </details>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">A shorter version is <code>return s == s[::-1]</code>, where <code>s[::-1]</code> builds a reversed copy of the string. How much extra space does it use?</p>
+    <div class="options">
+      <button data-correct data-why="The copy holds all n characters, so it grows with the input. No dict is involved, but the same question applies: does the memory grow with n? It's a fine answer in an interview, and two pointers is the follow-up that gets you to O(1).">O(n)</button>
+      <button data-why="It's only one line of code, but space measures memory, not lines. The reversed copy holds all n characters.">O(1)</button>
+    </div>
+  </div>
+
+  <h2>The real problem: Valid Palindrome</h2>
+  <p>Now some characters don't count. A character counts only if it's <strong>alphanumeric</strong>, meaning a letter or a digit, and uppercase and lowercase count as the same. So <code>"A man, a plan, a canal: Panama"</code> is a palindrome, and <code>"race a car"</code> isn't.</p>
+  <p>You need two new string methods:</p>
+  <ul>
+    <li><a href="https://docs.python.org/3/library/stdtypes.html#str.isalnum"><code>c.isalnum()</code></a> is <code>True</code> if <code>c</code> is a letter or digit.</li>
+    <li><a href="https://docs.python.org/3/library/stdtypes.html#str.lower"><code>c.lower()</code></a> gives the lowercase version of <code>c</code>.</li>
+  </ul>
+  <p>Step through the logic on <code>"a,bA"</code>. A pointer on a character that doesn't count moves on without comparing anything.</p>
+  <div id="trace"></div>
+
+  <p>Write it with two pointers, not by building a cleaned copy of the string, so the extra space stays O(1). The tests can't tell which you used, so that part's on you. Note the time you start.</p>
+  <div id="valid-palindrome"></div>
+  <details data-solution="valid-palindrome">
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def is_valid(s):
+    left = 0
+    right = len(s) - 1
+    while left &lt; right:
+        if not s[left].isalnum():
+            left += 1
+        elif not s[right].isalnum():
+            right -= 1
+        elif s[left].lower() != s[right].lower():
+            return False
+        else:
+            left += 1
+            right -= 1
+    return True</code></pre>
+    <p class="small">If you open this, close it again and rewrite the function from memory. It won't count as an unaided pass, and that's fine.</p>
+  </details>
+
+  <h3>The trap in skipping</h3>
+  <p>Many people skip with an inner loop. Whether or not you did, predict what this does:</p>
+  <pre><code>s = "..."
+left = 0
+while not s[left].isalnum():
+    left += 1</code></pre>
+  <div class="quiz" data-skill="two-pointers-bounds">
+    <p class="q">What happens?</p>
+    <div class="options">
+      <button data-correct data-why="No character is alphanumeric, so left reaches 3, and s[3] doesn't exist. An inner skipping loop needs its own bound: while left &lt; right and not s[left].isalnum().">IndexError</button>
+      <button data-why="left grows on every pass, so the loop can't run forever. It fails when left runs off the end of the string.">Endless loop</button>
+      <button data-why="The loop has no way to stop at the end of the string, so left runs past it, and s[3] raises an error.">left ends at 2</button>
+      <button data-why="A KeyError is for a missing dict key. A string index that's too large raises a different error.">KeyError</button>
+    </div>
+  </div>
+
+  <h2>Do it the interview way</h2>
+  <ol>
+    <li>Open <a href="https://leetcode.com/problems/valid-palindrome/">Valid Palindrome on LeetCode</a>. Its function is named <code>isPalindrome</code> and sits inside a class, so write your code in its template.</li>
+    <li>Say the plan out loud, then code it from memory while still talking.</li>
+    <li>Say the time and space cost, then submit.</li>
+  </ol>
+  <p>You haven't reported a LeetCode submission yet. It's the closest thing here to the real interview, so please do this step, even if the first attempt fails.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/algorithms/array/">Tech Interview Handbook, array cheatsheet</a>. Read its "Two pointers" section, which also covers the other pointer layouts. Valid Palindrome is in the Easy practice list of its <a href="https://www.techinterviewhandbook.org/coding-interview-study-plan/">study plan</a>, which allows 15 minutes for it.</p>
+  <p>Open these only after you've finished: <a href="../reference/two-pointers-cheatsheet.html">two pointers cheatsheet</a>, <a href="../reference/glossary.html">glossary</a>, and the previous lesson, <a href="0005-cold-rewrites.html">Cold Rewrites</a>.</p>
+
+  <h2>Your results</h2>
+  <p>This records your first answer to each question, plus your first and final code, and it survives a refresh. When you finish, paste it into the chat with three things added:</p>
+  <ul>
+    <li>Roughly how many minutes Valid Palindrome took, and how the LeetCode submission went.</li>
+    <li>Which other programming languages you've used, if any. This tells me whether block scope explains your earlier <code>NameError</code> answers.</li>
+    <li>Anything that felt shaky, even if you got it right.</li>
+  </ul>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a step is unclear, or your code fails and you can't see why, paste it into the chat with your teacher agent.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/trace.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 6: Two Pointers" });
+
+  mountTrace(document.getElementById("trace"), {
+    cells: ["a", ",", "b", "A"],
+    steps: [
+      { active: 0, state: "left = 0, right = 3", note: "Compare a and A. Both count, and they match once lowercased. Move both pointers inward." },
+      { active: 1, state: "left = 1, right = 2", note: "The left pointer is on a comma, which doesn't count. Move only the left pointer." },
+      { active: 2, state: "left = 2, right = 2", note: "The pointers have met, so no pair is left to compare. Every pair matched, so the answer is True." },
+    ],
+  });
+
+  mountExercise(document.getElementById("plain-palindrome"), {
+    starter: "def is_palindrome(s):\n    ",
+    skill: "implement-two-pointers",
+    fn: "is_palindrome",
+    cases: [
+      { label: '"racecar"', args: ["racecar"], expected: true },
+      { label: '"abba"', args: ["abba"], expected: true },
+      { label: '"abca"', args: ["abca"], expected: false },
+      { label: '"ab"', args: ["ab"], expected: false },
+      { label: '"a"', args: ["a"], expected: true },
+      { label: 'empty string', args: [""], expected: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("valid-palindrome"), {
+    starter: "def is_valid(s):\n    ",
+    skill: "implement-valid-palindrome",
+    fn: "is_valid",
+    cases: [
+      { label: '"A man, a plan, a canal: Panama"', args: ["A man, a plan, a canal: Panama"], expected: true },
+      { label: '"race a car"', args: ["race a car"], expected: false },
+      { label: 'a single space', args: [" "], expected: true },
+      { label: '"0P"', args: ["0P"], expected: false },
+      { label: '".,"', args: [".,"], expected: true },
+      { label: '"a."', args: ["a."], expected: true },
+      { label: '".a,b"', args: [".a,b"], expected: false },
+    ],
+  });
+</script>
+</body>
+</html>

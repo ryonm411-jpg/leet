@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First Unique Character: How Big Can the Dict Get?</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 4 · Hash maps</p>
+  <h1>How big can the dict get?</h1>
+  <p class="meta">About 25 minutes · Your win: work out a dict's space cost by naming its key, and pass an exercise on the first run</p>
+
+  <p class="lede">Your counting line came out right from memory last time, and so did your key and value. Those were the two slips from Lesson 2, so that's real progress. The space questions were harder, and my one-line rule didn't fix that, so this lesson gives you a method to follow.</p>
+
+  <h2>Warm-up: pass on the first run</h2>
+  <p>Your last slips were small Python ones: <code>s.len()</code>, <code>for i, w i words</code>, and <code>for i, w in words</code>. The tests caught them, but some interviews won't let you run your code at all. So before pressing Run, read each line once and check it. Your results show how many runs you needed, and the goal here is one.</p>
+  <p>Return the index of the first word that has exactly <code>n</code> letters, or <code>-1</code> if there isn't one. For example, <code>["hi", "cat", "dog"]</code> with <code>n = 3</code> gives <code>1</code>. Write this with no notes.</p>
+  <div id="warmup"></div>
+  <details data-solution="warm-up">
+    <summary>Stuck for 5 minutes? Show one solution</summary>
+    <pre><code>def first_with_length(words, n):
+    for i, word in enumerate(words):
+        if len(word) == n:
+            return i
+    return -1</code></pre>
+    <p class="small"><code>len(word)</code> is a function that takes the string, not a method on it. <code>enumerate(words)</code> is what produces the index and value pairs. If you open this, close it again and rewrite the function from memory.</p>
+  </details>
+
+  <h2>Two quick traces</h2>
+  <p>Work these out by hand before you answer. Both came up as misses last time, so these are new versions.</p>
+  <pre><code>for x in [4, 7, 9]:
+    y = x * 2
+print(x)</code></pre>
+
+  <div class="quiz" data-skill="trace-loop-variables">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="A loop variable keeps its last value after the loop ends. That's why the m in your Lesson 2 bug still held the magazine's last letter instead of raising an error.">9</button>
+      <button data-why="That's x on the first pass, but x changes on every pass and keeps the last value.">4</button>
+      <button data-why="That's y on the last pass. The code prints x, which is 9.">18</button>
+      <button data-why="Python doesn't remove a loop variable when the loop ends, so x still exists.">NameError, because x no longer exists</button>
+    </div>
+  </div>
+
+  <pre><code>def check(s, t):
+    counts = {}
+    for c in s:
+        counts[c] = counts.get(c, 0) + 1
+    for c in t:
+        if counts.get(c, 0) == 0:
+            return False
+        counts[c] -= 1
+    return True</code></pre>
+
+  <div class="quiz" data-skill="anagram-length-check">
+    <p class="q">This code has no length check. Which call returns <code>True</code> even though the strings aren't anagrams? Walk through each one: <code>s</code> fills the stock and <code>t</code> spends it.</p>
+    <div class="options">
+      <button data-correct data-why="t spends c and a, and both are in stock, so the loop ends and returns True. The t in cat was never spent, and nothing checks for leftovers. Only leftovers in s slip through, so s must be the longer string.">check("cat", "ca")</button>
+      <button data-why="t needs a t, which was never counted, so spending fails and it returns False. That's the right answer. An extra letter in the spending string gets caught.">check("ca", "cat")</button>
+      <button data-why="The second o has none left, because s has only one, so it returns False. That's the right answer.">check("dog", "doo")</button>
+      <button data-why="These are anagrams, so True is the right answer here.">check("tac", "cat")</button>
+    </div>
+  </div>
+
+  <h2>The problem</h2>
+  <p><a href="https://leetcode.com/problems/first-unique-character-in-a-string/">First Unique Character in a String</a>: given a string <code>s</code> of lowercase English letters, return the index of the first letter that appears exactly once. If there isn't one, return <code>-1</code>. For example, <code>"loveleetcode"</code> gives <code>2</code>, the <code>v</code>.</p>
+  <p>You can't decide as you first read a letter, because a copy might come later. So count the whole string first, then walk it again and stop at the first letter with a count of 1.</p>
+  <p>Step through <code>"aabc"</code>. The boxes show the string. Predict each result before pressing Next.</p>
+  <div id="trace"></div>
+
+  <h2>Now write it</h2>
+  <p>Two things to change from last time:</p>
+  <ul>
+    <li><strong>Name the dict after what it holds.</strong> <code>counts</code> or <code>seen</code> tells a reader what's inside. Naming it <code>dict</code> also hides Python's built-in <code>dict</code>, so calling <code>dict()</code> later in that code would fail.</li>
+    <li><strong>Use <code>enumerate</code> only when you use the index.</strong> One of the two loops here needs it and the other doesn't. Work out which before you type.</li>
+  </ul>
+  <p>Don't look at the cheatsheet. The tests include a large input that catches slow solutions.</p>
+  <div id="exercise"></div>
+  <p class="small" id="pass-message" hidden><strong>Nice work.</strong> Now work out what it costs, below.</p>
+
+  <details data-solution="first-unique">
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def first_unique(s):
+    counts = {}  # letter -> how many times it appears
+    for c in s:
+        counts[c] = counts.get(c, 0) + 1
+    for i, c in enumerate(s):
+        if counts[c] == 1:
+            return i
+    return -1</code></pre>
+    <p class="small"><code>counts[c]</code> is safe in the second loop, because every letter of <code>s</code> was counted in the first. If you open this, close it again and rewrite the function from memory.</p>
+  </details>
+
+  <h2>A method for dict space</h2>
+  <p>Last time you answered O(n) where the answer was O(1), then O(1) where it was O(n). Both answers are easy to give when you're looking at the length of the input or at the word "letters". Look at the <em>key</em> instead, and ask three questions:</p>
+  <ol>
+    <li><strong>What is one key?</strong> A letter, a word, a number?</li>
+    <li><strong>How many different keys are possible?</strong></li>
+    <li><strong>Does that number grow with the input?</strong> If there's a fixed limit, space is O(1). If more input can always bring new keys, space is O(n).</li>
+  </ol>
+  <table>
+    <thead><tr><th>Task</th><th>One key</th><th>Possible keys</th><th>Space</th></tr></thead>
+    <tbody>
+      <tr><td>Count letters in lowercase strings</td><td>one letter</td><td>at most 26, even for a billion characters</td><td>O(1)</td></tr>
+      <tr><td>Count words in a list of n words</td><td>a whole word</td><td>no limit, and all n could differ</td><td>O(n)</td></tr>
+    </tbody>
+  </table>
+  <p>Words are made of letters, but the key is the whole word, so the 26 doesn't apply. And O(1) doesn't mean one key: it means a limit that stays the same however long the input gets.</p>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">Use the method on your <code>first_unique</code>, where <code>s</code> has length n. What does it cost?</p>
+    <div class="options">
+      <button data-correct data-why="The key is one lowercase letter, so at most 26 keys, whatever n is. Two passes, one after the other, add up to O(n) time.">O(n) time, O(1) space</button>
+      <button data-why="The key is one letter, and there are only 26. A longer string repeats letters without adding keys.">O(n) time, O(n) space</button>
+      <button data-why="The loops run one after the other, not one inside the other, so their costs add.">O(n²) time, O(1) space</button>
+      <button data-why="You have to read the string, so the time grows with n.">O(1) time, O(1) space</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="space-distinct-keys">
+    <p class="q">You count how many times each digit, 0 to 9, appears in a string of n digits. What space does the dict use?</p>
+    <div class="options">
+      <button data-correct data-why="The key is one digit, and only 10 exist. That limit doesn't change as n grows.">O(1), because the key is one digit and there are 10</button>
+      <button data-why="The string has n characters, but they share at most 10 keys. Ask how many keys are possible, not how long the input is.">O(n), because the string has n characters</button>
+      <button data-why="The key is one digit, so the number of keys can't go past 10.">O(n), because each digit could be different</button>
+      <button data-why="The dict stores each digit once, so its size has nothing to do with squaring.">O(n²), because digits are compared</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="space-distinct-keys">
+    <p class="q">A log has n lines, each holding one username written in lowercase letters. You count the lines per username. What space does the dict use?</p>
+    <div class="options">
+      <button data-correct data-why="The key is a whole username, not a letter. Nothing limits how many usernames exist, so all n lines could differ.">O(n), because the key is a username and all n could differ</button>
+      <button data-why="The letters are limited, but the key is the whole username, and there's no limit on those.">O(1), because there are only 26 letters</button>
+      <button data-why="If every username is different, each one gets its own key, so the dict grows with n.">O(1), because usernames repeat</button>
+      <button data-why="Each username takes one key, so at most n keys.">O(n²), because usernames are compared</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="space-distinct-keys">
+    <p class="q">Your Two Sum seen map stores number → index, for a list of n integers. What space does it use?</p>
+    <div class="options">
+      <button data-correct data-why="The key is a number, and the integers have no small fixed limit. If nothing matches early, it stores all n of them.">O(n), because the key is a number and all n could differ</button>
+      <button data-why="Digits are limited to 10, but the key is the whole number.">O(1), because numbers use only 10 digits</button>
+      <button data-why="It usually stops early, but Big O here describes the worst case, where it stores nearly every number.">O(1), because it returns early</button>
+      <button data-why="It stores one entry per number and compares nothing pairwise.">O(n²), because it finds pairs</button>
+    </div>
+  </div>
+
+  <h2>Do it the interview way</h2>
+  <ol>
+    <li>Open <a href="https://leetcode.com/problems/first-unique-character-in-a-string/">First Unique Character on LeetCode</a>. Its function is named <code>firstUniqChar</code> and sits inside a class, so write your code in its template.</li>
+    <li>Say the plan out loud, then code it from a blank template while still talking.</li>
+    <li>Before you submit, trace <code>"aabb"</code> by hand. State the space cost by naming the key and how many keys are possible.</li>
+  </ol>
+  <p>You haven't reported a LeetCode submission yet, for this problem or the last two. Please tell me how they go, including whether you ran into trouble with the class template.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/algorithms/hash-table/">Tech Interview Handbook, Hash table cheatsheet</a>. For the costs of Python's own operations, see <a href="https://docs.python.org/3/builtins/time-complexity.html">the Python docs</a>.</p>
+  <p>Keep these for review: <a href="../reference/hash-map-cheatsheet.html">hash map cheatsheet</a> and <a href="../reference/glossary.html">glossary</a>.</p>
+
+  <h2>Your results</h2>
+  <p>This records your first answer to each question, plus your first and final code, and it survives a refresh. When you finish, paste it into the chat. Your teacher agent uses it to track your weak spots and choose what you practise next. Add anything that felt shaky, even if you got it right.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a step is unclear, or your code fails and you can't see why, paste it into the chat with your teacher agent.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/trace.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 4: First Unique Character" });
+
+  mountExercise(document.getElementById("warmup"), {
+    starter: "def first_with_length(words, n):\n    ",
+    skill: "python-builtins-recall",
+    fn: "first_with_length",
+    cases: [
+      { label: '["hi", "cat", "dog"], n = 3', args: [["hi", "cat", "dog"], 3], expected: 1 },
+      { label: '["hi", "yo"], n = 2', args: [["hi", "yo"], 2], expected: 0 },
+      { label: '["a", "bb"], n = 5', args: [["a", "bb"], 5], expected: -1 },
+      { label: "empty list", args: [[], 1], expected: -1 },
+    ],
+  });
+
+  mountTrace(document.getElementById("trace"), {
+    cells: ["a", "a", "b", "c"],
+    steps: [
+      { active: -1, state: "counts = {}", note: "First pass: count the whole string. What will counts hold at the end?" },
+      { active: -1, state: "counts = {a: 2, b: 1, c: 1}", note: "Now walk the string again from the start. What happens at index 0?" },
+      { active: 0, state: "counts[a] is 2", note: "Not unique, so keep going. What about index 1?" },
+      { active: 1, state: "counts[a] is 2", note: "Still a, still 2, so keep going. And index 2?" },
+      { active: 2, state: "return 2", note: "The count for b is 1, so this is the first unique letter. Return its index, 2, not the letter." },
+    ],
+  });
+
+  mountExercise(document.getElementById("exercise"), {
+    starter: "def first_unique(s):\n    ",
+    skill: "implement-frequency-count",
+    fn: "first_unique",
+    cases: [
+      { label: '"leetcode"', args: ["leetcode"], expected: 0 },
+      { label: '"loveleetcode"', args: ["loveleetcode"], expected: 2 },
+      { label: '"aabb"', args: ["aabb"], expected: -1 },
+      { label: '"z"', args: ["z"], expected: 0 },
+      { label: '"aabbc"', args: ["aabbc"], expected: 4 },
+      { label: "16,001-letter string", args: ["a".repeat(8000) + "b".repeat(8000) + "c"], expected: 16000, maxMs: 300 },
+    ],
+    onPass: () => { document.getElementById("pass-message").hidden = false; },
+  });
+</script>
+</body>
+</html>

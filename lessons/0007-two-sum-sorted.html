@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two Pointers on Sorted Input: Two Sum II</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 7 · Two pointers</p>
+  <h1>Let the sum choose the pointer</h1>
+  <p class="meta">About 30 minutes · Your win: solve Two Sum on sorted input in O(1) extra space, then tell which pattern a new problem needs</p>
+
+  <p class="lede">In Valid Palindrome, a matching pair moved both pointers inward. Here only one pointer moves at a time, and each sum tells you which one. Sorted order is what makes that safe.</p>
+
+  <h2>Warm up</h2>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">A list of n web requests, each with a status code from 100 to 599. Count the requests per status code. How much space does the dict use?</p>
+    <div class="options">
+      <button data-correct data-why="The key is one status code, and only 500 are possible, however many requests there are. A fixed limit means O(1).">O(1)</button>
+      <button data-why="There are n requests, but they share at most 500 keys. A fixed limit means O(1).">O(n)</button>
+    </div>
+  </div>
+
+  <h2>The idea</h2>
+  <p>You get a list sorted from smallest to largest, and a target. Put <code>left</code> on the smallest number and <code>right</code> on the largest, then add them. Before reading on, use that to answer this one.</p>
+  <pre><code>numbers = [1, 3, 8, 12]    target = 15
+left is on 1, right is on 12, and 1 + 12 = 13</code></pre>
+  <div class="quiz" data-skill="two-pointers-move-rule">
+    <p class="q">The sum is too small. What should you do next?</p>
+    <div class="options">
+      <button data-correct data-why="Moving left up is the only way to get a bigger sum. It's also safe: 1 paired with the largest number still falls short, so 1 can't be part of any answer. You can drop it for good.">Move left up</button>
+      <button data-why="Moving right down gives a smaller number, which makes a sum that's already too small even smaller.">Move right down</button>
+      <button data-why="Moving both can skip the answer. Here it would drop 12, yet 3 + 12 is exactly 15.">Move both in</button>
+      <button data-why="Only one pair has been checked so far. There may still be an answer, and here 3 + 12 is one.">Stop searching</button>
+    </div>
+  </div>
+  <p>Each comparison rules out one number for good, so the search takes at most n steps. It needs only two integers of extra memory. Step through a full search:</p>
+  <div id="trace"></div>
+
+  <h2>Your turn: Two Sum II</h2>
+  <p>Given <code>numbers</code>, sorted from smallest to largest, and a <code>target</code>, return the positions of the two different elements that add up to <code>target</code>. Exactly one answer exists. Use O(1) extra space, so no dict.</p>
+  <p>This problem has a twist: positions count from 1, not 0. So <code>[2, 7, 11, 15]</code> with target <code>9</code> gives <code>[1, 2]</code>.</p>
+  <p class="small">Press Tab for each indent level, and read every line once before you run it. Last time, one read-through could have caught the missing <code>not</code> before the tests did.</p>
+  <div id="sorted-sum"></div>
+  <details data-solution="sorted-sum">
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def two_sum_sorted(numbers, target):
+    left = 0
+    right = len(numbers) - 1
+    while left &lt; right:
+        total = numbers[left] + numbers[right]
+        if total == target:
+            return [left + 1, right + 1]
+        if total &lt; target:
+            left += 1
+        else:
+            right -= 1</code></pre>
+    <p class="small">If you open this, close it again and rewrite the function from memory. It won't count as an unaided pass.</p>
+  </details>
+
+  <h2>A problem you haven't seen: Contains Duplicate</h2>
+  <p>Now a change of pattern. Given a list of integers, return <code>True</code> if any value appears at least twice, and <code>False</code> if every value is different. The list isn't sorted, and it has to run in O(n) time on average. Work out which earlier pattern fits, then write it from memory.</p>
+  <div id="contains-duplicate"></div>
+  <details data-solution="contains-duplicate">
+    <summary>Stuck for 10 minutes? Show one solution</summary>
+    <pre><code>def contains_duplicate(nums):
+    seen = {}
+    for x in nums:
+        if x in seen:
+            return True
+        seen[x] = True
+    return False</code></pre>
+    <p class="small">A <code>set</code> is the tidier tool here, because no value is needed. We'll cover it when a later problem needs it.</p>
+  </details>
+
+  <h2>Which pattern?</h2>
+  <p>In an interview, nobody tells you the pattern, so noticing it is part of the job. Pick one for each problem before you think about code.</p>
+
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">An unsorted list and a target. Return the original indices of two numbers that add up to the target.</p>
+    <div class="options">
+      <button data-correct data-why="It's the original Two Sum. Sorting so you could use two pointers would cost O(n log n) time and scramble the indices you have to return.">Seen map</button>
+      <button data-why="Two pointers needs sorted input to know which way to move. Sorting this list would lose the original indices.">Two pointers</button>
+      <button data-why="You need the index of an earlier value, not how many times it appears.">Frequency count</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">A sorted list and a target, with O(1) extra space allowed. Does any pair add up to the target?</p>
+    <div class="options">
+      <button data-correct data-why="The input is sorted, and the O(1) limit rules out a dict. This is the problem you just solved, without the positions.">Two pointers</button>
+      <button data-why="It would give the right answer, but its dict uses O(n) space, and this problem allows only O(1).">Seen map</button>
+      <button data-why="Counts don't tell you which pairs add up to the target, and the dict would use O(n) space.">Frequency count</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Two strings of lowercase letters. Can the first be rearranged, using all its letters, to make the second?</p>
+    <div class="options">
+      <button data-correct data-why="How many of each letter is what matters, so this is Valid Anagram again. Position doesn't matter at all.">Frequency count</button>
+      <button data-why="Presence isn't enough, because how many of each letter also matters. &quot;aab&quot; and &quot;abb&quot; hold the same letters but aren't anagrams.">Seen map</button>
+      <button data-why="Walking in from both ends compares positions, but a rearrangement can put any letter anywhere.">Two pointers</button>
+    </div>
+  </div>
+
+  <h2>Do it the interview way</h2>
+  <ol>
+    <li>Open <a href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/">Two Sum II on LeetCode</a>, which LeetCode rates as a Medium. Its function is named <code>twoSum</code> and sits inside a class.</li>
+    <li>Explain out loud why dropping a number is safe, then code it from memory.</li>
+    <li>Say the time and space cost, and how they compare with the seen-map version. Then submit.</li>
+  </ol>
+  <p>If you have time, submit <a href="https://leetcode.com/problems/valid-palindrome/">Valid Palindrome</a> and <a href="https://leetcode.com/problems/contains-duplicate/">Contains Duplicate</a> as well.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/coding-interview-techniques/">Tech Interview Handbook, coding interview techniques</a>. Read the advice on answering "can we do better?", which is the question that takes you from a seen map to two pointers here.</p>
+  <p>Open these only after you've finished: <a href="../reference/two-pointers-cheatsheet.html">two pointers cheatsheet</a>, <a href="../reference/hash-map-cheatsheet.html">hash map cheatsheet</a>, <a href="../reference/glossary.html">glossary</a>, and the previous lesson, <a href="0006-two-pointers-valid-palindrome.html">Valid Palindrome</a>.</p>
+
+  <h2>Your results</h2>
+  <p>This records your first answer to each question, plus your first and final code, and it survives a refresh. When you finish, paste it into the chat with three things added:</p>
+  <ul>
+    <li>Roughly how many minutes Contains Duplicate took, and how your LeetCode submissions went.</li>
+    <li>Which other programming languages you've used, if any.</li>
+    <li>Anything that felt shaky, even if you got it right.</li>
+  </ul>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a step is unclear, or your code fails and you can't see why, paste it into the chat with your teacher agent.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/trace.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 7: Two Sum II" });
+
+  mountTrace(document.getElementById("trace"), {
+    cells: [2, 7, 11, 15],
+    steps: [
+      { active: 3, state: "target = 9, left on 2, right on 15, sum = 17", note: "Too big. Even the smallest number with 15 overshoots, so 15 can't be in any answer. Move right down." },
+      { active: 2, state: "target = 9, left on 2, right on 11, sum = 13", note: "Still too big, for the same reason. Move right down." },
+      { active: 1, state: "target = 9, left on 2, right on 7, sum = 9", note: "It matches. These are indices 0 and 1, so the positions counting from 1 are [1, 2]." },
+    ],
+  });
+
+  const odds = Array.from({ length: 5000 }, (_, i) => i * 2 + 1);
+
+  mountExercise(document.getElementById("sorted-sum"), {
+    starter: "def two_sum_sorted(numbers, target):\n    ",
+    skill: "implement-two-sum-sorted",
+    fn: "two_sum_sorted",
+    cases: [
+      { label: "[2, 7, 11, 15], target 9", args: [[2, 7, 11, 15], 9], expected: [1, 2] },
+      { label: "[2, 3, 4], target 6", args: [[2, 3, 4], 6], expected: [1, 3] },
+      { label: "[-1, 0], target -1", args: [[-1, 0], -1], expected: [1, 2] },
+      { label: "[1, 2, 3, 4, 4, 9, 56, 90], target 8", args: [[1, 2, 3, 4, 4, 9, 56, 90], 8], expected: [4, 5] },
+      { label: "5,000 numbers", args: [odds, 19996], expected: [4999, 5000], maxMs: 300 },
+    ],
+  });
+
+  mountExercise(document.getElementById("contains-duplicate"), {
+    starter: "def contains_duplicate(nums):\n    ",
+    skill: "implement-seen-map",
+    fn: "contains_duplicate",
+    cases: [
+      { label: "[1, 2, 3, 1]", args: [[1, 2, 3, 1]], expected: true },
+      { label: "[1, 2, 3, 4]", args: [[1, 2, 3, 4]], expected: false },
+      { label: "[1, 1, 1, 3, 3, 4, 3, 2, 4, 2]", args: [[1, 1, 1, 3, 3, 4, 3, 2, 4, 2]], expected: true },
+      { label: "[7]", args: [[7]], expected: false },
+      { label: "5,000 different numbers", args: [odds], expected: false, maxMs: 300 },
+    ],
+  });
+</script>
+</body>
+</html>
