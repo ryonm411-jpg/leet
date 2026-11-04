@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sliding Window Cheatsheet</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Reference</p>
+  <h1>Sliding window cheatsheet</h1>
+  <p class="meta">Learned in <a href="../lessons/0009-sliding-window.html">Lesson 9</a> · Terms in the <a href="glossary.html">glossary</a> · See also the <a href="two-pointers-cheatsheet.html">two pointers cheatsheet</a></p>
+
+  <h2>When to reach for it</h2>
+  <p>The problem asks about runs of items next to each other, such as "k in a row" or "any 5 consecutive days". Windows that grow and shrink are covered in the <a href="https://www.techinterviewhandbook.org/algorithms/array/">Tech Interview Handbook's array guide</a> and come in a later lesson.</p>
+
+  <h2>The template: fixed size k</h2>
+  <pre><code>def max_window_sum(nums, k):
+    window = sum(nums[:k])          # the only full add-up
+    best = window
+    for i in range(k, len(nums)):
+        window += nums[i] - nums[i - k]   # i enters, i - k leaves
+        best = max(best, window)
+    return best</code></pre>
+  <p>Time O(n), space O(1), compared with O(n·k) for adding up every window from scratch.</p>
+
+  <h2>Carry the best so far: Best Time to Buy and Sell Stock</h2>
+  <pre><code>def max_profit(prices):
+    cheapest = prices[0]
+    best = 0
+    for price in prices:
+        cheapest = min(cheapest, price)       # cheapest day up to now
+        best = max(best, price - cheapest)    # sell today
+    return best</code></pre>
+  <p>Like a seen map, it carries what it needs from the left, but here that's a single number, so space is O(1).</p>
+
+  <h2>Which pattern?</h2>
+  <table>
+    <tr><th>Clue</th><th>Pattern</th></tr>
+    <tr><td>Items in a row, a fixed run length k</td><td>Sliding window</td></tr>
+    <tr><td>Sorted input, or comparing from both ends, with O(1) space wanted</td><td>Two pointers</td></tr>
+    <tr><td>Unsorted input, "have I seen this?", or original indices needed</td><td>Seen map</td></tr>
+    <tr><td>"How many" of each item matters</td><td>Frequency count</td></tr>
+  </table>
+
+  <h2>Traps</h2>
+  <table>
+    <tr><th>Trap</th><th>Fix</th></tr>
+    <tr><td>Starting <code>best = 0</code> when numbers can be negative</td><td>Start from the first real window, or from <code>prices[0]</code>.</td></tr>
+    <tr><td>Removing <code>nums[i - k - 1]</code> or <code>nums[i - 1]</code></td><td>The leaving index is k places behind the entering one: <code>i - k</code>.</td></tr>
+    <tr><td>Using the overall lowest price</td><td>It might come after the highest. Only a price from an earlier day counts.</td></tr>
+  </table>
+</main>
+</body>
+</html>

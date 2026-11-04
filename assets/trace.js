@@ -1,5 +1,6 @@
 // Step-through algorithm trace.
 // mountTrace(element, { cells: [...], steps: [{ active, state, note }] })
+// active is one index, or a list of indexes to highlight a window.
 function mountTrace(root, { cells, steps }) {
   root.classList.add("trace");
   root.innerHTML = `
@@ -26,7 +27,8 @@ function mountTrace(root, { cells, steps }) {
 
   function render() {
     const step = steps[index];
-    cellEls.forEach((cell, i) => cell.classList.toggle("active", i === step.active));
+    const active = [].concat(step.active);
+    cellEls.forEach((cell, i) => cell.classList.toggle("active", active.includes(i)));
     root.querySelector(".state").textContent = step.state;
     root.querySelector(".note").textContent = step.note;
     root.querySelector("[data-position]").textContent = `Step ${index + 1} of ${steps.length}`;
