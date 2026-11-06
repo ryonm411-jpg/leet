@@ -23,6 +23,17 @@
 - [Video: Two Sum, NeetCode](https://www.youtube.com/watch?v=KLlXCFG5TnA)
   Brute force and one-pass walkthrough in Python. Use for: seeing the Two Sum reasoning explained another way.
 
+- [Guide: Amazon Leadership Principles](https://www.amazon.jobs/content/en/our-workplace/leadership-principles)
+  Amazon's official list of principles, which the Work Style Assessment is tied to, according to the OA invitation email. Use for: Work Style prep.
+- [Docs: Python testing in VS Code](https://code.visualstudio.com/docs/python/testing)
+  Microsoft's official guide to the Testing panel, Debug Test and unittest settings. Use for: the repository question drill.
+- [Docs: Python debugging in VS Code](https://code.visualstudio.com/docs/python/debugging)
+  Microsoft's official guide to breakpoints and inspecting variables. Use for: the repository question drill.
+- [Docs: unittest, Python docs](https://docs.python.org/3/library/unittest.html)
+  The official reference for the test framework used in the practice repos. Use for: reading and writing tests.
+- [List: NeetCode 150](https://neetcode.io/practice)
+  A problem list grouped by pattern. Use for: the problem queue after the OA, as the council recommended. Attempt each problem before watching its video. Not fetched this session.
+
 ## Wisdom (Communities)
 
 - [Exponent Practice (peer mock interviews, formerly Pramp)](https://www.tryexponent.com/blog/introducing-exponent-practice)
@@ -32,4 +43,4 @@
 
 ## Gaps
 
-- No verified source yet for the current internship and new-grad interview format at the user's target companies. Fill this once target companies are known.
+- Amazon's current OA format is documented only in the user's invitation email. It lists one coding problem, a multi-file repository question and a Work Style Assessment. Third-party guides found on 2026-11-05 describe an older format with two problems and are unverified.

@@ -120,3 +120,9 @@ summary { cursor: pointer; font: 600 0.9rem var(--sans); }
   pre { border: 1px solid #bbb; }
   h2, pre, table { break-inside: avoid; }
 }
+
+.timer { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 18px 0; padding: 10px 14px; background: var(--surface); border-radius: 4px; position: sticky; top: 0; z-index: 1; }
+.timer .clock { font: 700 1.4rem var(--mono); min-width: 4.5ch; }
+.timer.low .clock { color: var(--bad); }
+.steps li { margin-bottom: 10px; }
+.callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; margin: 18px 0; }

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OA Checklist</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Reference</p>
+  <h1>Online assessment checklist</h1>
+  <p class="meta">For the Amazon SDE Intern OA. The format below comes from Amazon's invitation email. Anything it doesn't say is marked as unconfirmed.</p>
+
+  <h2>Before the day</h2>
+  <ul>
+    <li>Find the exact deadline in the "SDE-I Online Assessment Invitation" email, and plan to finish at least a day early.</li>
+    <li>Check which languages the coding question and the repository question allow.</li>
+    <li>Do Amazon's coding assessment demo, so the editor is familiar before the timer starts.</li>
+    <li>Read the <a href="https://www.amazon.jobs/content/en/our-workplace/leadership-principles">Leadership Principles</a>.</li>
+    <li>Block 2.5 hours somewhere quiet, with a stable connection. The coding timer can't be paused.</li>
+    <li>No AI, notes or outside sites during the test. That includes this workspace.</li>
+  </ul>
+
+  <h2>Coding problem</h2>
+  <table>
+    <tr><th>Step</th><th>Do</th></tr>
+    <tr><td>1</td><td>Read it twice. Write two examples, including an edge case: one item, all equal, or the answer at the very end.</td></tr>
+    <tr><td>2</td><td>Name the pattern: seen map, frequency count, two pointers or sliding window. If none fits, say the brute force.</td></tr>
+    <tr><td>3</td><td>If no faster idea comes within about 10 minutes, code the brute force. A working answer beats an unfinished one.</td></tr>
+    <tr><td>4</td><td>Trace one example by hand, then run.</td></tr>
+    <tr><td>5</td><td>With time left, make it faster. Keep the working version in a comment.</td></tr>
+  </table>
+
+  <h2>Repository question</h2>
+  <ol>
+    <li>Read the task and the README. Know what "done" means.</li>
+    <li>Run the tests before changing anything.</li>
+    <li>Read the failing test. It gives you the input, the expected result and what actually happened.</li>
+    <li>Follow the calls with F12, Go to Definition. The bug is where a value first goes wrong, which is often not in the file the test names.</li>
+    <li>Set a breakpoint, Debug Test, and look at the real values.</li>
+    <li>Make the smallest change, then run every test. Never edit a test to make it pass.</li>
+  </ol>
+
+  <h2>Work Style Assessment</h2>
+  <p>It explores how you approach work and make decisions. Third-party guides say it uses pairs of statements, which is unconfirmed. Answer honestly and consistently. Guessing what Amazon "wants" tends to make your answers contradict each other.</p>
+
+  <h2>Python traps you've hit</h2>
+  <table>
+    <tr><th>Wrong</th><th>Right</th><th>What happens</th></tr>
+    <tr><td><code>max = 0</code> then <code>max(a, b)</code></td><td><code>best = 0</code></td><td>TypeError: 'int' object is not callable</td></tr>
+    <tr><td><code>range(nums)</code></td><td><code>range(len(nums))</code></td><td>TypeError: 'list' object cannot be interpreted as an integer</td></tr>
+    <tr><td>no <code>return</code></td><td><code>return best</code></td><td>The function returns None</td></tr>
+    <tr><td><code>s.len()</code></td><td><code>len(s)</code></td><td>AttributeError</td></tr>
+    <tr><td><code>else if</code></td><td><code>elif</code></td><td>SyntaxError</td></tr>
+    <tr><td><code>d.get(k, 0) += 1</code></td><td><code>d[k] = d.get(k, 0) + 1</code></td><td>SyntaxError, because you can't assign to a function call</td></tr>
+    <tr><td><code>if d[k] == 1</code> when k may be missing</td><td><code>if k in d</code></td><td>KeyError</td></tr>
+  </table>
+
+  <p class="small">More: <a href="glossary.html">glossary</a>, <a href="hash-map-cheatsheet.html">hash map</a>, <a href="two-pointers-cheatsheet.html">two pointers</a>, <a href="sliding-window-cheatsheet.html">sliding window</a>.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Under the Clock: a working answer first</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 10 · Amazon OA week, day 2</p>
+  <h1>Under the clock</h1>
+  <p class="meta">About 60 minutes · Your win: an unseen problem solved against hidden tests, with a timer you can't pause</p>
+
+  <p class="lede">So far every exercise showed you its tests, and you could run as often as you liked. The OA won't be that friendly. Today you practise the version that counts: a timer, tests you can't see, and a working answer before a clever one.</p>
+
+  <h2>Warm-up: your own Lesson 9 bugs</h2>
+  <p>Each of these comes from a mistake in your Lesson 9 first attempts, on new code. Spotting them by eye is the skill, because in the OA every wasted run costs time.</p>
+
+  <pre><code>def biggest(nums):
+    max = nums[0]
+    for n in nums:
+        max = max(max, n)
+    return max
+
+biggest([3, 8, 2])</code></pre>
+  <div class="quiz" data-skill="python-shadow-builtins">
+    <p class="q">What happens?</p>
+    <div class="options">
+      <button data-correct data-why="The first line makes the name max point to the number 3, hiding the built-in function. Calling max(...) then calls an int. Name it best or largest instead.">TypeError</button>
+      <button data-why="It would return 8 if the variable had a different name. Here the name max no longer means the function.">8</button>
+      <button data-why="The loop body runs on the first pass, and that's where it fails.">3</button>
+      <button data-why="max is defined. That's the problem: it's defined as a number.">NameError</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">With <code>nums = [4, 5]</code>, what does <code>for i in range(nums):</code> do?</p>
+    <div class="options">
+      <button data-correct data-why="range needs a number, not a list. Use range(len(nums)) for indexes, or for x in nums for values.">Raises TypeError</button>
+      <button data-why="That's range(len(nums)). range(nums) passes the list itself.">Loops twice</button>
+      <button data-why="That's for i in nums. range doesn't accept a list.">Loops on values</button>
+      <button data-why="It doesn't get as far as looping. Python rejects the list first.">Never loops</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="trace-before-run">
+    <p class="q">A function's body sets <code>largest</code> in a loop but has no <code>return</code> line. What does calling it give back?</p>
+    <div class="options">
+      <button data-correct data-why="A function without return gives back None. Your first Best Trade attempt failed every test with &quot;got None&quot; for this reason.">None</button>
+      <button data-why="Python doesn't return the last variable assigned. It returns None.">largest</button>
+      <button data-why="Python doesn't default to 0. It returns None.">0</button>
+      <button data-why="It's valid Python. Leaving out return is legal, it just returns None.">SyntaxError</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">You count how many of n emails were sent on each weekday, Monday to Sunday, in a dict. How much extra space does the dict use?</p>
+    <div class="options">
+      <button data-correct data-why="There are only 7 weekdays, so at most 7 keys however many emails there are. Ask what the key is, and how many different keys can exist.">O(1)</button>
+      <button data-why="Emails from the same weekday share a key. The number of keys is capped at 7, not n.">O(n)</button>
+      <button data-why="Nothing is sorted, and the key count is capped at 7.">O(n log n)</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">Best Trade keeps <code>cheapest</code> and <code>best</code> as it walks n prices once. Time and extra space?</p>
+    <div class="options">
+      <button data-correct data-why="One pass is O(n) time. Two numbers stay two numbers however long the list is, so space is O(1).">O(n) time, O(1) space</button>
+      <button data-why="Nothing grows with n. Two variables is constant space.">O(n) time, O(n) space</button>
+      <button data-why="It walks the list once and doesn't compare every pair.">O(n²) time, O(1) space</button>
+    </div>
+  </div>
+
+  <h2>A working answer first</h2>
+  <p>Amazon doesn't publish how the OA is scored. Third-party guides say the coding answer is checked against test cases, some of them hidden, but that isn't confirmed. Either way, the safest plan is the same:</p>
+  <ol class="steps">
+    <li><strong>Read twice, then write two examples,</strong> including an edge case: one item, all equal, the answer at the very end.</li>
+    <li><strong>Say the brute force.</strong> It's the direct approach that tries every possibility (see the <a href="../reference/glossary.html">glossary</a>).</li>
+    <li><strong>If no faster idea comes within about 10 minutes, code the brute force.</strong> A correct slow answer passes the small tests. An unfinished fast one passes none.</li>
+    <li><strong>Trace one example by hand, then run.</strong></li>
+    <li><strong>With time left, make it faster.</strong> Keep the working version in a comment so you can go back to it.</li>
+  </ol>
+  <p class="small">This follows the Tech Interview Handbook's <a href="https://www.techinterviewhandbook.org/coding-interview-techniques/">coding interview techniques</a>. Your full OA-day list is in the <a href="../reference/oa-checklist.html">OA checklist</a>.</p>
+
+  <div class="quiz" data-skill="oa-strategy">
+    <p class="q">You're 12 minutes in. You can see an O(n·k) answer but not an O(n) one. What now?</p>
+    <div class="options">
+      <button data-correct data-why="A working answer passes the small tests and gives you something to improve. Keep it, then look for the faster version with the time left.">Code the slow version first</button>
+      <button data-why="If the fast idea never comes, you finish with nothing. Bank the slow version first.">Keep searching for faster idea</button>
+      <button data-why="The problem is the whole coding section. A partial answer beats none.">Skip ahead to next section</button>
+      <button data-why="Comments don't run, so they pass no tests at all.">Submit pseudocode in a comment</button>
+    </div>
+  </div>
+
+  <h2>Timed problem: Quietest Shift</h2>
+  <p>Start the timer before you read on. When it runs out, stop, as you would in the real test. Two tests are visible. The other six are hidden, as in the OA, so you'll only see pass or fail.</p>
+  <div id="timer-shift"></div>
+
+  <p>A warehouse logs how many orders arrive each hour. <code>loads[i]</code> is the count for hour i. Maintenance needs <code>k</code> hours in a row, and should go where the total load is smallest.</p>
+  <p>Return the <strong>starting hour</strong> of the k-hour stretch with the smallest total. If several stretches tie, return the earliest. You can assume 1 ≤ k ≤ <code>len(loads)</code> and that every count is 0 or more. One hidden test is large, so O(n) passes it and an approach that re-adds every stretch is too slow.</p>
+  <p><strong>Example:</strong> <code>loads = [5, 2, 1, 4, 3, 1]</code>, <code>k = 2</code>. The stretches total 7, 3, 5, 7 and 4, so the answer is <code>1</code>.</p>
+  <div id="shift"></div>
+  <details data-solution="shift-hint">
+    <summary>Stuck for 15 minutes? Show a hint, not a solution</summary>
+    <p>This is Lesson 9's window again, with two changes. You track the smallest total, not the largest. And you store <em>where</em> it started, not the total. Which index starts the window whose newest item is <code>i</code>? Think about which comparison keeps the earliest of a tie.</p>
+  </details>
+
+  <h2>Two on LeetCode, blank editor</h2>
+  <p>Now do two unseen problems on LeetCode itself. Its tests are hidden until you submit. Give each one 20 minutes with the timer below, start it again for the second problem, and don't open the hints or solutions tab. Name the pattern before you type.</p>
+  <ol>
+    <li><a href="https://leetcode.com/problems/contains-duplicate-ii/">Contains Duplicate II</a> (Easy)</li>
+    <li><a href="https://leetcode.com/problems/is-subsequence/">Is Subsequence</a> (Easy)</li>
+  </ol>
+  <div id="timer-leetcode"></div>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/coding-interview-techniques/">Tech Interview Handbook, coding interview techniques</a>. Read the parts on getting unstuck and on optimising after you have a working answer.</p>
+  <p>For review: <a href="../reference/oa-checklist.html">OA checklist</a>, <a href="../reference/sliding-window-cheatsheet.html">sliding window cheatsheet</a>, <a href="../reference/glossary.html">glossary</a>. Previous: <a href="0009-sliding-window.html">Lesson 9</a>. Next: <a href="0011-someone-elses-code.html">Lesson 11, working in someone else's code</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat, with one added line: <strong>LeetCode: accepted or not, and how many submits, for each problem.</strong></p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If something is unclear, or a hidden test fails and you can't see why, paste your code into the chat with your teacher agent. Remember that during the real OA no AI help is allowed, including this workspace.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 10: Under the Clock" });
+  mountTimer(document.getElementById("timer-shift"), { label: "quietest shift", minutes: 30 });
+  mountTimer(document.getElementById("timer-leetcode"), { label: "leetcode", minutes: 20 });
+
+  // Large hidden test: 8,000 hours with a quiet stretch in the middle. Answer 2000.
+  const big = Array.from({ length: 8000 }, (_, i) => 500 + (i * 37) % 400 - (i >= 2500 && i < 6000 ? 300 : 0));
+
+  mountExercise(document.getElementById("shift"), {
+    starter: "def quietest_start(loads, k):\n    ",
+    skill: "implement-quietest-shift",
+    fn: "quietest_start",
+    cases: [
+      { label: "[5, 2, 1, 4, 3, 1], k 2", args: [[5, 2, 1, 4, 3, 1], 2], expected: 1 },
+      { label: "[6, 0, 6, 0, 6], k 3", args: [[6, 0, 6, 0, 6], 3], expected: 1 },
+      { label: "one hour, [3], k 1", args: [[3], 1], expected: 0, hidden: true },
+      { label: "all equal, tie goes to 0", args: [[4, 4, 4], 2], expected: 0, hidden: true },
+      { label: "k equals n", args: [[1, 2, 3, 4], 4], expected: 0, hidden: true },
+      { label: "smallest at the very end", args: [[5, 5, 0, 0], 2], expected: 2, hidden: true },
+      { label: "later tie must not win, [9,1,1,9,1,1] k 2", args: [[9, 1, 1, 9, 1, 1], 2], expected: 1, hidden: true },
+      { label: "8,000 hours, k 4000", args: [big, 4000], expected: 2000, maxMs: 80, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

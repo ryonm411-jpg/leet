@@ -1,6 +1,8 @@
 // In-browser Python exercise. Runs code in a worker so a slow or endless loop
 // cannot freeze the page.
-// mountExercise(element, { skill, starter, fn, sortResult, cases: [{ label, args, expected, maxMs }], onPass })
+// mountExercise(element, { skill, starter, fn, sortResult, cases: [{ label, args, expected, maxMs, hidden }], onPass })
+// A case with hidden: true shows only "Hidden test N" and pass or fail, like an online assessment.
+// Its label still goes into the results panel, so the teacher can see which case failed.
 const PYODIDE_BASE = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
 const LOAD_TIMEOUT_MS = 60000;
 const RUN_TIMEOUT_MS = 10000;
@@ -125,19 +127,27 @@ function mountExercise(root, config) {
     }
     let passed = 0;
     const problems = [];
-    output.results.forEach((result) => {
+    let hiddenCount = 0;
+    output.results.forEach((result, index) => {
       const ok = result.passed && !result.slow;
       if (ok) passed++;
       const item = document.createElement("li");
       item.className = ok ? "pass" : "fail";
-      if (ok) {
+      if (config.cases[index].hidden) {
+        hiddenCount++;
+        item.textContent = `Hidden test ${hiddenCount}: ${ok ? "pass" : "fail"}`;
+        if (!ok) {
+          const why = result.passed ? `too slow, ${Math.round(result.ms)} ms` : `got ${result.got}`;
+          problems.push(`Hidden test ${hiddenCount} failed (${result.label}): ${why}`);
+        }
+      } else if (ok) {
         item.textContent = `Pass: ${result.label}`;
       } else if (result.passed) {
         item.textContent = `Too slow: ${result.label}. Correct answer, but it took ${Math.round(result.ms)} ms. Can you avoid checking every pair?`;
       } else {
         item.textContent = `Fail: ${result.label}. Expected ${JSON.stringify(result.expected)}, got ${result.got}`;
       }
-      if (!ok) problems.push(item.textContent);
+      if (!ok && !config.cases[index].hidden) problems.push(item.textContent);
       list.append(item);
     });
     const allPassed = passed === output.results.length;

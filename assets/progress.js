@@ -8,12 +8,14 @@ function mountResults(root, { lesson }) {
   let quizResults = {}; // quiz position in the page -> { correct, answer }
   let exercises = {}; // skill -> { runs, passed, problems, firstCode, lastCode }
   let solutionsOpened = []; // data-solution values, "" when the attribute has no value
+  let timers = {}; // timer label -> { seconds, limit, expired }
 
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey)) || {};
     quizResults = saved.quizResults || {};
     exercises = saved.exercises || {};
     solutionsOpened = saved.solutionsOpened || [];
+    timers = saved.timers || {};
   } catch {
     // Unreadable or unavailable storage: start with empty results.
   }
@@ -49,6 +51,10 @@ function mountResults(root, { lesson }) {
       lines.push("  first attempt:", exercise.firstCode);
       if (exercise.lastCode !== exercise.firstCode) lines.push("  final attempt:", exercise.lastCode);
     });
+    Object.entries(timers).forEach(([label, t]) => {
+      const used = `${Math.floor(t.seconds / 60)} min ${t.seconds % 60} s`;
+      lines.push(`timer ${label}: ${t.expired ? "ran out" : "stopped at " + used} of ${t.limit} min`);
+    });
     const named = solutionsOpened.filter(Boolean);
     lines.push(`solution opened: ${solutionsOpened.length === 0 ? "no" : named.length ? "yes (" + named.join(", ") + ")" : "yes"}`);
     output.textContent = lines.join("\n");
@@ -56,7 +62,7 @@ function mountResults(root, { lesson }) {
 
   function update() {
     try {
-      localStorage.setItem(storageKey, JSON.stringify({ quizResults, exercises, solutionsOpened }));
+      localStorage.setItem(storageKey, JSON.stringify({ quizResults, exercises, solutionsOpened, timers }));
     } catch {
       message.textContent = "Your browser blocked saving, so copy your results before refreshing.";
     }
@@ -83,6 +89,10 @@ function mountResults(root, { lesson }) {
     });
     update();
   });
+  document.addEventListener("lesson:timer", ({ detail }) => {
+    timers[detail.label] = { seconds: detail.seconds, limit: detail.limit, expired: detail.expired };
+    update();
+  });
   // Toggle events don't bubble, so listen during capture.
   document.addEventListener("toggle", ({ target }) => {
     if (target.matches("details[data-solution]") && target.open) {
@@ -107,6 +117,7 @@ function mountResults(root, { lesson }) {
     quizResults = {};
     exercises = {};
     solutionsOpened = [];
+    timers = {};
     try {
       localStorage.removeItem(storageKey);
     } catch {

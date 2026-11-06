@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Working in Someone Else's Code</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 11 · Amazon OA week, day 3</p>
+  <h1>Working in someone else's code</h1>
+  <p class="meta">About 45 minutes · Your win: fix a bug and ship a feature in a project you didn't write, using its tests and a debugger</p>
+
+  <p class="lede">The OA's code repository question is a real-world task across several files, in a VS Code-style editor with Run and Debug. That's different from LeetCode. The skill isn't inventing an algorithm. It's finding your way around code you didn't write without breaking it. Today you do exactly that in real VS Code.</p>
+
+  <div class="callout">
+    <p><strong>Check this first.</strong> Amazon's invitation email and its coding demo say which languages the repository question allows. If Python isn't one of them, tell me, and I'll rebuild this project in a language that is. If the demo looked different from this lesson, tell me that too.</p>
+  </div>
+
+  <h2>The method</h2>
+  <p>On an unfamiliar codebase, work in this order. Each step narrows where you look.</p>
+  <ol class="steps">
+    <li><strong>Read the task, then the README.</strong> Know what "done" means before you touch anything.</li>
+    <li><strong>Run the tests before changing anything.</strong> Now you know what already fails, so you won't blame yourself for it later.</li>
+    <li><strong>Read the failing test.</strong> It's the most precise description of the bug you'll get: the input, the expected output, and what actually happened.</li>
+    <li><strong>Follow the call.</strong> Start in the function the test calls, and jump to each function it calls in turn. In VS Code, F12 (Go to Definition) jumps there.</li>
+    <li><strong>Stop it mid-run with a breakpoint</strong> instead of guessing. Look at the real values.</li>
+    <li><strong>Make the smallest change that fixes it, then run every test,</strong> not only the one you were fixing.</li>
+  </ol>
+
+  <div class="quiz" data-skill="repo-first-steps">
+    <p class="q">You open a repository you've never seen, with a bug ticket. What do you do first?</p>
+    <div class="options">
+      <button data-correct data-why="Running the tests first shows what already fails, and gives you a quick way to check every change you make.">Run the existing tests first</button>
+      <button data-why="Rewriting code you don't understand yet is how new bugs get in. Understand it first.">Clean up the messy functions</button>
+      <button data-why="Reading everything line by line is slow. The failing test tells you where to look.">Read every file in order</button>
+      <button data-why="Changing code before you know what passes means you can't tell what you broke.">Start editing the likely file</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="repo-first-steps">
+    <p class="q">A test in <code>test_orders.py</code> fails. Where is the bug?</p>
+    <div class="options">
+      <button data-correct data-why="A failing test shows where the problem showed up, not where it starts. Follow the calls until a value is wrong for the first time.">Wherever a value first goes wrong</button>
+      <button data-why="The test file usually describes the right behaviour. Editing a test so it passes hides the bug.">In test_orders.py, the test itself</button>
+      <button data-why="It may be there, but orders.py may call other code. Follow the calls to check.">In orders.py, matching the test name</button>
+      <button data-why="Guessing a file wastes time. Trace from the failing test instead.">In whichever file looks most complex</button>
+    </div>
+  </div>
+
+  <h2>Set up (about 5 minutes)</h2>
+  <ol class="steps">
+    <li>In VS Code, install the <strong>Python</strong> extension from Microsoft. It adds the Testing panel and the debugger. You don't have it yet. <a href="https://code.visualstudio.com/docs/python/python-quick-start">VS Code's Python quick start</a> shows how.</li>
+    <li>Open the folder <code>Downloads\Leet\practice-repos\0011-warehouse</code> with <strong>File → Open Folder</strong>.</li>
+    <li>Open the terminal with <strong>Ctrl+`</strong> and run <code>py -m unittest -v</code>. You should see 14 tests, with 4 failing. That's your starting point.</li>
+  </ol>
+
+  <h2>The tasks</h2>
+  <p>Start the timer, then open <code>TASK.md</code> in the project. Two tickets: a bug and a feature. Don't edit any test.</p>
+  <div id="timer-repo"></div>
+
+  <h3>Ticket 1: the bug</h3>
+  <ol class="steps">
+    <li>Find the failing test for it in <code>tests/test_orders.py</code>. What does it set up, and what does it expect?</li>
+    <li>Open <code>warehouse/orders.py</code>. Put your cursor on each function that <code>fulfil</code> calls and press F12 to follow it.</li>
+    <li>Set a breakpoint by clicking left of the line number on the line you suspect. Then, in the Testing panel (the flask icon), right-click that one test and choose <strong>Debug Test</strong>. When it stops, hover over the variables and read their values. The <a href="https://code.visualstudio.com/docs/python/testing">VS Code testing docs</a> cover this.</li>
+    <li>Fix it with the smallest change you can, then run all the tests again.</li>
+  </ol>
+  <details data-solution="repo-bug-hint">
+    <summary>Stuck for 10 minutes? Show a hint, not a solution</summary>
+    <p>The order asks for 3 boxes and there are exactly 3. Find the line that decides whether there are "enough". With 3 in stock and 3 asked for, should it say yes? Check which comparison it uses.</p>
+  </details>
+
+  <div class="quiz" data-skill="repo-trace-bug">
+    <p class="q">After you've fixed it: which file held the bug?</p>
+    <div class="options">
+      <button data-correct data-why="The test was in test_orders.py and called fulfil in orders.py. But the wrong comparison was in Inventory.has, two calls further down. That's why you follow the calls.">inventory.py</button>
+      <button data-why="orders.py only asks inventory.has. Its own logic is right.">orders.py</button>
+      <button data-why="The test is correct. A customer can buy the last 3 boxes.">test_orders.py</button>
+      <button data-why="pricing.py isn't involved in deciding whether an order ships.">pricing.py</button>
+    </div>
+  </div>
+
+  <h3>Ticket 2: the feature</h3>
+  <ol class="steps">
+    <li>Read <code>BulkDiscountTests</code> in <code>tests/test_pricing.py</code>. The tests are the spec, so work out by hand what each one expects before you write anything.</li>
+    <li>Find the single best place in <code>warehouse/pricing.py</code> to apply the discount. Use the constants at the top of that file. Don't type 10 directly.</li>
+    <li>Use whole-cent integer maths. <code>//</code> rounds down for numbers of 0 or more.</li>
+    <li>Run all 14 tests. You're done when they all pass.</li>
+  </ol>
+  <details data-solution="repo-feature-hint">
+    <summary>Stuck for 10 minutes? Show a hint, not a solution</summary>
+    <p>The discount applies to each line on its own, and <code>line_total</code> already handles one line. 10% off is the same as paying 90 out of every 100.</p>
+  </details>
+
+  <div class="quiz" data-skill="repo-feature-placement">
+    <p class="q">Why put the discount in <code>line_total</code> rather than at the end of <code>order_total</code>?</p>
+    <div class="options">
+      <button data-correct data-why="The rule depends on each line's quantity. At the end of order_total you only have the sum, and a 10-box line and a 1-tape line would be mixed together.">The rule depends on each line</button>
+      <button data-why="Speed isn't the issue. Both places run the same number of steps.">It makes the code run faster</button>
+      <button data-why="The tests call order_total, not line_total. Placement is about correctness.">The tests call line_total directly</button>
+      <button data-why="Both are equally changeable. The discount belongs where the quantity is known.">order_total must never be changed</button>
+    </div>
+  </div>
+
+  <h2>When you're done</h2>
+  <p>Don't paste your code. The project is in this workspace, so I can read what you changed with <code>git diff</code> and run the tests myself. Just paste the results below.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://code.visualstudio.com/docs/python/debugging">Python debugging in VS Code</a>. Read the sections on breakpoints and inspecting variables. The <a href="https://docs.python.org/3/library/unittest.html">unittest docs</a> explain how tests like these are written.</p>
+  <p>For review: <a href="../reference/oa-checklist.html">OA checklist</a>, <a href="../reference/glossary.html">glossary</a>. Previous: <a href="0010-under-the-clock.html">Lesson 10, under the clock</a>.</p>
+
+  <h2>Your results</h2>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If VS Code won't find the tests, the debugger won't stop, or you're stuck on a ticket, describe what you see in the chat with your teacher agent.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 11: Someone Else's Code" });
+  mountTimer(document.getElementById("timer-repo"), { label: "repo tickets", minutes: 40 });
+</script>
+</body>
+</html>
