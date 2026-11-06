@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mixed Practice Set: four unseen problems</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 12 · Amazon OA week · Practice set</p>
+  <h1>Four unseen problems, mixed</h1>
+  <p class="meta">About 75 minutes, or two sittings · Your win: pick the pattern yourself and pass hidden tests in 20 minutes or less per problem</p>
+
+  <p class="lede">Lesson 10 went well. You wrote Quietest Shift unaided, the tie rule and the start index were right first time, and every hidden test passed once a missing <code>=</code> was fixed. Two things to work on next. It took 29½ of your 30 minutes, which is too close in a test that can't be paused. And three Python basics were missed in the warm-up. So this set is about speed and picking the pattern, with nothing new.</p>
+
+  <h2>Warm-up: Python basics, again</h2>
+  <p>Last time you missed these three. They're on new code here, because spaced retrieval is what makes them stick.</p>
+
+  <pre><code>print(list(range(3)))</code></pre>
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="range(n) counts from 0 up to but not including n. It takes a number. That's why range(nums) with a list raises TypeError, and range(len(nums)) gives you the indexes.">[0, 1, 2]</button>
+      <button data-why="range starts at 0, not 1, unless you give it a start: range(1, 4).">[1, 2, 3]</button>
+      <button data-why="range stops before n, so 3 isn't included.">[0, 1, 2, 3]</button>
+      <button data-why="3 is a number, which is exactly what range needs. It's a list that would raise TypeError.">TypeError</button>
+    </div>
+  </div>
+
+  <pre><code>def double(x):
+    x * 2
+
+print(double(4))</code></pre>
+  <div class="quiz" data-skill="trace-before-run">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="The function works out 8 and then throws it away. Without return, every Python function gives back None.">None</button>
+      <button data-why="It calculates 8 but never returns it. Python doesn't return the last expression, the way some languages do.">8</button>
+      <button data-why="It's valid Python. A function with no return is allowed. It returns None.">SyntaxError</button>
+      <button data-why="Nothing is ever assigned back to x for the caller. The result is None.">4</button>
+    </div>
+  </div>
+
+  <pre><code>def total(nums):
+    sum = 0
+    for x in nums:
+        sum += x
+    return sum(nums)
+
+total([1, 2])</code></pre>
+  <div class="quiz" data-skill="python-shadow-builtins">
+    <p class="q">What happens?</p>
+    <div class="options">
+      <button data-correct data-why="sum = 0 makes the name sum mean a number inside this function, which hides the built-in. sum(nums) then tries to call 3. Call your variable total or running instead.">TypeError</button>
+      <button data-why="sum is defined, as a number. That's why calling it fails, but with a different error.">NameError</button>
+      <button data-why="It would return 3 if the variable had another name. Here sum(...) tries to call an int.">3</button>
+      <button data-why="The code is valid syntax. It fails when it runs, not when it's parsed.">SyntaxError</button>
+    </div>
+  </div>
+
+  <h2>How to run this set</h2>
+  <ul>
+    <li>Each problem gets its own 20-minute timer. Start it, read, then <strong>pick the pattern before you type</strong>.</li>
+    <li>Read every line before your first Run. Last time a missing <code>=</code> cost you a run, and reading would have caught it.</li>
+    <li>If you have no plan after about 8 minutes, code the brute force (see the <a href="../reference/oa-checklist.html">OA checklist</a>). Every problem has one large hidden test that only a fast solution passes, so the brute force still earns the other tests.</li>
+    <li>You can split the set across two sittings: Problems 1 and 2, then 3 and 4.</li>
+  </ul>
+
+  <h2>Problem 1: Rising Streak</h2>
+  <div id="timer-1"></div>
+  <p><code>sales[i]</code> is a shop's sales on day i. Return the length of the longest run of consecutive days where every day sold <strong>strictly more</strong> than the day before. A single day is a run of length 1. You can assume <code>len(sales) ≥ 1</code>.</p>
+  <p><strong>Example:</strong> <code>[3, 4, 5, 2, 6, 7, 8, 1]</code> gives <code>4</code>, from the days 2, 6, 7, 8.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="Carry the current streak length and the best so far in one pass. Like Best Trade's running minimum, you never look back.">Running value</button>
+      <button data-why="Nothing is looked up by value. Each day only needs the day before it.">Seen map</button>
+      <button data-why="The input isn't sorted, and nothing works inward from both ends.">Two pointers</button>
+      <button data-why="The run length isn't fixed, so a fixed-size window doesn't fit. A running count does the job.">Sliding window</button>
+    </div>
+  </div>
+  <div id="ex-1"></div>
+  <details data-solution="rising-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Keep two numbers: <code>current</code>, the streak ending today, and <code>best</code>. If today beats yesterday, the streak grows. Otherwise it restarts at 1. Update <code>best</code> on every day, not only when a streak breaks, or a streak that runs to the last day gets missed.</p>
+  </details>
+
+  <h2>Problem 2: Top Seller</h2>
+  <div id="timer-2"></div>
+  <p>You're given a list of product IDs (strings), one per sale. Return the ID that sold the most. If several tie, return the one whose <strong>first</strong> sale came earliest in the list. The list isn't empty.</p>
+  <p><strong>Example:</strong> <code>["pen", "cup", "cup", "pen", "ink"]</code> gives <code>"pen"</code>. Pen and cup both sold 2, and pen sold first.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="&quot;Sold the most&quot; is a count per key. Build the counts, then pick the largest, applying the tie rule.">Frequency count</button>
+      <button data-why="The list isn't sorted, and sorting would lose the order of first sales that the tie rule needs.">Two pointers</button>
+      <button data-why="The question is about the whole list, not about runs of sales next to each other.">Sliding window</button>
+      <button data-why="A running value can't tell you which ID wins until you know every ID's total.">Running value</button>
+    </div>
+  </div>
+  <div id="ex-2"></div>
+  <details data-solution="top-seller-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Since Python 3.7, a dict keeps keys in the order they were first inserted (<a href="https://docs.python.org/3/library/stdtypes.html#dict">Python docs</a>). So when you loop over your counts, IDs come out in order of first sale. Replace the best only when a count is <em>strictly</em> greater, and an earlier ID wins any tie.</p>
+  </details>
+
+  <h2>Problem 3: Exact Gap</h2>
+  <div id="timer-3"></div>
+  <p><code>amounts</code> is a list of order amounts (integers) and <code>d</code> is a whole number, at least 1. Return <code>True</code> if any two orders at <strong>different positions</strong> differ by exactly <code>d</code>, and <code>False</code> otherwise.</p>
+  <p><strong>Example:</strong> <code>[10, 4, 7, 15]</code> with <code>d = 3</code> gives <code>True</code>, because 7 − 4 = 3.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="For each amount x, ask: have I already seen x − d or x + d? That's Two Sum's question with a difference instead of a sum.">Seen map</button>
+      <button data-why="Two pointers needs sorted input. Sorting first works, but costs O(n log n). A set does it in one O(n) pass.">Two pointers</button>
+      <button data-why="The two orders can be anywhere in the list, not next to each other.">Sliding window</button>
+      <button data-why="You need to know whether something exists, not how many times it does. A set is enough.">Frequency count</button>
+    </div>
+  </div>
+  <div id="ex-3"></div>
+  <details data-solution="gap-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>A smaller amount can come either before or after its partner. So for each <code>x</code>, check both <code>x - d in seen</code> and <code>x + d in seen</code>, and only then add <code>x</code>. Use <code>in</code> on a set, not <code>.get</code>.</p>
+  </details>
+
+  <h2>Problem 4: Pairs Within Budget (stretch)</h2>
+  <div id="timer-4"></div>
+  <p><code>prices</code> is <strong>sorted</strong> from low to high. Count the pairs of positions i &lt; j where <code>prices[i] + prices[j] ≤ budget</code>.</p>
+  <p><strong>Example:</strong> <code>[1, 2, 3, 4, 5]</code> with budget 6 gives <code>6</code>: (1,2), (1,3), (1,4), (1,5), (2,3) and (2,4).</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="Sorted input and pairs are the classic two pointers clues, as in Two Sum II. The twist is counting many pairs at once.">Two pointers</button>
+      <button data-why="A seen map finds an exact partner. Here any partner up to the budget counts, so you'd need many lookups per item.">Seen map</button>
+      <button data-why="The two prices in a pair don't have to be next to each other.">Sliding window</button>
+      <button data-why="The counts of each price don't tell you which pairs fit the budget.">Frequency count</button>
+    </div>
+  </div>
+  <div id="ex-4"></div>
+  <details data-solution="budget-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Put <code>left</code> at the start and <code>right</code> at the end. If <code>prices[left] + prices[right]</code> fits the budget, then <code>left</code> also fits with <em>every</em> index between <code>left + 1</code> and <code>right</code>, because those prices are smaller. That's <code>right - left</code> pairs at once, and then you move <code>left</code>. If it doesn't fit, move <code>right</code>.</p>
+  </details>
+
+  <h2>More practice on LeetCode</h2>
+  <p>The <a href="../reference/practice-queue.html">practice queue</a> lists problems by pattern: Easy ones for OA week, Mediums to stretch on, and what comes after the OA. Do one or two a day in LeetCode's editor with a 20-minute timer, before looking at any hints.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/coding-interview-study-plan/">Tech Interview Handbook, study plan</a>. It's the order behind the practice queue, and it explains why mixing patterns beats doing one topic at a time.</p>
+  <p>For review: <a href="../reference/oa-checklist.html">OA checklist</a>, <a href="../reference/hash-map-cheatsheet.html">hash map</a>, <a href="../reference/two-pointers-cheatsheet.html">two pointers</a>, <a href="../reference/sliding-window-cheatsheet.html">sliding window</a>, <a href="../reference/glossary.html">glossary</a>. Previous: <a href="0011-someone-elses-code.html">Lesson 11</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat. If you did any LeetCode problems, add one line: <strong>which ones, and whether they were accepted.</strong></p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a hidden test fails and you can't see why, paste your code into the chat with your teacher agent and I'll tell you what kind of case broke it, without giving away the fix.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 12: Mixed Practice Set" });
+  [1, 2, 3, 4].forEach((n) => mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: 20 }));
+
+  const rising3000 = Array.from({ length: 3000 }, (_, i) => i);
+  const sales6001 = Array.from({ length: 6000 }, (_, i) => "p" + (i % 1000)).concat(["p999"]);
+  const evens3000 = Array.from({ length: 3000 }, (_, i) => i * 2);
+  const threes3000 = Array.from({ length: 3000 }, (_, i) => i * 3);
+
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def longest_rising(sales):\n    ",
+    skill: "implement-rising-streak",
+    fn: "longest_rising",
+    cases: [
+      { label: "[3, 4, 5, 2, 6, 7, 8, 1]", args: [[3, 4, 5, 2, 6, 7, 8, 1]], expected: 4 },
+      { label: "one day", args: [[5]], expected: 1, hidden: true },
+      { label: "all equal, not rising", args: [[3, 3, 3]], expected: 1, hidden: true },
+      { label: "streak runs to the last day", args: [[1, 2, 3, 4]], expected: 4, hidden: true },
+      { label: "all falling", args: [[5, 4, 3]], expected: 1, hidden: true },
+      { label: "later streak is longer, [1,2,1,2,3]", args: [[1, 2, 1, 2, 3]], expected: 3, hidden: true },
+      { label: "3,000 rising days", args: [rising3000], expected: 3000, maxMs: 60, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def top_seller(ids):\n    ",
+    skill: "implement-top-seller",
+    fn: "top_seller",
+    cases: [
+      { label: '["pen", "cup", "cup", "pen", "ink"]', args: [["pen", "cup", "cup", "pen", "ink"]], expected: "pen" },
+      { label: "one sale", args: [["a"]], expected: "a", hidden: true },
+      { label: "later ID has more, [x, y, y]", args: [["x", "y", "y"]], expected: "y", hidden: true },
+      { label: "clear winner last, [b,a,a,b,c,c,c]", args: [["b", "a", "a", "b", "c", "c", "c"]], expected: "c", hidden: true },
+      { label: "tie, first sale wins, [z,q,q,z]", args: [["z", "q", "q", "z"]], expected: "z", hidden: true },
+      { label: "6,001 sales, 1,000 IDs", args: [sales6001], expected: "p999", maxMs: 60, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def has_gap(amounts, d):\n    ",
+    skill: "implement-exact-gap",
+    fn: "has_gap",
+    cases: [
+      { label: "[10, 4, 7, 15], d 3", args: [[10, 4, 7, 15], 3], expected: true },
+      { label: "one order", args: [[5], 1], expected: false, hidden: true },
+      { label: "equal amounts, d 1", args: [[1, 1], 1], expected: false, hidden: true },
+      { label: "bigger amount first, [8, 2] d 6", args: [[8, 2], 6], expected: true, hidden: true },
+      { label: "no pair, [1, 5, 9] d 3", args: [[1, 5, 9], 3], expected: false, hidden: true },
+      { label: "3,000 even amounts, d 3", args: [evens3000, 3], expected: false, maxMs: 60, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-4"), {
+    starter: "def count_pairs_within(prices, budget):\n    ",
+    skill: "implement-budget-pairs",
+    fn: "count_pairs_within",
+    cases: [
+      { label: "[1, 2, 3, 4, 5], budget 6", args: [[1, 2, 3, 4, 5], 6], expected: 6 },
+      { label: "one price", args: [[5], 10], expected: 0, hidden: true },
+      { label: "duplicates, [1, 1, 1] budget 2", args: [[1, 1, 1], 2], expected: 3, hidden: true },
+      { label: "nothing fits, [3, 4, 5] budget 5", args: [[3, 4, 5], 5], expected: 0, hidden: true },
+      { label: "everything fits, budget 100", args: [[1, 2, 3, 4, 5], 100], expected: 10, hidden: true },
+      { label: "3,000 prices", args: [threes3000, 9000], expected: 2251499, maxMs: 60, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

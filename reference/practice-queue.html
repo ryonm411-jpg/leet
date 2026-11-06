@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Practice Queue</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Reference</p>
+  <h1>Practice queue</h1>
+  <p class="meta">LeetCode problems grouped by the patterns you know. Work from the top of each section, and tick each one when it's accepted without hints.</p>
+
+  <h2>How to use it</h2>
+  <ol>
+    <li>Set a 20-minute timer, or 35 minutes for a Medium. Before you type, name the pattern out loud.</li>
+    <li>Trace one example by hand, then submit. A wrong answer is information, not failure.</li>
+    <li>If time runs out, then watch the explanation. The <a href="https://neetcode.io/practice">NeetCode</a> videos are good for this. Come back to the problem cold 2 or 3 days later.</li>
+  </ol>
+
+  <h2>OA week: Easy, using patterns you already know</h2>
+  <table>
+    <tr><th>Pattern</th><th>Problem</th><th>Twist to notice</th></tr>
+    <tr><td>Sliding window</td><td><a href="https://leetcode.com/problems/maximum-average-subarray-i/">Maximum Average Subarray I</a></td><td>Lesson 9's window, then divide by k</td></tr>
+    <tr><td>Sliding window + seen map</td><td><a href="https://leetcode.com/problems/contains-duplicate-ii/">Contains Duplicate II</a></td><td>Store the latest index of each value</td></tr>
+    <tr><td>Two pointers</td><td><a href="https://leetcode.com/problems/is-subsequence/">Is Subsequence</a></td><td>One pointer in each string</td></tr>
+    <tr><td>Two pointers</td><td><a href="https://leetcode.com/problems/move-zeroes/">Move Zeroes</a></td><td>A slow pointer marks where the next non-zero goes</td></tr>
+    <tr><td>Two pointers</td><td><a href="https://leetcode.com/problems/squares-of-a-sorted-array/">Squares of a Sorted Array</a></td><td>The biggest square is at one of the two ends</td></tr>
+    <tr><td>Two pointers</td><td><a href="https://leetcode.com/problems/merge-sorted-array/">Merge Sorted Array</a></td><td>Fill from the back</td></tr>
+    <tr><td>Frequency count</td><td><a href="https://leetcode.com/problems/majority-element/">Majority Element</a></td><td>Count, then pick the largest</td></tr>
+    <tr><td>Seen map</td><td><a href="https://leetcode.com/problems/isomorphic-strings/">Isomorphic Strings</a></td><td>Map in both directions</td></tr>
+    <tr><td>Seen map</td><td><a href="https://leetcode.com/problems/word-pattern/">Word Pattern</a></td><td>Isomorphic Strings, but with words</td></tr>
+    <tr><td>Running value</td><td><a href="https://leetcode.com/problems/find-pivot-index/">Find Pivot Index</a></td><td>A running left sum, with total − left − x on the right</td></tr>
+  </table>
+
+  <h2>Stretch: Medium, same patterns</h2>
+  <table>
+    <tr><th>Pattern</th><th>Problem</th><th>Twist to notice</th></tr>
+    <tr><td>Seen map</td><td><a href="https://leetcode.com/problems/group-anagrams/">Group Anagrams</a></td><td>The key is the sorted word</td></tr>
+    <tr><td>Frequency count</td><td><a href="https://leetcode.com/problems/top-k-frequent-elements/">Top K Frequent Elements</a></td><td>Count, then sort by count</td></tr>
+    <tr><td>Running value</td><td><a href="https://leetcode.com/problems/maximum-subarray/">Maximum Subarray</a></td><td>Like Best Trade: drop a running sum once it goes negative</td></tr>
+    <tr><td>Two pointers</td><td><a href="https://leetcode.com/problems/container-with-most-water/">Container With Most Water</a></td><td>Move the shorter side inward</td></tr>
+    <tr><td>Running value</td><td><a href="https://leetcode.com/problems/product-of-array-except-self/">Product of Array Except Self</a></td><td>One pass from the left, one from the right</td></tr>
+  </table>
+
+  <h2>After the OA: new patterns</h2>
+  <p>Follow the <a href="https://neetcode.io/practice">NeetCode 150</a> order from here. Next up are variable-size sliding windows, such as <a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</a>, then stacks, binary search, linked lists and trees.</p>
+
+  <p class="small">Links and difficulty labels come from LeetCode's public problem URLs. LeetCode blocks automated reading, so the problem statements weren't checked. More: <a href="oa-checklist.html">OA checklist</a>, <a href="glossary.html">glossary</a>.</p>
+</main>
+</body>
+</html>
