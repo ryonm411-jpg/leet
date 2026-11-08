@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python Rules Card</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Reference</p>
+  <h1>Python rules that trip people up</h1>
+  <p class="meta">Taught in <a href="../lessons/0013-predict-then-run.html">Lesson 13</a> · Each rule here is one you've missed in a lesson · Terms in the <a href="glossary.html">glossary</a></p>
+
+  <table>
+    <tr><th>Rule</th><th>Right</th><th>Wrong</th></tr>
+    <tr>
+      <td><code>range</code> takes whole numbers and stops <em>before</em> the end (<a href="https://docs.python.org/3/library/stdtypes.html#range">docs</a>)</td>
+      <td><code>range(3)</code> → 0, 1, 2<br><code>range(2, 5)</code> → 2, 3, 4<br><code>range(len(nums))</code> → every index</td>
+      <td><code>range(nums)</code> raises TypeError, because a list isn't a number</td>
+    </tr>
+    <tr>
+      <td>A function returns <code>None</code> unless it reaches a <code>return</code> (<a href="https://docs.python.org/3/tutorial/controlflow.html#defining-functions">docs</a>)</td>
+      <td><code>return w * h</code></td>
+      <td>Leaving <code>w * h</code> as the last line. Python works it out, then throws it away. Ruby would return it, but Python doesn't</td>
+    </tr>
+    <tr>
+      <td>A variable named after a built-in hides it inside that function (<a href="https://docs.python.org/3/tutorial/classes.html#python-scopes-and-namespaces">docs</a>)</td>
+      <td><code>best = 0</code>, <code>total = 0</code>, <code>low = 0</code></td>
+      <td><code>max = 0</code> and then <code>max(a, b)</code> raises TypeError: 'int' object is not callable</td>
+    </tr>
+    <tr>
+      <td>Python spells it <code>elif</code> (<a href="https://docs.python.org/3/tutorial/controlflow.html#if-statements">docs</a>)</td>
+      <td><code>elif x &gt; 0:</code></td>
+      <td><code>elsif</code> (Ruby) and <code>else if</code> (JavaScript, C) are SyntaxErrors</td>
+    </tr>
+    <tr>
+      <td>Code after a loop runs once, when the loop finishes</td>
+      <td>Check the best value once more after the loop, or on every step</td>
+      <td>Updating <code>best</code> only when a streak breaks. A streak that runs to the last day is never counted</td>
+    </tr>
+  </table>
+
+  <h2>Read before your first Run</h2>
+  <ol class="steps">
+    <li>Every <code>(</code> and <code>[</code> is closed on the same line.</li>
+    <li>Every <code>def</code>, <code>if</code>, <code>elif</code>, <code>else</code>, <code>for</code> and <code>while</code> line ends with <code>:</code>.</li>
+    <li>No variable is called <code>max</code>, <code>min</code>, <code>sum</code>, <code>list</code>, <code>dict</code> or <code>id</code>.</li>
+    <li>There's a <code>return</code> after the loop, and it returns the right thing when the answer is at the very end.</li>
+  </ol>
+</main>
+</body>
+</html>

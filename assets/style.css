@@ -126,3 +126,5 @@ summary { cursor: pointer; font: 600 0.9rem var(--sans); }
 .timer.low .clock { color: var(--bad); }
 .steps li { margin-bottom: 10px; }
 .callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; margin: 18px 0; }
+.playground textarea { min-height: 0; }
+.playground .output { margin: 0; border-left: 3px solid var(--accent); white-space: pre-wrap; }

@@ -33,6 +33,8 @@
   The official reference for the test framework used in the practice repos. Use for: reading and writing tests.
 - [List: NeetCode 150](https://neetcode.io/practice)
   A problem list grouped by pattern. Use for: the problem queue after the OA, as the council recommended. Attempt each problem before watching its video. Not fetched this session.
+- [Tutorial: More Control Flow Tools, Python docs](https://docs.python.org/3/tutorial/controlflow.html)
+  The official tutorial sections on `if`/`elif`, `range` and defining functions, including "falling off the end of a function also returns None". Use for: the Python rules the user has missed.
 
 ## Wisdom (Communities)
 

@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predict, Then Run</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 13 · Amazon OA week · Practice set</p>
+  <h1>Predict, then run</h1>
+  <p class="meta">About 70 minutes, or two sittings · Your win: three unseen problems, each passing on its first or second Run, with no hint opened</p>
+
+  <p class="lede">In Lesson 12, every problem you tried passed in the end, and the two-pointer counting was neat once the idea clicked. But all three hints were opened, and most failed runs came from Python itself rather than the idea: a bracket left open, <code>elsif</code>, a <code>max</code> variable, a loose <code>id</code>, and a streak that was never counted after the loop. The same three basics were also missed for the second time. Reading the feedback twice hasn't fixed them, so this time you'll run the code and see for yourself.</p>
+
+  <h2>Part 1: predict, then run</h2>
+  <p>For each snippet, pick what you think happens. Then press <strong>Run it</strong> and see what Python actually does. If it surprises you, change something and run it again.</p>
+
+  <pre><code>for i in range(len(["a", "b", "c"])):
+    print(i)</code></pre>
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="len(...) is 3, and range(3) counts 0, 1, 2. It stops before 3. range always takes numbers, never a list.">0 1 2</button>
+      <button data-why="range starts at 0 unless you give it a start, as in range(1, 4).">1 2 3</button>
+      <button data-why="The loop variable is a number from range, not an item from the list. To get the items, loop over the list itself.">a b c</button>
+      <button data-why="len turns the list into the number 3, and range takes numbers, so this is fine. Only range(a_list) raises TypeError.">TypeError</button>
+    </div>
+  </div>
+  <div class="pg" data-code='for i in range(len(["a", "b", "c"])):
+    print(i)
+
+print(list(range(2, 5)))
+print(list(range(["a", "b"])))'></div>
+
+  <pre><code>def area(w, h):
+    w * h
+
+print(area(3, 4))</code></pre>
+  <div class="quiz" data-skill="trace-before-run">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="Python works out 12 and throws it away. A function that ends without return gives back None. Ruby returns the last line, but Python doesn't.">None</button>
+      <button data-why="That's how Ruby works. In Python, the last line isn't returned unless you write return.">12</button>
+      <button data-why="A function with no return is valid Python. It just returns None.">SyntaxError</button>
+      <button data-why="print always prints something here: the value the function returned, which is None.">Nothing</button>
+    </div>
+  </div>
+  <div class="pg" data-code='def area(w, h):
+    w * h
+
+print(area(3, 4))
+
+def area_fixed(w, h):
+    return w * h
+
+print(area_fixed(3, 4))'></div>
+
+  <pre><code>def best(nums):
+    max = 0
+    for n in nums:
+        max = max(max, n)
+    return max
+
+print(best([4, 9]))</code></pre>
+  <div class="quiz" data-skill="python-shadow-builtins">
+    <p class="q">What happens?</p>
+    <div class="options">
+      <button data-correct data-why="After max = 0, the name max means the number 0 inside this function. Then max(max, n) tries to call 0 like a function. Python doesn't keep the built-in around for you.">TypeError</button>
+      <button data-why="The name max does exist. It's just a number now, so calling it fails with a different error.">NameError</button>
+      <button data-why="It would print 9 if the variable had another name, such as best_so_far. Python has only one meaning for max at a time.">Prints 9</button>
+      <button data-why="It's valid syntax. It fails while running, on the first max(...) call.">SyntaxError</button>
+    </div>
+  </div>
+  <div class="pg" data-code='def best(nums):
+    max = 0
+    for n in nums:
+        max = max(max, n)
+    return max
+
+print(best([4, 9]))'></div>
+  <p class="small">Try renaming the variable to <code>top</code> (three places) and run it again.</p>
+
+  <p>All of these, plus <code>elif</code>, are on the new <a href="../reference/python-rules.html">Python rules card</a>.</p>
+
+  <h2>Part 2: read before your first Run</h2>
+  <p>In Lesson 12, two of your three first runs were SyntaxErrors. In the OA every run costs time, and in a live interview you can't run code at all. Before your first Run on each problem below, read your code line by line against this list:</p>
+  <ol class="steps">
+    <li>Every <code>(</code> and <code>[</code> is closed on the same line.</li>
+    <li>Every <code>def</code>, <code>if</code>, <code>elif</code>, <code>for</code> and <code>while</code> line ends with <code>:</code>.</li>
+    <li>No variable is called <code>max</code>, <code>min</code>, <code>sum</code> or <code>id</code>.</li>
+    <li>There's a <code>return</code> after the loop. Does it still work if the answer comes on the very last item?</li>
+  </ol>
+
+  <h2>Part 3: three unseen problems</h2>
+  <p>Same rules as before: 20 minutes each, pick the pattern before you type, and if there's no plan by about 8 minutes, write the brute force. Open a hint only after 10 minutes of being truly stuck. A pass without the hint is what counts as evidence.</p>
+  <p class="small">About Lesson 12: picking a sliding window for Rising Streak wasn't silly, because a window that grows and resets does work. A running value is just less to write. Both are fine in the OA.</p>
+
+  <h3>Problem 1: Biggest Price Drop</h3>
+  <div id="timer-1"></div>
+  <p><code>prices[i]</code> is a stock's price on day i. Return the biggest loss you could have made by buying on one day and selling on a <strong>later</strong> day, as a positive number: the largest <code>prices[i] - prices[j]</code> with <code>i &lt; j</code>. If the price never falls, return <code>0</code>. <code>len(prices) ≥ 1</code>.</p>
+  <p><strong>Example:</strong> <code>[5, 9, 3, 6, 1, 4]</code> gives <code>8</code>: buy at 9, sell at 1.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="Carry the highest price seen so far. Each day, the worst sale today is that high minus today's price. It's Best Trade turned upside down.">Running value</button>
+      <button data-why="Nothing is looked up by value. Each day only needs the highest price before it.">Seen map</button>
+      <button data-why="The prices aren't sorted, and sorting would lose which day came first.">Two pointers</button>
+      <button data-why="How often each price appears doesn't tell you their order.">Frequency count</button>
+    </div>
+  </div>
+  <div id="ex-1"></div>
+  <details data-solution="drop-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Keep two numbers: <code>high</code>, the highest price so far, and <code>worst</code>, the biggest drop so far. For each later day, compare <code>high - price</code> with <code>worst</code> first, then update <code>high</code>.</p>
+  </details>
+
+  <h3>Problem 2: Busiest Hour</h3>
+  <div id="timer-2"></div>
+  <p><code>hours</code> is a non-empty list of whole numbers from 0 to 23, one per order: the hour the order was placed. Return the hour with the most orders. If several hours tie, return the <strong>smallest</strong> hour.</p>
+  <p><strong>Example:</strong> <code>[14, 9, 14, 9, 20]</code> gives <code>9</code>. Hours 9 and 14 both have 2, and 9 is smaller.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="&quot;The most orders&quot; is a count per hour. Count first, then pick the winner with the tie rule.">Frequency count</button>
+      <button data-why="You can't know the winner until every order has been counted.">Running value</button>
+      <button data-why="Whether an hour appeared isn't enough. You need how many times.">Seen map</button>
+      <button data-why="The list isn't sorted, and the orders don't pair up.">Two pointers</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">You count orders per hour in a dict. With n orders, how much extra space does the dict use?</p>
+    <div class="options">
+      <button data-correct data-why="The keys can only be 0 to 23, so the dict never holds more than 24 entries, however many orders there are. A fixed cap is O(1).">O(1)</button>
+      <button data-why="There are n orders, but they share at most 24 keys. The dict's size depends on its keys, not on n.">O(n)</button>
+      <button data-why="Nothing here grows like a logarithm. Ask how many different keys there can be.">O(log n)</button>
+      <button data-why="There's one entry per hour, not one per pair of orders.">O(n²)</button>
+    </div>
+  </div>
+  <div id="ex-2"></div>
+  <details data-solution="hour-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>This tie rule is different from Top Seller's. "First seen" doesn't matter here, only the smallest hour. Since the hours are 0 to 23, you can loop <code>for h in range(24)</code> over every hour in order and keep one with a strictly greater count.</p>
+  </details>
+
+  <h3>Problem 3: Repeat Within k</h3>
+  <div id="timer-3"></div>
+  <p><code>ids</code> is a list of customer IDs (integers), one per order, in time order, and <code>k ≥ 1</code>. Return <code>True</code> if some customer ordered twice with their two orders at most <code>k</code> positions apart: positions <code>i &lt; j</code> with <code>ids[i] == ids[j]</code> and <code>j - i ≤ k</code>. Otherwise return <code>False</code>.</p>
+  <p><strong>Example:</strong> <code>[4, 1, 2, 4]</code> with <code>k = 3</code> gives <code>True</code>: customer 4 at positions 0 and 3. With <code>k = 2</code> it would be <code>False</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="For each ID, ask: have I seen this ID before, and where? Store each ID's latest position as you go, as in Contains Duplicate.">Seen map</button>
+      <button data-why="Sorting would scramble the positions, and the positions are the whole question.">Two pointers</button>
+      <button data-why="A count tells you an ID repeats, but not how far apart the repeats are.">Frequency count</button>
+      <button data-why="One running number can't remember every ID you've passed.">Running value</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="space-distinct-keys">
+    <p class="q">Your dict maps each customer ID to its latest position. With n orders, how much extra space can it use?</p>
+    <div class="options">
+      <button data-correct data-why="Customer IDs have no cap. If every order is from a new customer, the dict holds n entries.">O(n)</button>
+      <button data-why="There's no fixed list of possible IDs, as there was with hours. All n could be different.">O(1)</button>
+      <button data-why="The standard solution keeps every ID it has seen. Removing old ones can cap it at k, but that's an extra step you didn't write.">O(k)</button>
+      <button data-why="One entry per ID, not one per pair of orders.">O(n²)</button>
+    </div>
+  </div>
+  <div id="ex-3"></div>
+  <details data-solution="repeat-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Store the <em>latest</em> position of each ID, not the first one, and overwrite it every time. The newest earlier copy is always the closest one, so it's the only one worth checking. Check before you store.</p>
+  </details>
+
+  <p class="small">Extra, if you have time: Lesson 12's <a href="0012-mixed-practice-set.html">Exact Gap</a> was never attempted, and it's the same seen-map idea.</p>
+
+  <h2>Your plan before the OA</h2>
+  <table>
+    <tr><th>Day</th><th>Do</th></tr>
+    <tr><td>Sat 7 Nov</td><td><a href="0011-someone-elses-code.html">Lesson 11, the repository drill</a>. It's your only practice for the second OA section, so do it first</td></tr>
+    <tr><td>Sun 8 Nov</td><td>This lesson. A day's gap before the warm-up is what makes it a real test of memory</td></tr>
+    <tr><td>Mon 9 Nov</td><td>Amazon's coding demo from the invitation email, and the <a href="https://www.amazon.jobs/content/en/our-workplace/leadership-principles">Leadership Principles</a>. Ask me for one more set if you want it</td></tr>
+    <tr><td>Wed 11 Nov</td><td>Take the OA. The deadline is about 12 Nov, so check the email</td></tr>
+  </table>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://docs.python.org/3/tutorial/controlflow.html">The Python Tutorial, chapter 4: More Control Flow Tools</a>. Sections 4.1, 4.3 and 4.8 cover <code>elif</code>, <code>range</code> and <code>return</code>. It's short and official, and it's the right place to check a rule when you aren't sure.</p>
+  <p>For review: <a href="../reference/python-rules.html">Python rules card</a>, <a href="../reference/oa-checklist.html">OA checklist</a>, <a href="../reference/hash-map-cheatsheet.html">hash map</a>, <a href="../reference/glossary.html">glossary</a>. Previous: <a href="0012-mixed-practice-set.html">Lesson 12</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a hidden test fails and you can't see why, paste your code to your teacher agent and I'll tell you which kind of case broke it, without giving away the fix.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/python-playground.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  document.querySelectorAll(".pg").forEach((el) => mountPlayground(el, { code: el.dataset.code }));
+  mountResults(document.getElementById("results"), { lesson: "Lesson 13: Predict, Then Run" });
+  [1, 2, 3].forEach((n) => mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: 20 }));
+
+  const risingThenCrash = Array.from({ length: 3000 }, (_, i) => i + 1).concat([0]);
+  const hours6001 = Array.from({ length: 6000 }, (_, i) => i % 24).concat([7]);
+  const distinct3000 = Array.from({ length: 3000 }, (_, i) => i);
+
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def biggest_drop(prices):\n    ",
+    skill: "implement-biggest-drop",
+    fn: "biggest_drop",
+    cases: [
+      { label: "[5, 9, 3, 6, 1, 4]", args: [[5, 9, 3, 6, 1, 4]], expected: 8 },
+      { label: "one day", args: [[7]], expected: 0, hidden: true },
+      { label: "always rising, [1,2,3]", args: [[1, 2, 3]], expected: 0, hidden: true },
+      { label: "flat, [3,3]", args: [[3, 3]], expected: 0, hidden: true },
+      { label: "biggest drop on the last day, [2,10,1,9,0]", args: [[2, 10, 1, 9, 0]], expected: 10, hidden: true },
+      { label: "high comes late, [1,4,2,8,3]", args: [[1, 4, 2, 8, 3]], expected: 5, hidden: true },
+      { label: "3,000 rising days then 0", args: [risingThenCrash], expected: 3000, maxMs: 60, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def busiest_hour(hours):\n    ",
+    skill: "implement-busiest-hour",
+    fn: "busiest_hour",
+    cases: [
+      { label: "[14, 9, 14, 9, 20]", args: [[14, 9, 14, 9, 20]], expected: 9 },
+      { label: "one order", args: [[5]], expected: 5, hidden: true },
+      { label: "clear winner, [23,23,1]", args: [[23, 23, 1]], expected: 23, hidden: true },
+      { label: "all tie, [3,2,1]", args: [[3, 2, 1]], expected: 1, hidden: true },
+      { label: "tie, smaller hour seen second, [12,12,3,3]", args: [[12, 12, 3, 3]], expected: 3, hidden: true },
+      { label: "6,001 orders, every hour", args: [hours6001], expected: 7, maxMs: 60, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def repeat_within(ids, k):\n    ",
+    skill: "implement-repeat-within",
+    fn: "repeat_within",
+    cases: [
+      { label: "[4, 1, 2, 4], k 3", args: [[4, 1, 2, 4], 3], expected: true },
+      { label: "too far apart, [4,1,2,4] k 2", args: [[4, 1, 2, 4], 2], expected: false, hidden: true },
+      { label: "one order", args: [[1], 1], expected: false, hidden: true },
+      { label: "next to each other, [7,7] k 1", args: [[7, 7], 1], expected: true, hidden: true },
+      { label: "only the latest copy is close, [3,1,2,3,4,3] k 2", args: [[3, 1, 2, 3, 4, 3], 2], expected: true, hidden: true },
+      { label: "3,000 different IDs, k 2,999", args: [distinct3000, 2999], expected: false, maxMs: 60, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>
