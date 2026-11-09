@@ -53,7 +53,7 @@
   <ol class="steps">
     <li>In VS Code, install the <strong>Python</strong> extension from Microsoft. It adds the Testing panel and the debugger. You don't have it yet. <a href="https://code.visualstudio.com/docs/python/python-quick-start">VS Code's Python quick start</a> shows how.</li>
     <li>Open the folder <code>Downloads\Leet\practice-repos\0011-warehouse</code> with <strong>File → Open Folder</strong>.</li>
-    <li>Open the terminal with <strong>Ctrl+`</strong> and run <code>py -m unittest -v</code>. You should see 14 tests, with 4 failing. That's your starting point.</li>
+    <li>Open the terminal with <strong>Ctrl+`</strong> and run <code>py -m unittest -v</code> from the <code>0011-warehouse</code> folder itself, not from <code>tests</code>. Otherwise Python can't find the <code>warehouse</code> package and every test fails with ModuleNotFoundError. You should see 14 tests, with 4 failing. That's your starting point.</li>
   </ol>
 
   <h2>The tasks</h2>
