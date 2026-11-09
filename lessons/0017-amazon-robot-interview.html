@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Robot Interview Round</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 17 · Coding interview · Amazon's own example</p>
+  <h1>A live coding round, the way Amazon runs it</h1>
+  <p class="meta">About 40 minutes · Your win: ask the clarifying questions that matter, write a working solution in 25 minutes, and pass the tests on your first and only Run</p>
+
+  <p class="lede">You pointed me to Amazon's video <a href="https://www.youtube.com/watch?v=yKz2kPip4sg">"SDE Interview Coding Example"</a>. I read its official transcript (from Amazon's <a href="https://amazon.jobs/content/en/how-we-hire/interview-prep/software-development-topics">interview prep page</a>). In it, an Amazon engineer works through a robot time-series problem and explains what interviewers look for. This lesson turns that into a round you can practise.</p>
+
+  <h2>How the round works, from the video</h2>
+  <table>
+    <tr><th>Amazon's engineer said</th><th>What it means for you</th></tr>
+    <tr><td>The tool "is called LiveCode … just a text editor. You don't have the ability to compile or run code."</td><td>No Run button. This is why tracing by hand is your most important habit.</td></tr>
+    <tr><td>"About 25 minutes or so is a typical time." Read for "at least two to three minutes".</td><td>Spend the first 3 minutes reading, not typing.</td></tr>
+    <tr><td>Ask clarifying questions about the <em>data input</em> and about the <em>use cases</em>.</td><td>The naive solution in the video failed because the use-case questions weren't asked.</td></tr>
+    <tr><td>"Write a solution that works and then optimize it later." We advise that "more often".</td><td>Brute force first, then improve. You've practised exactly this.</td></tr>
+    <tr><td>"We don't expect perfect syntax." Readability matters: "distinct functions", "not a lot of repetitive code".</td><td>Small helper functions with clear names score well.</td></tr>
+    <tr><td>Library functions are fine "as long as you just mention it".</td><td><code>abs</code>, <code>sorted</code> and <code>enumerate</code> are all fine. Say so out loud.</td></tr>
+    <tr><td>"Write a case that's not a happy case … try to break it", walking the code "line by line".</td><td>Trace an edge case by hand before you say "done".</td></tr>
+    <tr><td>Expect questions on time and space complexity, and on what's optimal.</td><td>Know your Big O, and one way it could be better.</td></tr>
+  </table>
+
+  <h2>The problem</h2>
+  <div id="timer"></div>
+  <p class="small">Written from the video's transcript. The video shows its examples on screen without reading the grids out, so the examples here are my own, in the same spirit.</p>
+  <p>You're given a time series of robot positions as a 2D grid of 0s and 1s. Each row is one moment in time, and each 1 is a robot at that column. You're also given <code>num_robots</code>. Return <code>True</code> if the time series is <strong>valid</strong>: between one row and the next, every robot moves <strong>at most one column</strong> left or right, or stays put.</p>
+  <p><strong>Example:</strong> rows <code>[0, 1, 1, 0]</code> then <code>[1, 0, 0, 1]</code>, with 2 robots, gives <code>True</code>. One robot moved left and one moved right. <code>[1, 0, 0, 0]</code> then <code>[0, 0, 1, 0]</code>, with 1 robot, gives <code>False</code>, because the robot moved two columns.</p>
+
+  <h3>Step 1: your clarifying questions (3 minutes)</h3>
+  <p>Before you look at the answers, write the questions you'd ask the interviewer. Aim for some about the <em>data</em> and some about <em>use cases</em>.</p>
+  <div id="questions"></div>
+  <details data-solution="clarify-answers">
+    <summary>Show the interviewer's answers (from the video)</summary>
+    <ul>
+      <li><strong>Are all rows the same length?</strong> Yes.</li>
+      <li><strong>Can <code>num_robots</code> be negative?</strong> No. It's 0 or a positive integer.</li>
+      <li><strong>Minimum size?</strong> There's at least one row.</li>
+      <li><strong>Can two robots occupy the same slot, or collide?</strong> No.</li>
+      <li><strong>Is every row guaranteed to have <code>num_robots</code> ones?</strong> <em>No.</em> The input could be "a bunch of random zeros and ones". You must check every row has exactly <code>num_robots</code> robots, and return <code>False</code> if not.</li>
+    </ul>
+    <p>The last two are the use-case questions. The engineer said they're the ones people skip, and the ones the naive solution gets wrong.</p>
+  </details>
+
+  <h3>Step 2: spot the naive trap</h3>
+  <p>The video's first, naive idea: for every 1 in a row, check that the row above has a 1 at the same column or one to either side.</p>
+  <div class="quiz" data-skill="problem-breakdown">
+    <p class="q">With <code>num_robots = 3</code>, which pair of rows does the naive check wrongly call valid?</p>
+    <div class="options">
+      <button data-correct data-why="Every robot in the second row has a 1 within one column above it, so the naive check passes. But the robots above are at 1, 2 and 5, and 5 can't reach any free spot. Matching left to right gives 1→0, 2→2, 5→3, and 5→3 is two columns. Two robots can't both have come from column 1 or 2.">[0,1,1,0,0,1] → [1,0,1,1,0,0]</button>
+      <button data-why="The naive check would reject this: the robot in column 2 has nothing within one column above it.">[1,0,0,0,0,0] → [0,0,1,0,0,0]</button>
+      <button data-why="This one really is valid: 1→0, 2→2, 5→5. Both the naive check and a correct one say True.">[0,1,1,0,0,1] → [1,0,1,0,0,1]</button>
+      <button data-why="This one is valid too: 1→2, 2→3, 5→5. Every robot moves at most one column.">[0,1,1,0,0,1] → [0,0,1,1,0,1]</button>
+    </div>
+  </div>
+
+  <h3>Step 3: write it, with no running</h3>
+  <p>Start the timer above for the whole round. Write <code>valid_series</code>. Say your plan out loud first, as you would to an interviewer. Then, <strong>before your one Run</strong>, write a non-happy test in a comment and trace it line by line. Treat Run as the interviewer reading your code: aim for exactly one.</p>
+  <div id="ex"></div>
+  <details data-solution="robot-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Write a helper that turns a row into the list of robot columns, which come out left to right. Check that each list has length <code>num_robots</code>. Then compare consecutive rows' lists position by position: the k-th robot from the left must stay the k-th from the left, because robots can't pass through each other without sharing a slot. So check <code>abs(prev[k] - cur[k]) &lt;= 1</code> for every k.</p>
+  </details>
+
+  <h3>Step 4: complexity, as the interviewer will ask</h3>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">The grid has R rows and C columns. You build a positions list for each row and compare neighbouring rows. What's the time cost?</p>
+    <div class="options">
+      <button data-correct data-why="You look at every cell once to find the robots, R·C, and comparing lists is at most that much again. The video calls it &quot;length times width&quot;.">O(R·C)</button>
+      <button data-why="Finding the robots means scanning every cell, and each row has C cells.">O(R)</button>
+      <button data-why="You never compare every row with every other row, only each row with the one before it.">O(R²·C)</button>
+      <button data-why="Each cell is visited a fixed number of times, so nothing is squared in C.">O(R·C²)</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">Your solution keeps two position lists, each with up to <code>num_robots</code> entries. The video says the optimal version uses less extra space. How much?</p>
+    <div class="options">
+      <button data-correct data-why="Walk each row left to right and remember only the last column used in the previous row, so you don't store lists at all. That's &quot;constant&quot; space in the video. Your list version is O(num_robots), which is a fine first answer.">O(1)</button>
+      <button data-why="That's how much your list version uses. The video's optimal version drops the lists.">O(num_robots)</button>
+      <button data-why="Nobody stores the whole grid again. You only ever compare two rows.">O(R·C)</button>
+      <button data-why="Nothing here halves the work, so log doesn't come into it.">O(log C)</button>
+    </div>
+  </div>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> watch <a href="https://www.youtube.com/watch?v=yKz2kPip4sg">Amazon's "SDE Interview Coding Example"</a> <em>after</em> you've finished. It's 14 minutes. Compare your clarifying questions with theirs, and listen for how the engineer explains the working solution before the optimal one.</p>
+  <p>Amazon's companion videos, all with transcripts on the <a href="https://amazon.jobs/content/en/how-we-hire/interview-prep/software-development-topics">prep page</a>: <a href="https://www.youtube.com/watch?v=KsAUCv6THVk">Solving the coding problem</a>, <a href="https://www.youtube.com/watch?v=5gU8PSYeF6s">Running the solution and test cases</a>, <a href="https://www.youtube.com/watch?v=9OGZvZb8TZE">Fine tuning the solution</a>.</p>
+  <p>The video says to expect "tree traversal", "greedy algorithms", "dynamic programming", "sorting", and data structures like "trees, heaps, sets, lists, maps, arrays". You know arrays, maps and sets. Trees and heaps are next on the <a href="../reference/practice-queue.html">practice queue</a>'s NeetCode path. Previous: <a href="0016-work-style-and-leadership-principles.html">Lesson 16</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat, with your clarifying questions (use <strong>Copy as text</strong>).</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If you'd like a spoken mock round, paste your code and I'll ask you follow-up questions the way an interviewer would.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/worksheet.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountTimer(document.getElementById("timer"), { label: "interview round", minutes: 25 });
+  mountWorksheet(document.getElementById("questions"), {
+    key: "robot-clarify", title: "My clarifying questions (robot problem)",
+    fields: [
+      { label: "About the data input", hint: "Sizes, ranges, guarantees.", rows: 3 },
+      { label: "About the use cases", hint: "What could happen that the examples don't show?", rows: 3 },
+    ],
+  });
+  mountResults(document.getElementById("results"), { lesson: "Lesson 17: Robot Interview Round" });
+
+  mountExercise(document.getElementById("ex"), {
+    starter: "def valid_series(grid, num_robots):\n    ",
+    skill: "implement-robot-series",
+    fn: "valid_series",
+    cases: [
+      { label: "one left, one right", args: [[[0, 1, 1, 0], [1, 0, 0, 1]], 2], expected: true },
+      { label: "moved two columns", args: [[[1, 0, 0, 0], [0, 0, 1, 0]], 1], expected: false },
+      { label: "a row with too few robots", args: [[[1, 1, 0], [1, 0, 0]], 2], expected: false, hidden: true },
+      { label: "moves fine but fewer robots than num_robots", args: [[[1, 0], [1, 0]], 2], expected: false, hidden: true },
+      { label: "zero robots", args: [[[0, 0], [0, 0]], 0], expected: true, hidden: true },
+      { label: "one row only", args: [[[0, 1, 0]], 1], expected: true, hidden: true },
+      { label: "three rows, last move valid", args: [[[0, 1, 1, 0], [0, 1, 1, 0], [1, 0, 0, 1]], 2], expected: true, hidden: true },
+      { label: "naive trap, [0,1,1,0,0,1]→[1,0,1,1,0,0]", args: [[[0, 1, 1, 0, 0, 1], [1, 0, 1, 1, 0, 0]], 3], expected: false, hidden: true },
+      { label: "one robot zig-zags across 4 rows", args: [[[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 0]], 1], expected: true, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

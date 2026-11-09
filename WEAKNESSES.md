@@ -81,5 +81,8 @@ Read this before choosing or designing any lesson. Update it whenever there is n
 - `implement-pivot-index`, `implement-is-subsequence`, `implement-majority-element`: the three LeetCode problems in Lesson 14
 - `problem-breakdown`: pulling the requirements and output shape out of a statement (Lesson 15)
 - `implement-review-suggestions`, `implement-restock`: Lesson 15's two rehearsal problems
+- `lp-recognition`: naming the Leadership Principle behind a work statement (Lesson 16)
+- `lp-tension`: settling two principles that conflict, the way Jassy describes (Lesson 16)
+- `implement-robot-series`: the robot time-series problem from Amazon's interview video, in Lesson 17 (aim for one run)
 - `freq-count-tie-rule`: applying the tie rule after counting (seen in code)
 - `speed-under-timer`: time used against the limit, from the `timer` lines in the results

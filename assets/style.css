@@ -128,3 +128,9 @@ summary { cursor: pointer; font: 600 0.9rem var(--sans); }
 .callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; margin: 18px 0; }
 .playground textarea { min-height: 0; }
 .playground .output { margin: 0; border-left: 3px solid var(--accent); white-space: pre-wrap; }
+.worksheet { margin: 18px 0; padding: 14px 16px; background: var(--surface); border-radius: 4px; }
+.worksheet label { display: block; margin-bottom: 12px; }
+.worksheet .ws-label { display: block; font: 600 0.9rem var(--sans); }
+.worksheet .ws-hint { display: block; margin-bottom: 4px; }
+.worksheet textarea { width: 100%; padding: 8px; font: 0.95rem/1.5 var(--serif); color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 3px; resize: vertical; }
+.lp-grid td:first-child { white-space: nowrap; font-weight: 600; }

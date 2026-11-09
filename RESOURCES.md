@@ -39,6 +39,10 @@
   Amazon's official intern OA page: coding about 70 minutes, Workstyles about 15 minutes, a required feedback survey, the rule that public docs are allowed and browser use is logged, and the practice test link. Use for: OA rules. Read on 2026-11-08.
 - [Video: Amazon OA prep playlist (YouTube)](https://www.youtube.com/watch?v=_SDAj45PW8s&list=PL9JNmYfQa0bjNaqTlDQwECjsu78k2FwKC)
   Amazon's own videos. The transcripts were read for "What is Amazon Assessing" (five grading criteria) and "How to break down the coding problem" (the review suggestions problem, read paragraph by paragraph). The other videos haven't been checked. Use for: OA approach, and Lesson 15.
+- [Video: SDE Interview Coding Example, Amazon (YouTube)](https://www.youtube.com/watch?v=yKz2kPip4sg)
+  An Amazon engineer solves a robot time-series problem in LiveCode (no running code, about 25 minutes): clarifying questions on input and use cases, a working solution first, readability, tracing a non-happy case, and complexity. Its transcript is a .docx linked from the [software development topics page](https://amazon.jobs/content/en/how-we-hire/interview-prep/software-development-topics). Use for: Lesson 17 and the live interview format.
+- [Talk: Andy Jassy on the Leadership Principles](https://www.amazon.jobs/content/en/our-workplace/leadership-principles)
+  The user pasted transcripts of Jassy explaining each principle, including two-way doors, owners vs renters, and "follow the anecdotes". The original page wasn't confirmed, so the link goes to the official principles page. Use for: Work Style and behavioural prep (Lesson 16, `reference/leadership-principles.html`).
 
 ## Wisdom (Communities)
 
