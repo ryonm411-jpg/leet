@@ -35,6 +35,10 @@
   A problem list grouped by pattern. Use for: the problem queue after the OA, as the council recommended. Attempt each problem before watching its video. Not fetched this session.
 - [Tutorial: More Control Flow Tools, Python docs](https://docs.python.org/3/tutorial/controlflow.html)
   The official tutorial sections on `if`/`elif`, `range` and defining functions, including "falling off the end of a function also returns None". Use for: the Python rules the user has missed.
+- [Guide: Online assessment prep for SDE roles, Amazon](https://www.amazon.jobs/content/en/how-we-hire/university/sde-oa)
+  Amazon's official intern OA page: coding about 70 minutes, Workstyles about 15 minutes, a required feedback survey, the rule that public docs are allowed and browser use is logged, and the practice test link. Use for: OA rules. Read on 2026-11-08.
+- [Video: Amazon OA prep playlist (YouTube)](https://www.youtube.com/watch?v=_SDAj45PW8s&list=PL9JNmYfQa0bjNaqTlDQwECjsu78k2FwKC)
+  Amazon's own videos. The transcripts were read for "What is Amazon Assessing" (five grading criteria) and "How to break down the coding problem" (the review suggestions problem, read paragraph by paragraph). The other videos haven't been checked. Use for: OA approach, and Lesson 15.
 
 ## Wisdom (Communities)
 

@@ -10,22 +10,41 @@
 <main>
   <p class="kicker">Reference</p>
   <h1>Online assessment checklist</h1>
-  <p class="meta">For the Amazon SDE Intern OA. The format below comes from Amazon's invitation email. Anything it doesn't say is marked as unconfirmed.</p>
+  <p class="meta">For the Amazon SDE Intern OA. Sources: your recruiter email, and <a href="https://www.amazon.jobs/content/en/how-we-hire/university/sde-oa">Amazon's OA prep page</a> and video transcripts, read on 2026-11-08. Where they disagree, your invitation email wins.</p>
+
+  <h2>The format: check your invitation</h2>
+  <table>
+    <tr><th>Source</th><th>What it says</th></tr>
+    <tr><td>Your recruiter email</td><td>One coding problem, a multi-file repository task in a VS Code-style IDE, then Work Style. About 2.5 hours.</td></tr>
+    <tr><td>Amazon's intern prep page</td><td>Coding about 70 minutes on average, Workstyles about 15 minutes, then a feedback survey about 5 minutes. About 90 minutes in total. Their course page says two coding problems.</td></tr>
+  </table>
+  <p>Prepare for both: two problems in 70 minutes (about 35 minutes each) and the repository task. <strong>The feedback survey is required.</strong> Amazon says your OA isn't finalised until it's done.</p>
+
+  <h2>Amazon's official rules</h2>
+  <ul>
+    <li><strong>Allowed:</strong> "publicly accessible online resources", meaning language docs such as <a href="https://docs.python.org/3/">docs.python.org</a>. <strong>Not allowed:</strong> sites that need a login, and private repos. "Your browser usage is logged."</li>
+    <li>Don't use Print Screen. Amazon says the session is terminated and you're locked out.</li>
+    <li>Don't copy and paste code in. "We expect this to be your own code." AI tools are out too.</li>
+    <li>"If you get stuck on a problem, move to the next one and revisit."</li>
+    <li>Use a laptop or desktop, not a phone or tablet. The platform is HackerRank, which you can try on the <a href="https://hr.gs/TheAmazonCodingDemo">practice test</a>.</li>
+  </ul>
+
+  <h2>What they grade (Amazon's video)</h2>
+  <p>Reading the problem deeply, turning the idea into code accurately, choosing the right data structure (list, map or set), common-sense runtime complexity, and a <em>simple</em> solution. They say they don't set trick questions.</p>
 
   <h2>Before the day</h2>
   <ul>
     <li>Find the exact deadline in the "SDE-I Online Assessment Invitation" email, and plan to finish at least a day early.</li>
-    <li>Check which languages the coding question and the repository question allow.</li>
-    <li>Do Amazon's coding assessment demo, so the editor is familiar before the timer starts.</li>
+    <li>Take the HackerRank practice test, so the editor is familiar before the timer starts.</li>
     <li>Read the <a href="https://www.amazon.jobs/content/en/our-workplace/leadership-principles">Leadership Principles</a>.</li>
     <li>Block 2.5 hours somewhere quiet, with a stable connection. The coding timer can't be paused.</li>
-    <li>No AI, notes or outside sites during the test. That includes this workspace.</li>
+    <li>No AI, no notes and none of this workspace during the test. Public language docs are the only outside help allowed.</li>
   </ul>
 
   <h2>Coding problem</h2>
   <table>
     <tr><th>Step</th><th>Do</th></tr>
-    <tr><td>1</td><td>Read it twice. Write two examples, including an edge case: one item, all equal, or the answer at the very end.</td></tr>
+    <tr><td>1</td><td>Read it one paragraph at a time, as Amazon's video does, and list every requirement. Use the example to decode the output format. Write two examples, including an edge case: one item, all equal, or the answer at the very end.</td></tr>
     <tr><td>2</td><td>Name the pattern: seen map, frequency count, two pointers or sliding window. If none fits, say the brute force.</td></tr>
     <tr><td>3</td><td>If no faster idea comes within about 10 minutes, code the brute force. A working answer beats an unfinished one.</td></tr>
     <tr><td>4</td><td>Trace one example by hand, then run.</td></tr>

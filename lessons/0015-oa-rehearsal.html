@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OA Rehearsal</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 15 · Amazon OA week · Dress rehearsal</p>
+  <h1>OA rehearsal: two problems, 70 minutes</h1>
+  <p class="meta">About 85 minutes in total · Your win: both problems submitted before one 70-minute clock runs out, using Amazon's own way of breaking a problem down</p>
+
+  <p class="lede">Amazon's prep course says the intern coding assessment takes about 70 minutes on average, and its course page mentions two coding problems (<a href="https://www.amazon.jobs/content/en/how-we-hire/university/sde-oa">Amazon: OA prep for SDE roles</a>). Your recruiter email described a different shape: one coding problem, then a repository task. <strong>The invitation email decides which one is yours.</strong> Two problems in 70 minutes is the tighter of the two, so that's what this rehearsal practises.</p>
+
+  <h2>What Amazon says it's grading</h2>
+  <p>From the transcript of Amazon's video <a href="https://www.youtube.com/watch?v=_SDAj45PW8s">"What is Amazon Assessing?"</a>, five things:</p>
+  <table>
+    <tr><th>Amazon's words</th><th>What it means for you</th></tr>
+    <tr><td>Problem statement retention</td><td>Read it deeply. Every rule in the statement is a hidden test.</td></tr>
+    <tr><td>Coding ability</td><td>Turn the idea into code <em>accurately</em>. This is where your runs go.</td></tr>
+    <tr><td>Data structure application</td><td>Know when to use a list, a map (dict) or a set. That's exactly your pattern work.</td></tr>
+    <tr><td>Runtime complexity</td><td>"Common-sense" complexity: walk through your own code and say what it costs.</td></tr>
+    <tr><td>Create a simple solution</td><td>"We really value the simple solution." Clear names and no clever tricks.</td></tr>
+  </table>
+  <p>The same video says they aren't testing tricky questions or deep knowledge of one language. So Python you know well beats anything fancy.</p>
+
+  <h2>How Amazon breaks a problem down</h2>
+  <p>In <a href="https://www.youtube.com/watch?v=CuAXhBZ9uAg">"How to break down the coding problem"</a>, the engineer reads the statement one paragraph at a time and stops after each to say what they learned. They list every requirement they find ("alphabetical order, case insensitive, wait until two characters"). When the output format is confusing, they work it out from the example. They also notice things the statement doesn't say: "the input is not ordered".</p>
+  <p>Problem A below is the problem from that video, so you'll practise exactly that method on it.</p>
+
+  <h2>Rules for this rehearsal</h2>
+  <ul>
+    <li>One 70-minute clock for both problems. Start it, and don't stop it until you're done or it runs out.</li>
+    <li>Do the breakdown questions first. They're part of the 70 minutes, as reading is in the real thing.</li>
+    <li>If you're stuck on one problem, move to the other and come back. Amazon's own advice says the same.</li>
+    <li>Before each first Run, read through the <a href="../reference/python-rules.html">four-point list</a>, then trace the example by hand.</li>
+    <li>No hints are given. On the day, the Python docs are allowed (see the <a href="../reference/oa-checklist.html">OA checklist</a>), so <a href="https://docs.python.org/3/library/stdtypes.html#string-methods">string methods</a> and <a href="https://docs.python.org/3/howto/sorting.html">sorting</a> are fair game here too.</li>
+  </ul>
+
+  <div id="timer"></div>
+
+  <h2>Problem A: Customer review suggestions</h2>
+  <p class="small">From Amazon's breakdown video, written up here from its transcript. Inputs and edge cases are pinned down below so the tests are fair.</p>
+  <p>Amazon wants to suggest search keywords while a customer types into the review search box. Once the customer has typed <strong>at least two characters</strong>, the system suggests <strong>at most three</strong> keywords from <code>repository</code> that start with what's been typed so far. If more than three match, return the first three in <strong>alphabetical order</strong>. Compare <strong>case-insensitively</strong>, and return every suggestion in <strong>lowercase</strong>.</p>
+  <p><code>repository</code> is a list of unique words, in no particular order. <code>query</code> is the customer's full search, typed one character at a time. Return a list of lists: one list of suggestions for each prefix of length 2, 3, …, up to <code>len(query)</code>. A prefix with no matches gets an empty list. If the query is shorter than 2 characters, return <code>[]</code>.</p>
+  <p><strong>Example:</strong> <code>repository = ["mobile", "mouse", "moneypot", "monitor", "mousepad"]</code>, <code>query = "mouse"</code> gives</p>
+  <pre><code>[["mobile", "moneypot", "monitor"],   # "mo"
+ ["mouse", "mousepad"],               # "mou"
+ ["mouse", "mousepad"],               # "mous"
+ ["mouse", "mousepad"]]               # "mouse"</code></pre>
+
+  <div class="quiz" data-skill="problem-breakdown">
+    <p class="q">Breakdown: which of these is <em>not</em> a requirement of the problem?</p>
+    <div class="options">
+      <button data-correct data-why="Nothing says keep the repository's order. The example's repository is out of order, and the output is alphabetical. Spotting what isn't said is part of the breakdown.">Keep repository order</button>
+      <button data-why="It is required: &quot;at most three&quot;. Missing it fails any prefix with four or more matches.">Return three at most</button>
+      <button data-why="It is required: &quot;Apple&quot; must match &quot;ap&quot;. Lower-case both sides before comparing.">Ignore letter case</button>
+      <button data-why="It is required: there's no list for the first character on its own.">Start at two letters</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="problem-breakdown">
+    <p class="q">For <code>query = "mouse"</code>, how many inner lists should you return?</p>
+    <div class="options">
+      <button data-correct data-why="Prefixes of length 2, 3, 4 and 5: &quot;mo&quot;, &quot;mou&quot;, &quot;mous&quot;, &quot;mouse&quot;. The example shows four, which is how the engineer in the video worked it out.">4</button>
+      <button data-why="That's one per character, but nothing is suggested until two characters are typed.">5</button>
+      <button data-why="The output has one list per prefix, not one list per keyword.">3</button>
+      <button data-why="The lists are per character typed, so they add up as the query gets longer.">1</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">You sort the lowercased repository once (n words), then, for each of the q prefixes, scan every word with <code>startswith</code>. Roughly what's the time cost, treating word length as small?</p>
+    <div class="options">
+      <button data-correct data-why="The sort is n log n, done once. Then there are q prefixes times n words checked. That's simple, and plenty fast for an OA. A trie or binary search could do better, but simple first.">O(n log n + q·n)</button>
+      <button data-why="Each prefix still checks every word, so the q prefixes multiply the scan.">O(n log n)</button>
+      <button data-why="If you sort once, you don't pay for sorting q times. Sort before the prefix loop.">O(q·n log n)</button>
+      <button data-why="Checking every word against every prefix is at least q·n.">O(q + n)</button>
+    </div>
+  </div>
+  <div id="ex-a"></div>
+
+  <h2>Problem B: Warehouse restock</h2>
+  <p>A warehouse starts the week with <code>start</code> units of a product. <code>changes[i]</code> is the net change on day i: positive for deliveries and negative for orders shipped. After every day, the stock must be <strong>at least 1</strong>. Return the <strong>smallest</strong> whole-number <code>start</code> (at least 1) that keeps it that way. <code>len(changes) ≥ 1</code>.</p>
+  <p><strong>Example:</strong> <code>[-3, 2, -3, 4, 2]</code> gives <code>5</code>. Starting with 5, the stock goes 2, 4, 1, 5, 7, and never drops below 1. Starting with 4, it would hit 0 on day 3.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="Carry a running total, and the lowest it ever gets. The answer comes straight from that lowest point.">Running value</button>
+      <button data-why="Nothing is looked up by value. Each day only adds to a running total.">Seen map</button>
+      <button data-why="Sorting would scramble the days, and the order is what matters.">Two pointers</button>
+      <button data-why="All the days count, from the very first, not a fixed-size block.">Sliding window</button>
+    </div>
+  </div>
+  <div id="ex-b"></div>
+
+  <h2>After the clock</h2>
+  <p>Note which problem took longer, and why: reading, planning or fixing runs. In the real OA, if one problem is done and the other isn't, a brute force that passes some tests still beats a blank.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.youtube.com/watch?v=CuAXhBZ9uAg">Amazon, "How to break down the coding problem"</a>, the video Problem A comes from, part of Amazon's own <a href="https://www.youtube.com/watch?v=_SDAj45PW8s&amp;list=PL9JNmYfQa0bjNaqTlDQwECjsu78k2FwKC">OA prep playlist</a>. Watch it <em>after</em> you've finished Problem A, and compare your breakdown with theirs. The rest of the playlist covers the HackerRank platform, running tests and fine-tuning.</p>
+  <p>Then take Amazon's own unscored <a href="https://hr.gs/TheAmazonCodingDemo">practice test</a>, linked from <a href="https://www.amazon.jobs/content/en/how-we-hire/university/sde-oa">Amazon's OA prep page</a>, to see the HackerRank editor before the day.</p>
+  <p>For review: <a href="../reference/oa-checklist.html">OA checklist</a> (updated with Amazon's official rules), <a href="../reference/python-rules.html">Python rules card</a>. Previous: <a href="0014-three-leetcode-easies.html">Lesson 14</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> Questions about the OA format, the Work Style section or a failing test: ask your teacher agent.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 15: OA Rehearsal" });
+  mountTimer(document.getElementById("timer"), { label: "rehearsal", minutes: 70 });
+
+  mountExercise(document.getElementById("ex-a"), {
+    starter: "def suggestions(repository, query):\n    ",
+    skill: "implement-review-suggestions",
+    fn: "suggestions",
+    cases: [
+      { label: 'mouse example', args: [["mobile", "mouse", "moneypot", "monitor", "mousepad"], "mouse"],
+        expected: [["mobile", "moneypot", "monitor"], ["mouse", "mousepad"], ["mouse", "mousepad"], ["mouse", "mousepad"]] },
+      { label: "mixed case, more than three match", args: [["Apple", "apricot", "APE", "apply"], "AP"], expected: [["ape", "apple", "apply"]], hidden: true },
+      { label: "query of one character", args: [["cat"], "a"], expected: [], hidden: true },
+      { label: "nothing matches", args: [["cat"], "dog"], expected: [[], []], hidden: true },
+      { label: "query longer than every word", args: [["ab"], "abc"], expected: [["ab"], []], hidden: true },
+      { label: "upper-case query, a word equal to the prefix", args: [["bob", "Bobby", "bo"], "BOB"], expected: [["bo", "bob", "bobby"], ["bob", "bobby"]], hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-b"), {
+    starter: "def min_start_stock(changes):\n    ",
+    skill: "implement-restock",
+    fn: "min_start_stock",
+    cases: [
+      { label: "[-3, 2, -3, 4, 2]", args: [[-3, 2, -3, 4, 2]], expected: 5 },
+      { label: "never falls, [1, 2]", args: [[1, 2]], expected: 1, hidden: true },
+      { label: "one bad day, [-1]", args: [[-1]], expected: 2, hidden: true },
+      { label: "no change, [0]", args: [[0]], expected: 1, hidden: true },
+      { label: "lowest point in the middle, [5,-10,5]", args: [[5, -10, 5]], expected: 6, hidden: true },
+      { label: "6,000 days of -1", args: [Array(6000).fill(-1)], expected: 6001, maxMs: 60, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>
