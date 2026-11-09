@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three LeetCode Easies</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 14 · Amazon OA week · LeetCode set</p>
+  <h1>Three LeetCode Easies, traced first</h1>
+  <p class="meta">About 70 minutes · Your win: three real LeetCode problems, each passing on its first Run, then accepted on LeetCode</p>
+
+  <p class="lede">Lesson 13 was your first set with no hints at all, and you finished in 11 and 10 minutes. Your ideas are now right first time. What's costing you runs is small mechanics: a comparison written backwards, and a name reused for two things. So today's habit is to <strong>trace the given example by hand before your first Run</strong>. These are real LeetCode problems, so you can submit each one when it passes here.</p>
+
+  <h2>Warm-up: predict, then run</h2>
+
+  <pre><code>def evens(nums):
+    nums = []
+    for n in nums:
+        if n % 2 == 0:
+            nums.append(n)
+    return nums
+
+print(evens([1, 2, 4]))</code></pre>
+  <div class="quiz" data-skill="python-shadow-builtins">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="nums = [] replaces the input list, so the loop walks an empty list and never runs. This was the Busiest Hour bug. A name means one thing at a time: give the new list its own name, such as result.">[]</button>
+      <button data-why="That's what was meant, but the input was thrown away on the first line, before the loop.">[2, 4]</button>
+      <button data-why="The input list is gone after nums = [], so 1, 2 and 4 are never seen.">[1, 2, 4]</button>
+      <button data-why="It's valid code and nothing crashes. It quietly does the wrong thing, which is worse.">Error</button>
+    </div>
+  </div>
+  <div class="pg" data-code='def evens(nums):
+    nums = []
+    for n in nums:
+        if n % 2 == 0:
+            nums.append(n)
+    return nums
+
+print(evens([1, 2, 4]))'></div>
+
+  <pre><code>min = 5
+print(min(3, 8))</code></pre>
+  <div class="quiz" data-skill="python-shadow-builtins">
+    <p class="q">What happens?</p>
+    <div class="options">
+      <button data-correct data-why="Same rule. After min = 5, the name min means 5, and 5(3, 8) can't be called. The built-in is hidden, not deleted. The name exists, so it isn't a NameError.">TypeError</button>
+      <button data-why="NameError means the name doesn't exist at all. Here min exists. It's just the number 5 now.">NameError</button>
+      <button data-why="Python doesn't keep two meanings of min. The number 5 replaced the function.">Prints 3</button>
+      <button data-why="print never gets a value, because the call min(3, 8) fails first.">Prints 5</button>
+    </div>
+  </div>
+  <div class="pg" data-code='min = 5
+print(min(3, 8))'></div>
+
+  <pre><code>def greet(name):
+    print("hi", name)
+
+result = greet("Ana")
+print(result)</code></pre>
+  <div class="quiz" data-skill="trace-before-run">
+    <p class="q">What appears on screen?</p>
+    <div class="options">
+      <button data-correct data-why="Calling greet prints &quot;hi Ana&quot;. It has no return, so result is None, and print(result) shows the word None. Printing isn't returning.">hi Ana, then None</button>
+      <button data-why="The function prints once. Its return value is a separate thing, and it's None.">hi Ana, then hi Ana</button>
+      <button data-why="print(result) always shows something. Here it shows None.">hi Ana, then nothing</button>
+      <button data-why="The function body does run when greet is called, so hi Ana appears first.">None, then hi Ana</button>
+    </div>
+  </div>
+  <div class="pg" data-code='def greet(name):
+    print("hi", name)
+
+result = greet("Ana")
+print(result)'></div>
+
+  <pre><code>print(list(range(1, len("abc"))))</code></pre>
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="len(&quot;abc&quot;) is 3, and range(1, 3) is 1, 2. It starts at the first number and stops before the second.">[1, 2]</button>
+      <button data-why="range stops before its end, so 3 isn't included.">[1, 2, 3]</button>
+      <button data-why="A start of 1 skips 0.">[0, 1, 2]</button>
+      <button data-why="range gets numbers here, 1 and 3, so it works. Only range(a_string) or range(a_list) fails.">TypeError</button>
+    </div>
+  </div>
+
+  <h2>Trace before you run</h2>
+  <p>This is your first Repeat Within k attempt from Lesson 13. Trace the example <code>[4, 1, 2, 4]</code>, <code>k = 3</code> by hand.</p>
+  <pre><code>for indx, i in enumerate(ids):
+    if i in seen and (seen[i] - indx) &gt;= k:
+        return True
+    seen[i] = indx</code></pre>
+  <div class="quiz" data-skill="trace-before-run">
+    <p class="q">At <code>indx = 3</code>, the second 4, what is <code>seen[i] - indx</code>?</p>
+    <div class="options">
+      <button data-correct data-why="seen[4] is 0, and 0 - 3 = -3. That's never ≥ 3, so the code says False. One line of tracing shows the subtraction is backwards: it should be indx - seen[i], which is 3, and then ≤ k.">-3</button>
+      <button data-why="That's indx - seen[i]. The code has them the other way round.">3</button>
+      <button data-why="seen[4] holds the first 4's position, 0, not its value.">-1</button>
+      <button data-why="seen[i] is a position, so the result isn't 4 minus anything.">1</button>
+    </div>
+  </div>
+  <p><strong>The habit for each problem below:</strong> once your code is written, take the example from the problem and write down your variables after each loop step, on paper or in a comment. Only then press Run. Also check the <a href="../reference/python-rules.html">four-point read-through</a>.</p>
+
+  <h2>Which pattern? A note on "i &lt; j"</h2>
+  <p>In Lesson 13 you picked two pointers twice, both on problems saying "positions i &lt; j", but your code then used the right pattern. "i &lt; j" only means "a pair, in order". Two pointers needs one more clue: the input is <strong>sorted</strong>, or you're walking <strong>two sequences</strong> side by side.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Unsorted list. Is there a pair i &lt; j with <code>nums[i] == nums[j]</code>? Best approach?</p>
+    <div class="options">
+      <button data-correct data-why="&quot;Have I seen this value before?&quot; is a seen map question. The list isn't sorted, so two pointers has nothing to work with.">Seen map</button>
+      <button data-why="&quot;i < j&quot; just means an ordered pair. Two pointers needs sorted input or two sequences.">Two pointers</button>
+      <button data-why="The equal pair could be anywhere, not only next to each other.">Sliding window</button>
+      <button data-why="One running number can't remember every value you've passed.">Running value</button>
+    </div>
+  </div>
+
+  <h2>Problem 1: Find Pivot Index</h2>
+  <div id="timer-1"></div>
+  <p class="small">LeetCode 724, Easy. The statement is paraphrased, because LeetCode blocks automated reading. Check the exact wording on <a href="https://leetcode.com/problems/find-pivot-index/">LeetCode</a>.</p>
+  <p>Return the <strong>leftmost</strong> index i where the sum of everything to the left of i equals the sum of everything to the right of i. The element at i belongs to neither side. At index 0 the left sum is 0. If there's no such index, return <code>-1</code>. Numbers can be negative.</p>
+  <p><strong>Example:</strong> <code>[1, 7, 3, 6, 5, 6]</code> gives <code>3</code>: 1 + 7 + 3 = 11 and 5 + 6 = 11.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="Carry a running left sum. The right sum is then total - left - nums[i], so you never re-add a slice.">Running value</button>
+      <button data-why="Nothing is looked up by value, and the input isn't sorted.">Two pointers</button>
+      <button data-why="The left part keeps growing. It isn't a window of fixed size.">Sliding window</button>
+      <button data-why="How often each number appears doesn't tell you where the sums balance.">Frequency count</button>
+    </div>
+  </div>
+  <div id="ex-1"></div>
+  <details data-solution="pivot-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Work out <code>total = sum(nums)</code> once, before the loop. Keep <code>left</code>, starting at 0. At each index, the right side is <code>total - left - nums[i]</code>. Compare, then add <code>nums[i]</code> to <code>left</code>, in that order.</p>
+  </details>
+
+  <h2>Problem 2: Is Subsequence</h2>
+  <div id="timer-2"></div>
+  <p class="small">LeetCode 392, Easy. Paraphrased. Check the exact wording on <a href="https://leetcode.com/problems/is-subsequence/">LeetCode</a>.</p>
+  <p>Given strings <code>s</code> and <code>t</code>, return <code>True</code> if <code>s</code> is a subsequence of <code>t</code>. That means you can delete some characters of <code>t</code>, or none, without reordering the rest, and get <code>s</code>.</p>
+  <p><strong>Example:</strong> <code>s = "abc"</code>, <code>t = "ahbgdc"</code> gives <code>True</code>. <code>s = "axc"</code> with the same <code>t</code> gives <code>False</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="Two sequences walked side by side: one pointer in s, one in t. This is the other real clue for two pointers.">Two pointers</button>
+      <button data-why="A seen map loses the order, and order is the whole point here.">Seen map</button>
+      <button data-why="Counting letters would say yes to &quot;cba&quot; in &quot;abc&quot;. The order matters.">Frequency count</button>
+      <button data-why="The matching letters of t can be far apart, not in one block.">Sliding window</button>
+    </div>
+  </div>
+  <div id="ex-2"></div>
+  <details data-solution="subseq-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Keep <code>i</code>, the index of the next letter of <code>s</code> you still need. Loop over every character of <code>t</code>. When it matches <code>s[i]</code>, move <code>i</code> on. Guard <code>i &lt; len(s)</code> before reading <code>s[i]</code>. At the end, did <code>i</code> reach <code>len(s)</code>?</p>
+  </details>
+
+  <h2>Problem 3: Majority Element</h2>
+  <div id="timer-3"></div>
+  <p class="small">LeetCode 169, Easy. Paraphrased. Check the exact wording on <a href="https://leetcode.com/problems/majority-element/">LeetCode</a>.</p>
+  <p>Return the element that appears <strong>more than n / 2 times</strong> in <code>nums</code>, where n is the length. You can assume it always exists.</p>
+  <p><strong>Example:</strong> <code>[2, 2, 1, 1, 1, 2, 2]</code> gives <code>2</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="&quot;Appears more than n/2 times&quot; is a count per value. Count, then return the one over the line. (There's also a clever O(1)-space trick, Boyer-Moore voting, but counting is the OA-safe answer.)">Frequency count</button>
+      <button data-why="The list isn't sorted, and nothing pairs up.">Two pointers</button>
+      <button data-why="The copies can be spread anywhere in the list.">Sliding window</button>
+      <button data-why="Whether a value appeared isn't enough. You need how many times.">Seen map</button>
+    </div>
+  </div>
+  <div id="ex-3"></div>
+  <details data-solution="majority-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Count with <code>counts[n] = counts.get(n, 0) + 1</code>, then return the key whose count is greater than <code>len(nums) // 2</code>. Don't call <code>nums.count(x)</code> inside a loop, because that's O(n²) and fails the big hidden test.</p>
+  </details>
+
+  <h2>Then submit on LeetCode</h2>
+  <p>Once a problem passes here, paste your function into LeetCode. There it sits inside <code>class Solution</code> as a method with <code>self</code> first, so keep LeetCode's starter line and put your body under it. Submit, and note whether it's accepted on the first try. You've already solved <a href="https://leetcode.com/problems/contains-duplicate-ii/">Contains Duplicate II</a> as Repeat Within k, so submit that one too. It's a free accept.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/coding-interview-techniques/">Tech Interview Handbook, coding interview techniques</a>. It covers testing your code by tracing an example before you call it done, which is today's habit.</p>
+  <p>For review: <a href="../reference/python-rules.html">Python rules card</a>, <a href="../reference/practice-queue.html">practice queue</a>, <a href="../reference/oa-checklist.html">OA checklist</a>, <a href="../reference/glossary.html">glossary</a>. Previous: <a href="0013-predict-then-run.html">Lesson 13</a>. Still to do before the OA: <a href="0011-someone-elses-code.html">Lesson 11, the repository drill</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat. If you submitted on LeetCode, add one line saying which problems were accepted.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a hidden test fails and you can't see why, paste your code to your teacher agent and I'll tell you which kind of case broke it, without giving away the fix.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/python-playground.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  document.querySelectorAll(".pg").forEach((el) => mountPlayground(el, { code: el.dataset.code }));
+  mountResults(document.getElementById("results"), { lesson: "Lesson 14: Three LeetCode Easies" });
+  [1, 2, 3].forEach((n) => mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: 20 }));
+
+  const ones = Array(3000).fill(1);
+  const bigPivot = ones.concat([5], ones);
+  const bigMajority = Array.from({ length: 1500 }, (_, i) => i).concat(Array(1501).fill(7));
+
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def pivot_index(nums):\n    ",
+    skill: "implement-pivot-index",
+    fn: "pivot_index",
+    cases: [
+      { label: "[1, 7, 3, 6, 5, 6]", args: [[1, 7, 3, 6, 5, 6]], expected: 3 },
+      { label: "no pivot, [1,2,3]", args: [[1, 2, 3]], expected: -1, hidden: true },
+      { label: "pivot at index 0, [2,1,-1]", args: [[2, 1, -1]], expected: 0, hidden: true },
+      { label: "one number", args: [[0]], expected: 0, hidden: true },
+      { label: "pivot at the last index, [-1,-1,0,1,1,0]", args: [[-1, -1, 0, 1, 1, 0]], expected: 5, hidden: true },
+      { label: "several pivots, leftmost wins, [0,0,0]", args: [[0, 0, 0]], expected: 0, hidden: true },
+      { label: "6,001 numbers", args: [bigPivot], expected: 3000, maxMs: 60, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def is_subsequence(s, t):\n    ",
+    skill: "implement-is-subsequence",
+    fn: "is_subsequence",
+    cases: [
+      { label: '"abc" in "ahbgdc"', args: ["abc", "ahbgdc"], expected: true },
+      { label: '"axc" in "ahbgdc"', args: ["axc", "ahbgdc"], expected: false },
+      { label: "empty s", args: ["", "abc"], expected: true, hidden: true },
+      { label: "empty t", args: ["abc", ""], expected: false, hidden: true },
+      { label: 's longer than t, "aaa" in "aa"', args: ["aaa", "aa"], expected: false, hidden: true },
+      { label: '"ace" in "abcde"', args: ["ace", "abcde"], expected: true, hidden: true },
+      { label: 'wrong order, "aec" in "abcde"', args: ["aec", "abcde"], expected: false, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def majority_element(nums):\n    ",
+    skill: "implement-majority-element",
+    fn: "majority_element",
+    cases: [
+      { label: "[2, 2, 1, 1, 1, 2, 2]", args: [[2, 2, 1, 1, 1, 2, 2]], expected: 2 },
+      { label: "[3, 2, 3]", args: [[3, 2, 3]], expected: 3, hidden: true },
+      { label: "one number", args: [[1]], expected: 1, hidden: true },
+      { label: "majority first, [5,5,5,1,2]", args: [[5, 5, 5, 1, 2]], expected: 5, hidden: true },
+      { label: "3,001 numbers, majority at the end", args: [bigMajority], expected: 7, maxMs: 60, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

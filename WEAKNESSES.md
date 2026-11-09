@@ -78,5 +78,6 @@ Read this before choosing or designing any lesson. Update it whenever there is n
 - `repo-feature-placement`: putting a change where the data it depends on is known
 - `implement-rising-streak`, `implement-top-seller`, `implement-exact-gap`, `implement-budget-pairs`: the four timed problems in Lesson 12
 - `implement-biggest-drop`, `implement-busiest-hour`, `implement-repeat-within`: the three timed problems in Lesson 13
+- `implement-pivot-index`, `implement-is-subsequence`, `implement-majority-element`: the three LeetCode problems in Lesson 14
 - `freq-count-tie-rule`: applying the tie rule after counting (seen in code)
 - `speed-under-timer`: time used against the limit, from the `timer` lines in the results
