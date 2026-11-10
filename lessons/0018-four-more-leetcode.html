@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Four More LeetCode</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 18 · Amazon OA week · LeetCode set</p>
+  <h1>Four more LeetCode problems, from Easy to Medium</h1>
+  <p class="meta">About 100 minutes · Your win: four real LeetCode problems passing here, two of them Mediums, then accepted on LeetCode</p>
+
+  <p class="lede">In Lesson 14 you solved all three problems with no hints, but they took 4 and 5 runs where reading the code would have caught the slips. The OA is expected at Medium level, so this set goes from two Easies to two Mediums. The habit stays the same: <strong>trace the example by hand before your first Run</strong>. Problem 4 is a bonus if you run out of energy.</p>
+
+  <h2>Warm-up: predict, then run</h2>
+
+  <pre><code>def total(prices):
+    prices = 0
+    for p in prices:
+        prices += p
+    return prices
+
+print(total([4, 5]))</code></pre>
+  <div class="quiz" data-skill="python-shadow-builtins">
+    <p class="q">What happens?</p>
+    <div class="options">
+      <button data-correct data-why="prices = 0 replaces the list with the number 0. Then for p in prices tries to loop over 0, and an int can't be looped over: TypeError: 'int' object is not iterable. A name holds one thing at a time, so give the running total its own name, such as result.">TypeError</button>
+      <button data-why="That's what was meant, but the list was replaced by 0 before the loop started.">Prints 9</button>
+      <button data-why="The loop never quietly does nothing here. Looping over the number 0 is an error.">Prints 0</button>
+      <button data-why="The name prices exists. It's just 0 now, so it isn't a NameError.">NameError</button>
+    </div>
+  </div>
+  <div class="pg" data-code='def total(prices):
+    prices = 0
+    for p in prices:
+        prices += p
+    return prices
+
+print(total([4, 5]))'></div>
+
+  <pre><code>def biggest(nums):
+    print(max(nums))
+
+x = biggest([3, 9, 4])
+print(x + 1)</code></pre>
+  <div class="quiz" data-skill="trace-before-run">
+    <p class="q">What appears on screen?</p>
+    <div class="options">
+      <button data-correct data-why="biggest prints 9, but it has no return, so x is None. Then None + 1 is a TypeError. Printing shows a value to you; only return hands it back to the caller. On LeetCode a print instead of a return fails every test.">9, then a TypeError</button>
+      <button data-why="x isn't 9. The function printed 9 but returned nothing, so x is None.">9, then 10</button>
+      <button data-why="print(x + 1) never prints, because x + 1 fails first.">9, then None</button>
+      <button data-why="The function body runs when it's called, so 9 is printed before anything fails.">Just a TypeError</button>
+    </div>
+  </div>
+  <div class="pg" data-code='def biggest(nums):
+    print(max(nums))
+
+x = biggest([3, 9, 4])
+print(x + 1)'></div>
+
+  <pre><code>nums = [10, 30, 35]
+for i in range(1, len(nums)):
+    print(nums[i] - nums[i - 1])</code></pre>
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="len(nums) is 3, so range(1, 3) gives i = 1 and i = 2. It starts at 1 and stops before 3. That prints 30 - 10 = 20, then 35 - 30 = 5. Starting at 1 is how you safely look back at i - 1.">20, then 5</button>
+      <button data-why="range(1, 3) stops before 3, so there's no third line. If it went on to i = 3, nums[3] would crash.">20, 5, then an IndexError</button>
+      <button data-why="A start of 1 skips i = 0, so nums[0] - nums[-1] never runs.">-25, 20, then 5</button>
+      <button data-why="range gets two numbers here, which is fine. Only range(a_list) is an error.">TypeError</button>
+    </div>
+  </div>
+  <div class="pg" data-code='nums = [10, 30, 35]
+for i in range(1, len(nums)):
+    print(nums[i] - nums[i - 1])'></div>
+
+  <p><strong>The habit for each problem below:</strong> once your code is written, take the example from the problem and write down your variables after each loop step, in a comment or on paper. Check the <a href="../reference/python-rules.html">four-point read-through</a>. Only then press Run.</p>
+
+  <h2>Problem 1: Isomorphic Strings</h2>
+  <div id="timer-1"></div>
+  <p class="small">LeetCode 205, Easy. The statement is paraphrased, because LeetCode blocks automated reading. Check the exact wording on <a href="https://leetcode.com/problems/isomorphic-strings/">LeetCode</a>.</p>
+  <p>Strings <code>s</code> and <code>t</code> have the same length. Return <code>True</code> if you can replace characters in <code>s</code> to get <code>t</code>, where every copy of a character is replaced by the same character, and <strong>no two different characters may map to the same character</strong>. A character may map to itself.</p>
+  <p><strong>Examples:</strong> <code>"egg"</code>, <code>"add"</code> gives <code>True</code> (e→a, g→d). <code>"foo"</code>, <code>"bar"</code> gives <code>False</code>, because o would need to become both a and r.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="&quot;What did I map this character to before?&quot; is a lookup by key, so it's a dict. You need to check both directions, which a second dict (or a set of used targets) handles.">Seen map</button>
+      <button data-why="Counts can match while the order doesn't: &quot;ab&quot; and &quot;ba&quot; have the same counts, but that's not the question.">Frequency count</button>
+      <button data-why="Nothing is sorted, and s and t are walked at the same index, so one index i is enough.">Two pointers</button>
+      <button data-why="There's no fixed-size block to slide. Every position matters.">Sliding window</button>
+    </div>
+  </div>
+  <div id="ex-1"></div>
+  <details data-solution="isomorphic-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Loop with <code>for a, b in zip(s, t):</code>. Keep <code>s_to_t</code> and <code>t_to_s</code>. If <code>a</code> is already in <code>s_to_t</code> and maps to something other than <code>b</code>, return False. Do the same check for <code>b</code> in <code>t_to_s</code>. Otherwise store both. One dict alone passes the examples but fails <code>"badc"</code>, <code>"baba"</code>.</p>
+  </details>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">LeetCode says the strings hold ASCII characters, which has 128 possible characters. How much extra space do your dicts use as the strings get longer?</p>
+    <div class="options">
+      <button data-correct data-why="Keys are characters, and there are at most 128 of them however long the strings get. A fixed cap is O(1).">O(1)</button>
+      <button data-why="The strings grow, but the dicts can't hold more than 128 keys each. Size the dict by what its keys are.">O(n)</button>
+      <button data-why="Nothing here grows with n twice over.">O(n²)</button>
+      <button data-why="Two dicts are still each capped at 128 keys. Constants don't change the answer.">O(2n)</button>
+    </div>
+  </div>
+
+  <h2>Problem 2: Squares of a Sorted Array</h2>
+  <div id="timer-2"></div>
+  <p class="small">LeetCode 977, Easy. Paraphrased. Check the exact wording on <a href="https://leetcode.com/problems/squares-of-a-sorted-array/">LeetCode</a>.</p>
+  <p><code>nums</code> is sorted from smallest to largest and may contain negatives. Return a new list of the squares of each number, also sorted from smallest to largest.</p>
+  <p><strong>Example:</strong> <code>[-4, -1, 0, 3, 10]</code> gives <code>[0, 1, 9, 16, 100]</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">LeetCode's follow-up asks for O(n) time. Which approach gets that?</p>
+    <div class="options">
+      <button data-correct data-why="The input is sorted, which is the clue. The biggest square is at one of the two ends (a big negative or a big positive). Compare the ends, take the bigger square, move that pointer inward, and fill the answer from the back.">Two pointers</button>
+      <button data-why="Squaring then sorting works and is accepted, but it's O(n log n), not O(n).">Square everything, then sort</button>
+      <button data-why="There's no fixed-size block. Every number goes into the answer.">Sliding window</button>
+      <button data-why="Looking values up doesn't help put them in order.">Seen map</button>
+    </div>
+  </div>
+  <div id="ex-2"></div>
+  <details data-solution="squares-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Make <code>result = [0] * len(nums)</code> and set <code>pos = len(nums) - 1</code>, the slot to fill next. With <code>left = 0</code> and <code>right = len(nums) - 1</code>, loop while <code>left &lt;= right</code>: whichever of <code>nums[left] ** 2</code> and <code>nums[right] ** 2</code> is bigger goes into <code>result[pos]</code>, then that pointer moves inward and <code>pos</code> goes down by 1. If you're short on time, <code>sorted(n * n for n in nums)</code> is a safe answer to bank first.</p>
+  </details>
+
+  <h2>Problem 3: Maximum Subarray</h2>
+  <div id="timer-3"></div>
+  <p class="small">LeetCode 53, <strong>Medium</strong>. Paraphrased. Check the exact wording on <a href="https://leetcode.com/problems/maximum-subarray/">LeetCode</a>.</p>
+  <p>Return the largest sum of any non-empty run of neighbouring numbers in <code>nums</code>. Numbers can be negative, and the run must contain at least one number.</p>
+  <p><strong>Example:</strong> <code>[-2, 1, -3, 4, -1, 2, 1, -5, 4]</code> gives <code>6</code>, from <code>[4, -1, 2, 1]</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="Carry the best sum of a run ending here. At each number, either add it to that run or start fresh from it, whichever is bigger. Keep the best ever seen. This is the same running value idea as Best Trade and Pivot Index.">Running value</button>
+      <button data-why="The best run can be any length, so a fixed-size window doesn't fit.">Fixed sliding window</button>
+      <button data-why="The input isn't sorted, and nothing pairs up.">Two pointers</button>
+      <button data-why="Trying every start and end is O(n²) and fails the big hidden test. Bank it only if you're truly stuck.">Try every start and end</button>
+    </div>
+  </div>
+  <div id="ex-3"></div>
+  <details data-solution="max-subarray-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Start <code>current = nums[0]</code> and <code>best = nums[0]</code>, not 0, or an all-negative list goes wrong. Loop over the rest with <code>range(1, len(nums))</code>. Each step: <code>current = max(nums[i], current + nums[i])</code>, then <code>best = max(best, current)</code>. Don't name either variable <code>max</code>.</p>
+  </details>
+
+  <h2>Bonus, Problem 4: Top K Frequent Elements</h2>
+  <div id="timer-4"></div>
+  <p class="small">LeetCode 347, <strong>Medium</strong>. Paraphrased. Check the exact wording on <a href="https://leetcode.com/problems/top-k-frequent-elements/">LeetCode</a>.</p>
+  <p>Return the <code>k</code> numbers that appear most often in <code>nums</code>, in any order. The answer is always unique, so there are no ties to break at the cutoff.</p>
+  <p><strong>Example:</strong> <code>[1, 1, 1, 2, 2, 3]</code>, <code>k = 2</code> gives <code>[1, 2]</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which approach fits best?</p>
+    <div class="options">
+      <button data-correct data-why="&quot;Most often&quot; means a count per value. Count first, then pick the k values with the biggest counts. Counting first, then choosing, is the habit that fixed Top Seller and Busiest Hour.">Frequency count, then pick the top k</button>
+      <button data-why="Whether a value appeared isn't enough. You need how many times.">Seen map of True/False</button>
+      <button data-why="Equal values can be spread all over the list, so they're not in one block.">Sliding window</button>
+      <button data-why="One running number can't track counts for every value.">Running value</button>
+    </div>
+  </div>
+  <div id="ex-4"></div>
+  <details data-solution="top-k-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Count with <code>counts[n] = counts.get(n, 0) + 1</code>. Then <code>sorted(counts, key=counts.get, reverse=True)</code> gives the keys from most to least frequent, and <code>[:k]</code> takes the first k. That's O(n log n), which LeetCode accepts. Don't call <code>nums.count(x)</code> in a loop: that's O(n²).</p>
+  </details>
+
+  <h2>Then submit on LeetCode</h2>
+  <p>Once a problem passes here, paste it into LeetCode. Keep LeetCode's starter line (a method inside <code>class Solution</code> with <code>self</code> first) and put your body under it. Note whether it's accepted on the first submit.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://www.techinterviewhandbook.org/algorithms/array/">Tech Interview Handbook, arrays</a>. It lists the techniques used today (two pointers from both ends, running sums) and the edge cases to test: empty, one item, all negatives, duplicates.</p>
+  <p>For review: <a href="../reference/python-rules.html">Python rules card</a>, <a href="../reference/practice-queue.html">practice queue</a>, <a href="../reference/oa-checklist.html">OA checklist</a>. Previous LeetCode set: <a href="0014-three-leetcode-easies.html">Lesson 14</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat. If you submitted on LeetCode, add one line saying which were accepted.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a hidden test fails and you can't see why, paste your code and I'll tell you which kind of case broke it, without giving away the fix.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/python-playground.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  document.querySelectorAll(".pg").forEach((el) => mountPlayground(el, { code: el.dataset.code }));
+  mountResults(document.getElementById("results"), { lesson: "Lesson 18: Four more LeetCode problems" });
+  [[1, 20], [2, 20], [3, 25], [4, 30]].forEach(([n, m]) =>
+    mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: m }));
+
+  const bigS = "ab".repeat(3000);
+  const bigT = "cd".repeat(3000);
+  const bigSorted = Array.from({ length: 6001 }, (_, i) => i - 3000);
+  const bigSquares = bigSorted.map((x) => x * x).sort((a, b) => a - b);
+  const bigWave = Array.from({ length: 6000 }, (_, i) => (i % 2 === 0 ? 3 : -2));
+  const bigTopK = Array.from({ length: 3000 }, (_, i) => i + 10).concat(Array(500).fill(9));
+
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def is_isomorphic(s, t):\n    ",
+    skill: "implement-isomorphic",
+    fn: "is_isomorphic",
+    cases: [
+      { label: '"egg", "add"', args: ["egg", "add"], expected: true },
+      { label: '"foo", "bar"', args: ["foo", "bar"], expected: false },
+      { label: '"paper", "title"', args: ["paper", "title"], expected: true, hidden: true },
+      { label: 'two letters onto one, "badc", "baba"', args: ["badc", "baba"], expected: false, hidden: true },
+      { label: 'two letters onto one, "ab", "aa"', args: ["ab", "aa"], expected: false, hidden: true },
+      { label: 'one letter, "a", "a"', args: ["a", "a"], expected: true, hidden: true },
+      { label: 'digits, "13", "42"', args: ["13", "42"], expected: true, hidden: true },
+      { label: "6,000 characters", args: [bigS, bigT], expected: true, maxMs: 60, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def sorted_squares(nums):\n    ",
+    skill: "implement-sorted-squares",
+    fn: "sorted_squares",
+    cases: [
+      { label: "[-4, -1, 0, 3, 10]", args: [[-4, -1, 0, 3, 10]], expected: [0, 1, 9, 16, 100] },
+      { label: "[-7, -3, 2, 3, 11]", args: [[-7, -3, 2, 3, 11]], expected: [4, 9, 9, 49, 121], hidden: true },
+      { label: "all positive", args: [[1, 2, 3]], expected: [1, 4, 9], hidden: true },
+      { label: "all negative", args: [[-3, -2, -1]], expected: [1, 4, 9], hidden: true },
+      { label: "one number", args: [[0]], expected: [0], hidden: true },
+      { label: "equal squares, [-5,-5,5,5]", args: [[-5, -5, 5, 5]], expected: [25, 25, 25, 25], hidden: true },
+      { label: "-3000 to 3000", args: [bigSorted], expected: bigSquares, maxMs: 60, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def max_subarray(nums):\n    ",
+    skill: "implement-max-subarray",
+    fn: "max_subarray",
+    cases: [
+      { label: "[-2, 1, -3, 4, -1, 2, 1, -5, 4]", args: [[-2, 1, -3, 4, -1, 2, 1, -5, 4]], expected: 6 },
+      { label: "[5, 4, -1, 7, 8]", args: [[5, 4, -1, 7, 8]], expected: 23, hidden: true },
+      { label: "one number", args: [[1]], expected: 1, hidden: true },
+      { label: "all negative, [-3, -1, -2]", args: [[-3, -1, -2]], expected: -1, hidden: true },
+      { label: "one negative number", args: [[-1]], expected: -1, hidden: true },
+      { label: "dip worth crossing, [2, -1, 2]", args: [[2, -1, 2]], expected: 3, hidden: true },
+      { label: "6,000 numbers", args: [bigWave], expected: 3002, maxMs: 60, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-4"), {
+    starter: "def top_k_frequent(nums, k):\n    ",
+    skill: "implement-top-k-frequent",
+    fn: "top_k_frequent",
+    sortResult: true,
+    cases: [
+      { label: "[1, 1, 1, 2, 2, 3], k=2", args: [[1, 1, 1, 2, 2, 3], 2], expected: [1, 2] },
+      { label: "one number", args: [[1], 1], expected: [1], hidden: true },
+      { label: "negatives, [4,4,-1,-1,-1,2], k=1", args: [[4, 4, -1, -1, -1, 2], 1], expected: [-1], hidden: true },
+      { label: "spread out, [5,3,5,3,5,7,3,3], k=2", args: [[5, 3, 5, 3, 5, 7, 3, 3], 2], expected: [3, 5], hidden: true },
+      { label: "k = every distinct value", args: [[1, 2, 3], 3], expected: [1, 2, 3], hidden: true },
+      { label: "3,500 numbers", args: [bigTopK, 1], expected: [9], maxMs: 100, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

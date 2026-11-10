@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trace Before Run</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .gate { border-left: 3px solid currentColor; padding: 0.25rem 0 0.25rem 0.75rem; margin: 0.75rem 0; }
+  .gate-msg { font-weight: 600; min-height: 1.2em; }
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 19 · Amazon OA week · LeetCode set</p>
+  <h1>Trace before Run: the button waits for you</h1>
+  <p class="meta">About 90 minutes · Your win: each problem passes in two runs or fewer, with your trace written in the code</p>
+
+  <p class="lede">In Lesson 18 your ideas were mostly right, but every first run failed on indentation, and Squares used up its timer over 5 runs. In the OA you get one 100-minute timer for two problems, so wasted runs are wasted minutes. In this lesson, <strong>Run tests won't work until you've written a trace and ticked the read-through.</strong></p>
+
+  <h2>How the gate works</h2>
+  <ol>
+    <li>Write your solution.</li>
+    <li>Below it, as <code>#</code> comments, trace the visible example: <strong>at least 3 lines</strong>, one per loop step, with your variables' values. For example <code># i=1 c='w' left=0 best=2</code>.</li>
+    <li>Read your code top to bottom: every <code>if</code>/<code>for</code> ends in <code>:</code> and has an indented body, names aren't reused, there's a <code>return</code> at the end. Then tick the box.</li>
+    <li>Press Run. The box unticks after every run, so read again before the next one.</li>
+  </ol>
+  <p class="small">Comments in Python are ignored when it runs, so your trace never breaks the code. Writing one in the OA editor is allowed and a good habit there too.</p>
+
+  <h2>Warm-up: one name, one value at a time</h2>
+  <p>You've missed this three times, always the same way: after a name is given a new value, you expect the old value to still be used. Step through it.</p>
+  <pre><code>def total(prices):
+    prices = 0
+    for p in prices:
+        prices += p
+    return prices
+
+total([4, 5])</code></pre>
+  <div id="rebind-trace"></div>
+
+  <p>The rule: <strong>Python looks a name up at the moment a line runs</strong>, and uses whatever the name points to right then. Use that rule on these two.</p>
+
+  <pre><code>s = "abc"
+t = s
+s = "xyz"
+print(t)</code></pre>
+  <div class="quiz" data-skill="python-shadow-builtins">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="t = s makes t point at the same &quot;abc&quot;. Then s = &quot;xyz&quot; moves only the name s. t still points at &quot;abc&quot;. Moving one name never moves another.">abc</button>
+      <button data-why="s = &quot;xyz&quot; moves s only. t was pointed at &quot;abc&quot; and nothing moved it.">xyz</button>
+      <button data-why="t exists: it was set on line 2.">NameError</button>
+      <button data-why="Nothing here is an error: three assignments and a print.">TypeError</button>
+    </div>
+  </div>
+  <div class="pg" data-code='s = "abc"
+t = s
+s = "xyz"
+print(t)'></div>
+
+  <pre><code>def f(nums):
+    for n in nums:
+        nums = [0]
+    return nums
+
+print(f([1, 2, 3]))</code></pre>
+  <div class="quiz" data-skill="python-shadow-builtins">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="The for line ran once, at the start, and grabbed the list [1, 2, 3], so the loop still runs three times. Each time, nums = [0] moves the name nums. At the return, nums points at [0]. The name is looked up when each line runs.">[0]</button>
+      <button data-why="nums was moved to [0] inside the loop, and return looks nums up after that.">[1, 2, 3]</button>
+      <button data-why="The for line already holds the original list, so the loop doesn't restart or crash. Moving the name doesn't touch that list.">An error</button>
+      <button data-why="nums = [0] replaces what nums points to. It doesn't add to a list.">[0, 0, 0]</button>
+    </div>
+  </div>
+  <div class="pg" data-code='def f(nums):
+    for n in nums:
+        nums = [0]
+    return nums
+
+print(f([1, 2, 3]))'></div>
+  <p><strong>The safe habit:</strong> never assign to a parameter. Give every new value a new name: <code>total</code>, <code>result</code>, <code>best</code>.</p>
+
+  <h2>Before every dict: "what's the key?"</h2>
+  <p>In Isomorphic Strings your first dict was keyed by position (<code>seen[indx] = c</code>). The key is <strong>the thing you'll look up later</strong>. Ask: "When I come back to this dict, what will I have in hand?" That's the key. What you want back is the value.</p>
+
+  <h2>Problem 1: Word Pattern</h2>
+  <div id="timer-1"></div>
+  <p class="small">LeetCode 290, Easy. Paraphrased, because LeetCode blocks automated reading. Check the exact wording on <a href="https://leetcode.com/problems/word-pattern/">LeetCode</a>.</p>
+  <p>Given a <code>pattern</code> of letters and a string <code>s</code> of words separated by single spaces, return <code>True</code> if <code>s</code> follows the pattern: each letter always matches the same word, and <strong>no two letters match the same word</strong>. The number of words must equal the number of letters.</p>
+  <p><strong>Examples:</strong> <code>"abba"</code>, <code>"dog cat cat dog"</code> gives <code>True</code>. <code>"abba"</code>, <code>"dog dog dog dog"</code> gives <code>False</code>, because a and b would both be dog.</p>
+  <div class="quiz" data-skill="dict-key-direction">
+    <p class="q">You walk letters and words side by side. For the check "does this letter already have a different word?", what is the dict's key?</p>
+    <div class="options">
+      <button data-correct data-why="When you meet a letter, you have the letter in hand and want its word back. So the letter is the key and the word is the value. The reverse check (&quot;does this word already have a different letter?&quot;) needs a second dict, keyed by word.">The letter</button>
+      <button data-why="The position isn't what you'll look up later. Two different positions can hold the same letter, and that's exactly what you need to catch.">The position i</button>
+      <button data-why="That's the key for the other direction. For &quot;which word did this letter get?&quot;, you look up by letter.">The word</button>
+      <button data-why="A count tells you how often, not which word a letter got.">How many times it appeared</button>
+    </div>
+  </div>
+  <div class="gate">
+    <label><input type="checkbox" id="read-1"> I traced the example in comments and read my code top to bottom</label>
+    <p class="gate-msg" id="gate-msg-1" aria-live="polite"></p>
+  </div>
+  <div id="ex-1"></div>
+  <details data-solution="word-pattern-hint">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p><code>words = s.split()</code>. If <code>len(words) != len(pattern)</code>, return False straight away, because <code>zip</code> would silently stop at the shorter one. Then it's Isomorphic Strings with words: two dicts, check both, then store both.</p>
+  </details>
+
+  <h2>Problem 2: Group Anagrams</h2>
+  <div id="timer-2"></div>
+  <p class="small">LeetCode 49, <strong>Medium</strong>. Paraphrased. Check the exact wording on <a href="https://leetcode.com/problems/group-anagrams/">LeetCode</a>.</p>
+  <p>Group the words in <code>strs</code> that are anagrams of each other (the same letters in any order). Return a list of groups. LeetCode accepts any order. Here the order of the groups doesn't matter either, but keep the words inside each group <strong>in the order they appear in <code>strs</code></strong>. A dict of lists does that naturally.</p>
+  <p><strong>Example:</strong> <code>["eat", "tea", "tan", "ate", "nat", "bat"]</code> gives <code>[["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]</code>.</p>
+  <div class="quiz" data-skill="dict-key-direction">
+    <p class="q">One dict, with each value a list of words. What key makes all anagrams land on the same entry?</p>
+    <div class="options">
+      <button data-correct data-why="&quot;eat&quot;, &quot;tea&quot; and &quot;ate&quot; all sort to &quot;aet&quot;. Words that aren't anagrams sort to something different. So the sorted letters are a label that every word in a group shares: &quot;&quot;.join(sorted(word)).">The word's letters, sorted</button>
+      <button data-why="Each word is its own key that way, so &quot;eat&quot; and &quot;tea&quot; land on different entries.">The word itself</button>
+      <button data-why="&quot;aab&quot; and &quot;abb&quot; have the same set of letters, {a, b}, but they aren't anagrams. A set loses the counts.">The set of its letters</button>
+      <button data-why="&quot;tan&quot; and &quot;bat&quot; both have length 3 and aren't anagrams.">Its length</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">How much extra space does that dict use, for n words in total?</p>
+    <div class="options">
+      <button data-correct data-why="The keys are sorted words, and there's no cap on how many different ones can appear. Every word is also stored in some list. It grows with the input, so it's O(n) (more exactly, the total number of letters). Compare that with dicts keyed by single ASCII characters, which are capped at 128 keys: O(1).">O(n)</button>
+      <button data-why="O(1) needs a fixed cap on the keys, like 26 letters or 128 characters. Sorted words have no cap, and every word is stored.">O(1)</button>
+      <button data-why="Each word is stored once, so nothing is squared.">O(n²)</button>
+      <button data-why="Space here doesn't depend on a log of anything.">O(log n)</button>
+    </div>
+  </div>
+  <div class="gate">
+    <label><input type="checkbox" id="read-2"> I traced the example in comments and read my code top to bottom</label>
+    <p class="gate-msg" id="gate-msg-2" aria-live="polite"></p>
+  </div>
+  <div id="ex-2"></div>
+  <details data-solution="group-anagrams-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p><code>key = "".join(sorted(word))</code>. If the key isn't in <code>groups</code> yet, set <code>groups[key] = []</code>. Then <code>groups[key].append(word)</code>. At the end, <code>return list(groups.values())</code>.</p>
+  </details>
+
+  <h2>New twist: a window that shrinks</h2>
+  <p>Lesson 9's window had a fixed size. Some problems need a window that <strong>grows on the right</strong> and <strong>jumps its left edge forward</strong> when a rule breaks. Step through "longest stretch with no repeated character" on <code>"pwwkew"</code>. The dict <code>last</code> maps each character to the last index where you saw it.</p>
+  <div id="window-trace"></div>
+
+  <h2>Problem 3: Longest Substring Without Repeating Characters</h2>
+  <div id="timer-3"></div>
+  <p class="small">LeetCode 3, <strong>Medium</strong>. Paraphrased. Check the exact wording on <a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/">LeetCode</a>.</p>
+  <p>Return the length of the longest run of neighbouring characters in <code>s</code> with no character repeated. <code>s</code> can hold letters, digits, symbols and spaces, and can be empty.</p>
+  <p><strong>Examples:</strong> <code>"abcabcbb"</code> gives <code>3</code> (<code>"abc"</code>). <code>"bbbbb"</code> gives <code>1</code>. <code>"pwwkew"</code> gives <code>3</code> (<code>"wke"</code>).</p>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">LeetCode says the characters are English letters, digits, symbols and spaces, so fewer than 128 possible characters. How much space does <code>last</code> use as <code>s</code> gets longer?</p>
+    <div class="options">
+      <button data-correct data-why="The keys are characters, and there are fewer than 128 possible ones however long s is. A fixed cap is O(1). This is the case you missed last lesson: size the dict by its keys, not by the input.">O(1)</button>
+      <button data-why="s grows, but last can't hold more than about 128 keys. A fixed cap means O(1).">O(n)</button>
+      <button data-why="The window's length doesn't decide the dict's size either. The number of possible characters does.">O(window length)</button>
+      <button data-why="Nothing here is squared.">O(n²)</button>
+    </div>
+  </div>
+  <div class="gate">
+    <label><input type="checkbox" id="read-3"> I traced the example in comments and read my code top to bottom</label>
+    <p class="gate-msg" id="gate-msg-3" aria-live="polite"></p>
+  </div>
+  <div id="ex-3"></div>
+  <details data-solution="longest-substring-hint">
+    <summary>Stuck for 12 minutes? Show a hint</summary>
+    <p>Keep <code>last = {}</code>, <code>left = 0</code> and <code>best = 0</code>. Loop with <code>for i, c in enumerate(s):</code>. If <code>c in last and last[c] &gt;= left</code>, set <code>left = last[c] + 1</code>. Then store <code>last[c] = i</code> and update <code>best</code> with <code>i - left + 1</code>. The <code>&gt;= left</code> part matters: without it, <code>"abba"</code> moves <code>left</code> <em>backwards</em> at the last a.</p>
+  </details>
+
+  <h2>Then submit on LeetCode</h2>
+  <p>Submit each one that passes here. In the OA you'll get sample tests to run and hidden tests that decide your score, which is the same shape as here. If you have time today, do the <strong>demo test</strong> from your invitation email. It's the only practice in the real format, including the repository question with the AI assistant.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://docs.python.org/3/reference/executionmodel.html#naming-and-binding">Python reference, naming and binding</a>. The first paragraphs say what an assignment does: it <em>binds</em> a name to an object. Moving a name never changes the object.</p>
+  <p>For review: <a href="../reference/oa-checklist.html">OA checklist</a> (updated with your invitation's rules), <a href="../reference/python-rules.html">Python rules card</a>, <a href="../reference/sliding-window-cheatsheet.html">sliding window cheat sheet</a>. Previous: <a href="0018-four-more-leetcode.html">Lesson 18</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat. Your first and last code, including your trace comments, are in it.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a hidden test fails and you can't see why, paste your code and I'll tell you which kind of case broke it, without giving away the fix.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/trace.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/python-playground.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  document.querySelectorAll(".pg").forEach((el) => mountPlayground(el, { code: el.dataset.code }));
+  mountResults(document.getElementById("results"), { lesson: "Lesson 19: Trace before Run" });
+  [[1, 15], [2, 25], [3, 35]].forEach(([n, m]) =>
+    mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: m }));
+
+  mountTrace(document.getElementById("rebind-trace"), {
+    cells: ["4", "5"],
+    steps: [
+      { active: [0, 1], state: "prices → [4, 5]", note: "total([4, 5]) is called. The name prices points at the list." },
+      { active: [], state: "prices → 0     (the list [4, 5] still exists, but no name points at it)", note: "prices = 0 moves the name. It doesn't change the list. It just stops pointing at it." },
+      { active: [], state: "for p in prices   →   for p in 0", note: "The for line looks prices up now, and finds 0. You can't loop over a number: TypeError: 'int' object is not iterable." },
+      { active: [0, 1], state: "total = 0   ·   prices → [4, 5]", note: "The fix: give the running sum its own name. prices keeps pointing at the list, and the loop sees 4, then 5." },
+    ],
+  });
+
+  mountTrace(document.getElementById("window-trace"), {
+    cells: ["p", "w", "w", "k", "e", "w"],
+    steps: [
+      { active: [0], state: "i=0 c='p'   left=0   last={p:0}   best=1", note: "p is new. The window is s[0..0], length 1." },
+      { active: [0, 1], state: "i=1 c='w'   left=0   last={p:0, w:1}   best=2", note: "w is new. The window grows to length 2." },
+      { active: [2], state: "i=2 c='w'   left=2   last={p:0, w:2}   best=2", note: "w was last seen at 1, inside the window. Jump left to 1 + 1 = 2, past the old w." },
+      { active: [2, 3], state: "i=3 c='k'   left=2   last={p:0, w:2, k:3}   best=2", note: "k is new. Length 3 - 2 + 1 = 2." },
+      { active: [2, 3, 4], state: "i=4 c='e'   left=2   last={…, e:4}   best=3", note: "e is new. Length 3 is a new best." },
+      { active: [3, 4, 5], state: "i=5 c='w'   left=3   last={…, w:5}   best=3", note: "w was last seen at 2, which is ≥ left, so it's inside the window. Jump left to 3. Length 3 doesn't beat best. The answer is 3." },
+    ],
+  });
+
+  // The gate: Run only works with at least 3 trace comment lines and the read-through ticked.
+  function gate(n) {
+    const ex = document.getElementById("ex-" + n);
+    const box = document.getElementById("read-" + n);
+    const msg = document.getElementById("gate-msg-" + n);
+    ex.addEventListener("click", (event) => {
+      if (!event.target.closest(".controls button")) return;
+      const code = ex.querySelector("textarea").value;
+      const traceLines = code.split("\n").filter((line) =>
+        /^\s*#/.test(line) && !/Trace the example/.test(line) && line.replace(/[#\s]/g, "").length > 2).length;
+      if (traceLines < 3) {
+        event.stopImmediatePropagation();
+        msg.textContent = "Not yet: write at least 3 # lines tracing the example (" + traceLines + " so far).";
+        return;
+      }
+      if (!box.checked) {
+        event.stopImmediatePropagation();
+        msg.textContent = "Not yet: read your code top to bottom, then tick the box.";
+        return;
+      }
+      msg.textContent = "";
+      box.checked = false;
+    }, true);
+  }
+  [1, 2, 3].forEach(gate);
+
+  const traceHeader = "\n    # Trace the example here, one line per step:\n    ";
+  const bigPattern = "ab".repeat(3000);
+  const bigWords = Array(3000).fill(["x", "y"]).flat().join(" ");
+  const bigAnagrams = Array.from({ length: 4000 }, (_, i) => ["listen", "silent", "enlist", "tinsel"][i % 4]);
+  const bigPrintable = Array.from({ length: 6000 }, (_, i) => String.fromCharCode(32 + (i % 95))).join("");
+
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def word_pattern(pattern, s):\n    " + traceHeader,
+    skill: "implement-word-pattern",
+    fn: "word_pattern",
+    cases: [
+      { label: '"abba", "dog cat cat dog"', args: ["abba", "dog cat cat dog"], expected: true },
+      { label: '"abba", "dog dog dog dog"', args: ["abba", "dog dog dog dog"], expected: false },
+      { label: '"abba", "dog cat cat fish"', args: ["abba", "dog cat cat fish"], expected: false, hidden: true },
+      { label: '"aaaa", "dog cat cat dog"', args: ["aaaa", "dog cat cat dog"], expected: false, hidden: true },
+      { label: 'more words than letters, "aaa", "aa aa aa aa"', args: ["aaa", "aa aa aa aa"], expected: false, hidden: true },
+      { label: 'one letter, "a", "dog"', args: ["a", "dog"], expected: true, hidden: true },
+      { label: "6,000 words", args: [bigPattern, bigWords], expected: true, maxMs: 60, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def group_anagrams(strs):\n    " + traceHeader,
+    skill: "implement-group-anagrams",
+    fn: "group_anagrams",
+    sortResult: true,
+    cases: [
+      { label: '["eat","tea","tan","ate","nat","bat"]', args: [["eat", "tea", "tan", "ate", "nat", "bat"]], expected: [["bat"], ["eat", "tea", "ate"], ["tan", "nat"]] },
+      { label: 'one empty word, [""]', args: [[""]], expected: [[""]], hidden: true },
+      { label: 'one word, ["a"]', args: [["a"]], expected: [["a"]], hidden: true },
+      { label: 'mixed lengths, ["ab","ba","abc","cab","bca","b"]', args: [["ab", "ba", "abc", "cab", "bca", "b"]], expected: [["ab", "ba"], ["abc", "cab", "bca"], ["b"]], hidden: true },
+      { label: 'same word twice, ["aa","aa"]', args: [["aa", "aa"]], expected: [["aa", "aa"]], hidden: true },
+      { label: 'same letters, different counts, ["aab","abb"]', args: [["aab", "abb"]], expected: [["aab"], ["abb"]], hidden: true },
+      { label: "4,000 words", args: [bigAnagrams], expected: [bigAnagrams], maxMs: 100, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def length_of_longest_substring(s):\n    " + traceHeader,
+    skill: "implement-longest-substring",
+    fn: "length_of_longest_substring",
+    cases: [
+      { label: '"abcabcbb"', args: ["abcabcbb"], expected: 3 },
+      { label: '"bbbbb"', args: ["bbbbb"], expected: 1 },
+      { label: '"pwwkew"', args: ["pwwkew"], expected: 3, hidden: true },
+      { label: "empty string", args: [""], expected: 0, hidden: true },
+      { label: "one space", args: [" "], expected: 1, hidden: true },
+      { label: 'left must not move back, "abba"', args: ["abba"], expected: 2, hidden: true },
+      { label: '"dvdf"', args: ["dvdf"], expected: 3, hidden: true },
+      { label: '"tmmzuxt"', args: ["tmmzuxt"], expected: 5, hidden: true },
+      { label: "6,000 printable characters", args: [bigPrintable], expected: 95, maxMs: 150, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

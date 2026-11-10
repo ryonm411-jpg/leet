@@ -10,23 +10,26 @@
 <main>
   <p class="kicker">Reference</p>
   <h1>Online assessment checklist</h1>
-  <p class="meta">For the Amazon SDE Intern OA. Sources: your recruiter email, and <a href="https://www.amazon.jobs/content/en/how-we-hire/university/sde-oa">Amazon's OA prep page</a> and video transcripts, read on 2026-11-08. Where they disagree, your invitation email wins.</p>
+  <p class="meta">For the Amazon SDE Intern OA. Main source: your "Welcome to Amazon Assessments" invitation email (2026-11-05), checked on 2026-11-09. It wins wherever other sources disagree.</p>
 
-  <h2>The format: check your invitation</h2>
+  <h2>The format, from your invitation</h2>
   <table>
-    <tr><th>Source</th><th>What it says</th></tr>
-    <tr><td>Your recruiter email</td><td>One coding problem, a multi-file repository task in a VS Code-style IDE, then Work Style. About 2.5 hours.</td></tr>
-    <tr><td>Amazon's intern prep page</td><td>Coding about 70 minutes on average, Workstyles about 15 minutes, then a feedback survey about 5 minutes. About 90 minutes in total. Their course page says two coding problems.</td></tr>
+    <tr><th>Part</th><th>Time</th><th>What it is</th></tr>
+    <tr><td>Coding Challenge</td><td>100 minutes, one timer that can't be paused</td><td>Two problems. (1) A traditional coding question: Python 3 is allowed, and so are PyPy3 and others. (2) A code repository task in a VS Code-style IDE, <strong>with an AI coding assistant built in</strong>. Its language list is shorter, and you can't change language once you start that question. Both must be attempted.</td></tr>
+    <tr><td>Work Simulation</td><td>About 45 minutes</td><td>Software development decisions and scenarios that SDEs face at Amazon.</td></tr>
+    <tr><td>Work Style Surveys</td><td>About 6 minutes, two surveys</td><td>Questions about how you approach work in general.</td></tr>
   </table>
-  <p>Prepare for both: two problems in 70 minutes (about 35 minutes each) and the repository task. <strong>The feedback survey is required.</strong> Amazon says your OA isn't finalised until it's done.</p>
+  <p>Plan for at least 2.5 hours. Breaks are fine <em>after</em> the Coding Challenge. You can log out and come back with the same link. You're done when you see the confirmation page.</p>
+  <p>A rough split for the 100 minutes: about 45 for the traditional question and about 50 for the repository task, plus a few spare. Check the on-screen timer at least every 15 minutes.</p>
+  <p class="small">Older sources disagree. Amazon's public intern page says 70 minutes of coding, about 15 minutes of Workstyles and a feedback survey. Your recruiter's email lists one coding problem, the repository task and Work Style, and doesn't mention the Work Simulation. Go by the invitation.</p>
 
-  <h2>Amazon's official rules</h2>
+  <h2>Rules, from your invitation</h2>
   <ul>
-    <li><strong>Allowed:</strong> "publicly accessible online resources", meaning language docs such as <a href="https://docs.python.org/3/">docs.python.org</a>. <strong>Not allowed:</strong> sites that need a login, and private repos. "Your browser usage is logged."</li>
-    <li>Don't use Print Screen. Amazon says the session is terminated and you're locked out.</li>
-    <li>Don't copy and paste code in. "We expect this to be your own code." AI tools are out too.</li>
-    <li>"If you get stuck on a problem, move to the next one and revisit."</li>
-    <li>Use a laptop or desktop, not a phone or tablet. The platform is HackerRank, which you can try on the <a href="https://hr.gs/TheAmazonCodingDemo">practice test</a>.</li>
+    <li><strong>No outside resources.</strong> You acknowledge that you'll complete it "without external assistance or resources", with no personal IDEs. Amazon's public page mentions public docs, but your invitation is stricter, so plan on <strong>no docs at all</strong>. Know your Python by heart.</li>
+    <li>Single monitor. Full-screen IDE. Latest Chrome or Edge. Stable internet.</li>
+    <li>A photo of you holding a photo ID (a student ID is fine) before you start. Your webcam stays uncovered, and your <strong>screen and webcam are recorded</strong>.</li>
+    <li>Don't refresh the page over and over. If something breaks, log out and back in with the link, then contact your recruiter.</li>
+    <li>From Amazon's public page: don't use Print Screen, because the session is terminated. Don't paste in code from outside.</li>
   </ul>
 
   <h2>What they grade (Amazon's video)</h2>
@@ -34,11 +37,11 @@
 
   <h2>Before the day</h2>
   <ul>
-    <li>Find the exact deadline in the "SDE-I Online Assessment Invitation" email, and plan to finish at least a day early.</li>
-    <li>Take the HackerRank practice test, so the editor is familiar before the timer starts.</li>
-    <li>Read the <a href="https://www.amazon.jobs/content/en/our-workplace/leadership-principles">Leadership Principles</a>.</li>
-    <li>Block 2.5 hours somewhere quiet, with a stable connection. The coding timer can't be paused.</li>
-    <li>No AI, no notes and none of this workspace during the test. Public language docs are the only outside help allowed.</li>
+    <li>Deadline: one week from the invite on Thu 2026-11-05 at 12:29 PM, so about <strong>Thu 2026-11-12 around midday</strong>. Finish before then.</li>
+    <li>Do the demo test from the invitation email. It has a traditional question and a repository question in the real format.</li>
+    <li>Have your photo ID ready, your camera working, and one monitor.</li>
+    <li>Read the <a href="https://www.amazon.jobs/content/en/our-workplace/leadership-principles">Leadership Principles</a>. They help with the Work Simulation and Work Style.</li>
+    <li>Block 2.5 hours somewhere quiet, with a stable connection.</li>
   </ul>
 
   <h2>Coding problem</h2>
@@ -60,9 +63,10 @@
     <li>Set a breakpoint, Debug Test, and look at the real values.</li>
     <li>Make the smallest change, then run every test. Never edit a test to make it pass.</li>
   </ol>
+  <p>The IDE includes an AI coding assistant. Treat its suggestions like a teammate's code: read them, make sure you understand them, and confirm them by running the tests. You still own the result.</p>
 
-  <h2>Work Style Assessment</h2>
-  <p>It explores how you approach work and make decisions. Third-party guides say it uses pairs of statements, which is unconfirmed. Answer honestly and consistently. Guessing what Amazon "wants" tends to make your answers contradict each other.</p>
+  <h2>Work Simulation and Work Style</h2>
+  <p>The Work Simulation gives you SDE scenarios and decisions. Reason from the customer outward, and weigh speed against quality the way the Leadership Principles do. The Work Style surveys explore how you approach work and make decisions. Third-party guides say it uses pairs of statements, which is unconfirmed. Answer honestly and consistently. Guessing what Amazon "wants" tends to make your answers contradict each other.</p>
 
   <h2>Python traps you've hit</h2>
   <table>
@@ -74,6 +78,8 @@
     <tr><td><code>else if</code></td><td><code>elif</code></td><td>SyntaxError</td></tr>
     <tr><td><code>d.get(k, 0) += 1</code></td><td><code>d[k] = d.get(k, 0) + 1</code></td><td>SyntaxError, because you can't assign to a function call</td></tr>
     <tr><td><code>if d[k] == 1</code> when k may be missing</td><td><code>if k in d</code></td><td>KeyError</td></tr>
+    <tr><td><code>prices = 0</code> inside a function, then <code>for p in prices</code></td><td><code>total = 0</code></td><td>The list is gone from that name. TypeError: 'int' object is not iterable</td></tr>
+    <tr><td><code>if x in d:</code> with nothing under it</td><td>Write the body, or <code>pass</code> for now</td><td>IndentationError: expected an indented block</td></tr>
   </table>
 
   <p class="small">More: <a href="glossary.html">glossary</a>, <a href="hash-map-cheatsheet.html">hash map</a>, <a href="two-pointers-cheatsheet.html">two pointers</a>, <a href="sliding-window-cheatsheet.html">sliding window</a>.</p>

@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real Amazon OA Questions</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .gate { border-left: 3px solid currentColor; padding: 0.25rem 0 0.25rem 0.75rem; margin: 0.75rem 0; }
+  .gate-msg { font-weight: 600; min-height: 1.2em; }
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 20 · Amazon OA week · Past OA questions</p>
+  <h1>Four questions Amazon has really asked</h1>
+  <p class="meta">About 100 minutes · Do Lesson 19 first · Your win: three problems pass in two runs or fewer each, with no docs open</p>
+
+  <p class="lede">These come from a public collection of past Amazon OA questions (<a href="https://github.com/NoobSolver/Amazon-Previous-OA-questions">NoobSolver/Amazon-Previous-OA-questions</a>, last updated January 2021). I picked the four that use patterns you already know. Today's OA questions tend to be longer stories, like Lesson 15's, but the patterns underneath are the same. The Run gate from Lesson 19 is still on.</p>
+
+  <h2>Warm-up 1: name the pattern</h2>
+  <p>Answer before reading any problem below. Choose from seen map, frequency count, two pointers, fixed sliding window, or running value.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">"Return the indices of two numbers, in an unsorted list, that add up to a target."</p>
+    <div class="options">
+      <button data-correct data-why="Unsorted, and you need the original positions. For each number, ask &quot;have I already seen the number that completes it?&quot; That's a dict from value to index. Two pointers would need sorting, which loses the positions.">Seen map</button>
+      <button data-why="Two pointers needs sorted input. Sorting moves the numbers, so the indices you return would be wrong.">Two pointers</button>
+      <button data-why="A window is for neighbouring items. The two numbers can be anywhere.">Fixed sliding window</button>
+      <button data-why="Counting tells you how often a value appears, not where. You need where.">Frequency count</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">"Return the word used most often in a paragraph, ignoring a list of banned words."</p>
+    <div class="options">
+      <button data-correct data-why="&quot;Most often&quot; means count every word, then pick the biggest count. That's a frequency count: a dict from word to count.">Frequency count</button>
+      <button data-why="A seen map answers &quot;have I seen it?&quot;, yes or no. This question asks how many times.">Seen map</button>
+      <button data-why="Nothing here is about neighbouring words.">Fixed sliding window</button>
+      <button data-why="A running value tracks one best number as you go, but you can't know a word's final count until you've read the whole paragraph.">Running value</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">"Find every substring of length k whose characters are all different."</p>
+    <div class="options">
+      <button data-correct data-why="&quot;Substring of length k&quot; means a block of k neighbours, and you check every block. That's a fixed-size window. Slide it one step at a time, adding the new character and removing the one that leaves.">Fixed sliding window</button>
+      <button data-why="Two pointers walking in from both ends is for sorted pairs. Here both ends move the same way, always k apart, which is a fixed window.">Two pointers</button>
+      <button data-why="You'll count characters inside the window, but the shape of the problem (every block of k neighbours) is a window.">Frequency count</button>
+      <button data-why="A seen map over the whole string can't tell you about one block of k characters.">Seen map</button>
+    </div>
+  </div>
+
+  <h2>Warm-up 2: string tools, with no docs</h2>
+  <p>Your invitation says no outside resources, so you need these from memory. Problems 2 and 4 use them.</p>
+  <pre><code>print("b,b,b c".split())</code></pre>
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="split() with no argument splits on spaces only. Commas stay inside the pieces, so &quot;b,b,b&quot; is one piece. That's why you can't just split a paragraph with punctuation in it.">['b,b,b', 'c']</button>
+      <button data-why="split() with no argument splits on whitespace only. It doesn't know about commas.">['b', 'b', 'b', 'c']</button>
+      <button data-why="split() splits into words, not characters. list(s) gives characters.">['b', ',', 'b', ',', 'b', ' ', 'c']</button>
+      <button data-why="split() is a string method that every string has. No error.">An error</button>
+    </div>
+  </div>
+  <pre><code>for c in "Hi, 2!":
+    print(c, c.isalpha(), c.lower())</code></pre>
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">How many lines print True?</p>
+    <div class="options">
+      <button data-correct data-why="Only H and i are letters. The comma, the space, the 2 and the ! all give False. isalpha() is True only for letters, which makes it a good way to decide where a word ends.">2</button>
+      <button data-why="The digit 2 isn't a letter. isalpha() is letters only. isdigit() is for digits.">3</button>
+      <button data-why="The string has 6 characters, but only H and i are letters.">6</button>
+      <button data-why="isalpha() works on one character just as it does on a whole string. H and i give True.">0</button>
+    </div>
+  </div>
+  <div class="pg" data-code='for c in "Hi, 2!":
+    print(c, c.isalpha(), c.lower())
+print("b,b,b c".split())
+print("Bob,".lower())'></div>
+  <p><strong>The word-building loop</strong> for text with punctuation. You'll want it twice today:</p>
+  <pre><code>word = ""
+for c in text.lower() + " ":      # the extra space ends the last word
+    if c.isalpha():
+        word += c
+    else:
+        if word:
+            ...                       # do something with word
+        word = ""</code></pre>
+  <p class="small">Without the <code>+ " "</code>, the last word never reaches the <code>else</code>, so it's silently dropped. A hidden test checks for this.</p>
+
+  <h2>Problem 1: Find Pair With Given Sum</h2>
+  <div id="timer-1"></div>
+  <p class="small">Past Amazon OA question. Related to <a href="https://leetcode.com/problems/two-sum/">LeetCode 1, Two Sum</a>. Wording from the repo, tidied.</p>
+  <p>Given a list of positive integers <code>nums</code> and an int <code>target</code>, return the indices of two numbers that add up to <strong><code>target - 30</code></strong>.</p>
+  <ul>
+    <li>Pick exactly 2 numbers. You can't pick the same element twice.</li>
+    <li>If several pairs work, return the pair that contains <strong>the largest number</strong>.</li>
+    <li>Return the indices smaller first, as <code>[i, j]</code>. If no pair works, return <code>[-1, -1]</code> (that rule is ours, as the repo doesn't say).</li>
+  </ul>
+  <p><strong>Examples:</strong> <code>[1, 10, 25, 35, 60]</code>, <code>90</code> gives <code>[2, 3]</code>, because 25 + 35 = 60 = 90 − 30. <code>[20, 50, 40, 25, 30, 10]</code>, <code>90</code> gives <code>[1, 5]</code>: both 20 + 40 and 50 + 10 make 60, and 50 is the largest number in either pair.</p>
+  <div class="quiz" data-skill="dict-key-direction">
+    <p class="q">At index j you have <code>n = nums[j]</code> and you need <code>60 - n</code>. What should your dict's key be?</p>
+    <div class="options">
+      <button data-correct data-why="You have the number you need in hand, 60 − n, and you want its index back. So the key is the number and the value is its index: seen[n] = j. Ask &quot;what will I have in hand when I come back?&quot;">A number from the list (value is its index)</button>
+      <button data-why="You never have an index in hand and want the number. You have a number you need and want its position.">An index (value is the number)</button>
+      <button data-why="You don't need counts. You need where the partner is.">A number (value is how many times it appeared)</button>
+      <button data-why="Sums aren't what you look up. You look up the one partner number that completes this n.">A pair's sum</button>
+    </div>
+  </div>
+  <div class="gate">
+    <label><input type="checkbox" id="read-1"> I traced the example in comments and read my code top to bottom</label>
+    <p class="gate-msg" id="gate-msg-1" aria-live="polite"></p>
+  </div>
+  <div id="ex-1"></div>
+  <details data-solution="find-pair-hint">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p>It's Two Sum, plus a "best so far" like Lesson 13's. Check first, then store: <code>need = (target - 30) - n</code>. If <code>need in seen</code>, this pair's largest number is <code>max(n, need)</code>. Keep the pair only if that beats your best so far. Then <code>seen[n] = j</code>. Checking before storing is what stops <code>[30]</code> from pairing 30 with itself.</p>
+  </details>
+
+  <h2>Problem 2: Most Common Word</h2>
+  <div id="timer-2"></div>
+  <p class="small">Past Amazon OA question. Same as <a href="https://leetcode.com/problems/most-common-word/">LeetCode 819</a>, Easy.</p>
+  <p>Given a <code>paragraph</code> and a list of <code>banned</code> words, return the most frequent word that isn't banned, in lowercase. Words aren't case sensitive, and punctuation (<code>!?',;.</code>) is ignored, even when it's touching a word. The answer is always unique, and at least one word isn't banned. Banned words are already lowercase.</p>
+  <p><strong>Example:</strong> <code>"Bob hit a ball, the hit BALL flew far after it was hit."</code>, <code>["hit"]</code> gives <code>"ball"</code>. "hit" appears 3 times but is banned. "ball" and "BALL" are the same word.</p>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">Your count dict is keyed by words from the paragraph. How much space does it use as the paragraph grows?</p>
+    <div class="options">
+      <button data-correct data-why="Words have no fixed cap: a longer paragraph can bring new words without limit. So the dict grows with the input: O(n). Compare that with a dict keyed by single lowercase letters, which can't pass 26 keys: O(1).">O(n)</button>
+      <button data-why="O(1) needs a fixed cap on the keys, like 26 letters. There's no cap on how many different words a paragraph can hold.">O(1)</button>
+      <button data-why="The banned list affects what you skip, not how many words you might store.">O(banned)</button>
+      <button data-why="Each word is stored once, with one count.">O(n²)</button>
+    </div>
+  </div>
+  <div class="gate">
+    <label><input type="checkbox" id="read-2"> I traced the example in comments and read my code top to bottom</label>
+    <p class="gate-msg" id="gate-msg-2" aria-live="polite"></p>
+  </div>
+  <div id="ex-2"></div>
+  <details data-solution="most-common-word-hint">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p>Make <code>banned_set = set(banned)</code>, so each check is fast. Use the word-building loop from Warm-up 2. Where it says "do something with word", count it if it isn't banned: <code>counts[word] = counts.get(word, 0) + 1</code>. At the end, pick the word with the biggest count. One way is <code>max(counts, key=counts.get)</code>. Another is a loop with a <code>best</code> variable.</p>
+  </details>
+
+  <h2>Problem 3: Substrings of Size K with K Distinct Characters</h2>
+  <div id="timer-3"></div>
+  <p class="small">Past Amazon OA question. The k = 3 version is <a href="https://leetcode.com/problems/substrings-of-size-three-with-distinct-characters/">LeetCode 1876</a>, which counts instead of listing. The repo has only the title, so this wording is the commonly reported version.</p>
+  <p>Given a lowercase string <code>s</code> and an int <code>k</code>, return every <strong>different</strong> substring of length <code>k</code> in which all k characters are different. Any order is fine. If there are none, return <code>[]</code>.</p>
+  <p><strong>Examples:</strong> <code>"abcabc"</code>, <code>3</code> gives <code>["abc", "bca", "cab"]</code>. <code>"abc"</code> appears twice but is listed once. <code>"abacab"</code>, <code>3</code> gives <code>["bac", "cab"]</code>.</p>
+  <p><strong>OA strategy:</strong> the brute force is fine here. For each start, check whether <code>len(set(s[i:i+k])) == k</code>. That's O(n·k), and k is at most 26 for this to ever be true. Bank it first. If you have time, rewrite it as a window with a count dict.</p>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">In the window version you keep a count dict of the characters inside the window. <code>s</code> is lowercase letters only. How much space does that dict use as <code>s</code> gets longer?</p>
+    <div class="options">
+      <button data-correct data-why="Its keys are lowercase letters, so it can never hold more than 26 keys, however long s gets. A fixed cap is O(1). Size a dict by what its keys can be, not by the input length.">O(1)</button>
+      <button data-why="s grows, but the dict's keys are letters, and there are only 26. A fixed cap is O(1).">O(n)</button>
+      <button data-why="It's at most k keys, but k can't usefully pass 26 here. And the question is how it grows with s: it doesn't.">O(k), and that grows with s</button>
+      <button data-why="Nothing here is squared.">O(n²)</button>
+    </div>
+  </div>
+  <div class="gate">
+    <label><input type="checkbox" id="read-3"> I traced the example in comments and read my code top to bottom</label>
+    <p class="gate-msg" id="gate-msg-3" aria-live="polite"></p>
+  </div>
+  <div id="ex-3"></div>
+  <details data-solution="k-distinct-hint">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p>Brute force: <code>found = set()</code>. Loop <code>for i in range(len(s) - k + 1):</code>, so the last start still has k characters after it. Take <code>part = s[i:i + k]</code>. If <code>len(set(part)) == k</code>, then <code>found.add(part)</code>. At the end, <code>return list(found)</code>. The set removes repeats for you. When <code>k &gt; len(s)</code>, the range is empty, and you return <code>[]</code> with no special case.</p>
+  </details>
+
+  <h2>Before the bonus: sorting by two things</h2>
+  <p>Problem 4 needs "most mentions first, and alphabetical when tied". <code>sorted</code> takes a <code>key</code>: a function that turns each item into the thing to compare. Return a tuple, and Python compares the first part, then the second part on a tie. A minus sign flips a number to largest first.</p>
+  <div class="pg" data-code='counts = {"zeta": 2, "alpha": 2, "mid": 1, "beta": 3}
+print(sorted(counts))                                    # alphabetical keys
+print(sorted(counts, key=lambda w: counts[w]))           # fewest first
+print(sorted(counts, key=lambda w: (-counts[w], w)))     # most first, ties alphabetical'></div>
+  <p class="small"><code>lambda w: (-counts[w], w)</code> is a one-line function: given <code>w</code>, return the tuple. Run it and check that alpha comes before zeta.</p>
+
+  <h2>Bonus, Problem 4: Top K Frequently Mentioned Keywords</h2>
+  <div id="timer-4"></div>
+  <p class="small">Past Amazon OA question. Related to <a href="https://leetcode.com/problems/top-k-frequent-words/">LeetCode 692</a>. Wording from the repo, tidied.</p>
+  <p>Given an int <code>k</code>, a list of <code>keywords</code> and a list of <code>reviews</code>, return the k keywords mentioned in the most reviews, most first. A keyword counts <strong>once per review</strong>, however many times that review says it. Matching ignores case, and punctuation isn't part of a word. On a tie, alphabetical order wins. Only keywords mentioned at least once count, so return fewer than k if fewer were mentioned.</p>
+  <p><strong>Example:</strong> k = 2, keywords <code>["anacell", "cetracular", "betacellular"]</code>, reviews:</p>
+  <pre><code>"Anacell provides the best services in the city"
+"betacellular has awesome services"
+"Best services provided by anacell, everyone should use anacell"</code></pre>
+  <p>This gives <code>["anacell", "betacellular"]</code>. anacell is in 2 reviews (the third review says it twice, but that's still one review), and betacellular is in 1.</p>
+  <div class="gate">
+    <label><input type="checkbox" id="read-4"> I traced the example in comments and read my code top to bottom</label>
+    <p class="gate-msg" id="gate-msg-4" aria-live="polite"></p>
+  </div>
+  <div id="ex-4"></div>
+  <details data-solution="top-keywords-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Make <code>wanted = set(w.lower() for w in keywords)</code>. For each review, collect its words into a <strong>set</strong> with the word-building loop, so a repeat in one review is counted once. Then for each word in that set that's in <code>wanted</code>, add 1 to its count. At the end, <code>return sorted(counts, key=lambda w: (-counts[w], w))[:k]</code>.</p>
+  </details>
+
+  <h2>More from the same collection</h2>
+  <p>The repo has 40 questions. I've added the ones you can do with today's tools to the <a href="../reference/practice-queue.html">practice queue</a>, along with a list of the ones that need patterns we haven't covered, such as grid BFS and heaps.</p>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> <a href="https://docs.python.org/3/library/stdtypes.html#string-methods">Python docs, string methods</a>: <code>split</code>, <code>lower</code> and <code>isalpha</code>. Read them now, because you won't have them in the OA. Also the <a href="https://docs.python.org/3/howto/sorting.html#key-functions">Sorting HOW TO, key functions</a>.</p>
+  <p>For review: <a href="../reference/oa-checklist.html">OA checklist</a>, <a href="../reference/hash-map-cheatsheet.html">hash map cheat sheet</a>, <a href="../reference/sliding-window-cheatsheet.html">sliding window cheat sheet</a>. Previous: <a href="0019-trace-gate.html">Lesson 19</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat. Your first and last code, including your trace comments, are in it.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a hidden test fails and you can't see why, paste your code and I'll tell you which kind of case broke it, without giving away the fix.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/python-playground.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  document.querySelectorAll(".pg").forEach((el) => mountPlayground(el, { code: el.dataset.code }));
+  mountResults(document.getElementById("results"), { lesson: "Lesson 20: Real Amazon OA questions" });
+  [[1, 20], [2, 20], [3, 25], [4, 30]].forEach(([n, m]) =>
+    mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: m }));
+
+  // The gate: Run only works with at least 3 trace comment lines and the read-through ticked.
+  function gate(n) {
+    const ex = document.getElementById("ex-" + n);
+    const box = document.getElementById("read-" + n);
+    const msg = document.getElementById("gate-msg-" + n);
+    ex.addEventListener("click", (event) => {
+      if (!event.target.closest(".controls button")) return;
+      const code = ex.querySelector("textarea").value;
+      const traceLines = code.split("\n").filter((line) =>
+        /^\s*#/.test(line) && !/Trace the example/.test(line) && line.replace(/[#\s]/g, "").length > 2).length;
+      if (traceLines < 3) {
+        event.stopImmediatePropagation();
+        msg.textContent = "Not yet: write at least 3 # lines tracing the example (" + traceLines + " so far).";
+        return;
+      }
+      if (!box.checked) {
+        event.stopImmediatePropagation();
+        msg.textContent = "Not yet: read your code top to bottom, then tick the box.";
+        return;
+      }
+      msg.textContent = "";
+      box.checked = false;
+    }, true);
+  }
+  [1, 2, 3, 4].forEach(gate);
+
+  const traceHeader = "\n    # Trace the example here, one line per step:\n    ";
+  const bigNums = Array.from({ length: 6000 }, (_, i) => i + 1);
+  const bigLetters = Array.from({ length: 6000 }, (_, i) => String.fromCharCode(97 + ((i * 7) % 26))).join("");
+  const bigLettersAnswer = Array.from(new Set(Array.from({ length: 6000 - 26 + 1 }, (_, i) => bigLetters.slice(i, i + 26)))).sort();
+
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def find_pair(nums, target):\n    " + traceHeader,
+    skill: "implement-find-pair",
+    fn: "find_pair",
+    cases: [
+      { label: "[1, 10, 25, 35, 60], 90", args: [[1, 10, 25, 35, 60], 90], expected: [2, 3] },
+      { label: "[20, 50, 40, 25, 30, 10], 90", args: [[20, 50, 40, 25, 30, 10], 90], expected: [1, 5] },
+      { label: "one 30 can't pair with itself, [30], 90", args: [[30], 90], expected: [-1, -1], hidden: true },
+      { label: "two different 30s, [30, 30], 90", args: [[30, 30], 90], expected: [0, 1], hidden: true },
+      { label: "no pair, [1, 2, 3], 90", args: [[1, 2, 3], 90], expected: [-1, -1], hidden: true },
+      { label: "largest pair found second, [45, 5, 15, 55, 10], 90", args: [[45, 5, 15, 55, 10], 90], expected: [1, 3], hidden: true },
+      { label: "largest pair found first, [10, 50, 25, 35], 90", args: [[10, 50, 25, 35], 90], expected: [0, 1], hidden: true },
+      { label: "6,000 numbers, 1 to 6000", args: [bigNums, 90], expected: [0, 58], maxMs: 80, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def most_common_word(paragraph, banned):\n    " + traceHeader,
+    skill: "implement-most-common-word",
+    fn: "most_common_word",
+    cases: [
+      { label: '"Bob hit a ball, the hit BALL flew far after it was hit.", ["hit"]', args: ["Bob hit a ball, the hit BALL flew far after it was hit.", ["hit"]], expected: "ball" },
+      { label: 'one word, "Bob", []', args: ["Bob", []], expected: "bob", hidden: true },
+      { label: 'commas with no spaces, "a, a, a, a, b,b,b,c, c", ["a"]', args: ["a, a, a, a, b,b,b,c, c", ["a"]], expected: "b", hidden: true },
+      { label: 'last word with no punctuation after it, "go stop stop", []', args: ["go stop stop", []], expected: "stop", hidden: true },
+      { label: 'mixed case and two banned, "Bob. hIt, baLl", ["bob", "hit"]', args: ["Bob. hIt, baLl", ["bob", "hit"]], expected: "ball", hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def k_distinct_substrings(s, k):\n    " + traceHeader,
+    skill: "implement-k-distinct-substrings",
+    fn: "k_distinct_substrings",
+    sortResult: true,
+    cases: [
+      { label: '"abcabc", 3', args: ["abcabc", 3], expected: ["abc", "bca", "cab"] },
+      { label: '"abacab", 3', args: ["abacab", 3], expected: ["bac", "cab"] },
+      { label: '"awaglknagawunagwkwagl", 4', args: ["awaglknagawunagwkwagl", 4], expected: ["agwk", "aglk", "awun", "gawu", "glkn", "knag", "kwag", "lkna", "nagw", "unag", "wagl", "wuna"], hidden: true },
+      { label: 'k longer than s, "ab", 3', args: ["ab", 3], expected: [], hidden: true },
+      { label: 'k = 1, "aaa", 1', args: ["aaa", 1], expected: ["a"], hidden: true },
+      { label: 'no match, "aaaa", 2', args: ["aaaa", 2], expected: [], hidden: true },
+      { label: "6,000 letters, k = 26", args: [bigLetters, 26], expected: bigLettersAnswer, maxMs: 200, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-4"), {
+    starter: "def top_keywords(k, keywords, reviews):\n    " + traceHeader,
+    skill: "implement-top-keywords",
+    fn: "top_keywords",
+    cases: [
+      { label: "k = 2, Example 1 from the problem", args: [2, ["anacell", "cetracular", "betacellular"], ["Anacell provides the best services in the city", "betacellular has awesome services", "Best services provided by anacell, everyone should use anacell"]], expected: ["anacell", "betacellular"] },
+      { label: "k = 2, five keywords, a tie broken alphabetically, \"Betacellular\" and \"deltacellular.\" with case and punctuation", args: [2, ["anacell", "betacellular", "cetracular", "deltacellular", "eurocell"], ["I love anacell Best services; Best services provided by anacell", "betacellular has great services", "deltacellular provides much better services than betacellular", "cetracular is worse than anacell", "Betacellular is better than deltacellular."]], expected: ["betacellular", "anacell"], hidden: true },
+      { label: "k = 5, but only one keyword is ever mentioned", args: [5, ["anacell", "eurocell"], ["anacell is ok", "nothing here"]], expected: ["anacell"], hidden: true },
+      { label: "tie on count, alpha before zeta, with ZETA, and alpha!", args: [2, ["zeta", "alpha", "mid"], ["zeta alpha", "ZETA, alpha!", "mid"]], expected: ["alpha", "zeta"], hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

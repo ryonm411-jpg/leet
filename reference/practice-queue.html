@@ -44,6 +44,28 @@
     <tr><td>Running value</td><td><a href="https://leetcode.com/problems/product-of-array-except-self/">Product of Array Except Self</a></td><td>One pass from the left, one from the right</td></tr>
   </table>
 
+  <h2>Past Amazon OA questions</h2>
+  <p>From <a href="https://github.com/NoobSolver/Amazon-Previous-OA-questions">NoobSolver/Amazon-Previous-OA-questions</a>, a collection last updated in January 2021. It has 40 questions, but most folders hold only a title. Lesson 20 covers Find Pair With Given Sum, Most Common Word, Substrings of Size K with K Distinct Characters, and Top K Frequently Mentioned Keywords.</p>
+  <p><strong>Ready now</strong>: these use patterns you know.</p>
+  <table>
+    <tr><th>Pattern</th><th>Question</th><th>Twist to notice</th></tr>
+    <tr><td>Seen map</td><td>Two Sum: Unique Pairs</td><td>Count pairs of <em>values</em> that hit the target, each pair once. Use a set of pairs you've already counted</td></tr>
+    <tr><td>Seen map</td><td>Partition Labels (<a href="https://leetcode.com/problems/partition-labels/">LeetCode 763</a>)</td><td>First store each letter's <em>last</em> index, then walk, stretching the current part's end</td></tr>
+    <tr><td>Frequency count</td><td>Favorite Genres</td><td>Two dicts, user to songs and song to genre. For each user, count genres and return every genre tied for the most</td></tr>
+    <tr><td>Sort with a key</td><td>K Closest Points to Origin (<a href="https://leetcode.com/problems/k-closest-points-to-origin/">LeetCode 973</a>)</td><td><code>key=lambda p: p[0]**2 + p[1]**2</code>. No square root needed</td></tr>
+    <tr><td>Sort with a key</td><td>Reorder Data in Log Files (<a href="https://leetcode.com/problems/reorder-data-in-log-files/">LeetCode 937</a>)</td><td>Letter-logs sort by (content, identifier). Digit-logs keep their order</td></tr>
+    <tr><td>Sort, then scan</td><td>Merge Intervals (<a href="https://leetcode.com/problems/merge-intervals/">LeetCode 56</a>)</td><td>Sort by start, then extend the last merged interval or start a new one</td></tr>
+    <tr><td>Sort, then scan</td><td>Search Suggestions System (<a href="https://leetcode.com/problems/search-suggestions-system/">LeetCode 1268</a>)</td><td>Sort the products once. For each typed prefix, take the first 3 that <code>startswith</code> it</td></tr>
+  </table>
+  <p><strong>Later</strong>: these need patterns we haven't covered.</p>
+  <ul>
+    <li><strong>Grid BFS</strong>, a classic for Amazon: Number of Islands (<a href="https://leetcode.com/problems/number-of-islands/">LeetCode 200</a>), Zombie in Matrix (like <a href="https://leetcode.com/problems/rotting-oranges/">LeetCode 994</a>), Treasure Island 1 and 2. If you want one more lesson before Thursday, this is the pattern I'd pick.</li>
+    <li><strong>Heaps</strong> (<code>heapq</code>): Min Cost to Connect Ropes, Longest String Without 3 Consecutive Characters.</li>
+    <li><strong>Linked lists and trees</strong>: Merge Two Sorted Lists, Copy List with Random Pointer, Subtree of Another Tree, Subtree with Maximum Average.</li>
+    <li><strong>Graphs and dynamic programming</strong>: Critical Connections, Critical Routers, Min Cost to Connect All Nodes, Min Cost to Repair Edges, Max of Min Altitudes, Number of Dice Rolls with Target Sum, and Count Substrings with Exactly K Distinct Chars.</li>
+  </ul>
+  <p class="small">The question names come from the repo's folder names. Where a LeetCode number is given, it's the well-known match for that title. The repo's own wording wasn't checked against LeetCode.</p>
+
   <h2>After the OA: new patterns</h2>
   <p>Follow the <a href="https://neetcode.io/practice">NeetCode 150</a> order from here. Next up are variable-size sliding windows, such as <a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</a>, then stacks, binary search, linked lists and trees.</p>
 
