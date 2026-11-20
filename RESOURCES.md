@@ -12,6 +12,10 @@
   How to get unstuck and how to answer "can we do better?". Use for: problem-solving process.
 - [Cheatsheet: Hash table, Tech Interview Handbook](https://www.techinterviewhandbook.org/algorithms/hash-table/)
   Complexity, interview relevance and essential questions. Use for: hash map lessons. The site's algorithm cheatsheets cover the other topics too.
+- [Cheatsheet: Stack, Tech Interview Handbook](https://www.techinterviewhandbook.org/algorithms/stack/)
+  Essential questions (Valid Parentheses, Implement Queue using Stacks), a practice list including Daily Temperatures, and corner cases (empty stack, one item, two items). Read on 2026-11-17. Use for: stack lessons.
+- [Tutorial: Using Lists as Stacks, Python docs](https://docs.python.org/3/tutorial/datastructures.html#using-lists-as-stacks)
+  The official tutorial: `append()` pushes and `pop()` with no index takes the top. Read on 2026-11-17. Use for: stack syntax.
 - [Cheatsheet: Array, Tech Interview Handbook](https://www.techinterviewhandbook.org/algorithms/array/)
   Array techniques, including two pointers and sliding window, with practice questions. Use for: two pointers lessons.
 - [Reference: String methods, Python docs](https://docs.python.org/3/library/stdtypes.html#string-methods)

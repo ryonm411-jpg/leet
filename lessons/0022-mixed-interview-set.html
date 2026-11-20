@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mixed Interview Set</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 22 · Interview practice · Mixed patterns</p>
+  <h1>Four problems, and nobody tells you the pattern</h1>
+  <p class="meta">About 90 minutes, or split it over two days · Two Easy, two Medium · Your win: name the right pattern before coding, on at least 3 of the 4</p>
+
+  <p class="lede">In an interview, the problem doesn't come with a chapter title. Each problem here uses a pattern you've already met, but they're mixed up on purpose. Mixing makes practice feel harder, and it's the kind of difficulty that sticks. Before each problem you'll name its pattern, then code it. Your <strong>first run is your interview answer</strong>, as in a live interview, where you can't run code at all. A short checklist of the slips that cost you the most runs in Lesson 21 unlocks that first run. After it, run as often as you like.</p>
+
+  <h2>Warm-up 1: trace the code, not the plan</h2>
+  <p>This is your own first attempt at Squares of a Sorted Array from your Lesson 18 retry. Your trace comments were right about the <em>plan</em>: <code># arr = [100]</code>. Now trace the <em>code</em>, line by line, on <code>[-4, -1, 0, 3, 10]</code>.</p>
+  <pre><code>def sorted_squares(nums):
+    left = 0
+    right = len(nums) - 1
+    arrIndex = len(nums) - 1
+    arr = []
+    while left &lt;= right:
+        numleft = nums[left]*nums[left]
+        numRight = nums[right]*nums[right]
+        if numLeft &gt; numRight:
+            arr[arrIndex] = numLeft
+            ...</code></pre>
+  <div class="quiz" data-skill="trace-before-run">
+    <p class="q">What actually happens first?</p>
+    <div class="options">
+      <button data-correct data-why="Line 7 makes numleft (small l). Line 9 reads numLeft (capital L), which was never made, so it's a NameError, and nothing after it runs. Your trace said arr = [100], but the code never gets there. Reading each name as it's typed catches this in seconds.">NameError on numLeft, in the if line</button>
+      <button data-why="That error is real, but it comes later, on the arr[arrIndex] line. The if line before it fails first: numleft and numLeft are different names.">IndexError on arr, in the assignment</button>
+      <button data-why="That's what the plan would give. The code stops at the if line, because numLeft (capital L) was never assigned.">It returns [0, 1, 9, 16, 100]</button>
+      <button data-why="It never gets far enough to loop. The if line raises NameError on the very first pass.">It loops forever and never returns</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="trace-before-run">
+    <p class="q">You fix the spelling. On the first pass, numLeft is 16 and numRight is 100. What does the else branch's <code>arr[arrIndex] = numRight</code> do?</p>
+    <div class="options">
+      <button data-correct data-why="arr is [], so index 4 doesn't exist, and Python won't create it by assigning to it: IndexError. Your final version used arr = [0] * len(nums), which makes all 5 slots first. That's the fix.">Raises IndexError: arr has no index 4</button>
+      <button data-why="Assigning to an index never grows a list. Only append (or insert) does. arr is empty, so arr[4] doesn't exist: IndexError.">Makes arr equal to [100]</button>
+      <button data-why="Python doesn't fill in the missing slots for you. arr is empty, so arr[4] = 100 raises IndexError.">Makes arr [0, 0, 0, 0, 100]</button>
+      <button data-why="The name is fixed now, so the if line works. The problem is the empty list.">Raises NameError on numLeft</button>
+    </div>
+  </div>
+  <div class="pg" data-code='def sorted_squares(nums):
+    left = 0
+    right = len(nums) - 1
+    arrIndex = len(nums) - 1
+    arr = []
+    while left <= right:
+        numleft = nums[left]*nums[left]
+        numRight = nums[right]*nums[right]
+        if numLeft > numRight:
+            arr[arrIndex] = numLeft
+        else:
+            arr[arrIndex] = numRight
+        right -= 1
+        arrIndex -= 1
+    return arr
+
+print(sorted_squares([-4, -1, 0, 3, 10]))'></div>
+  <p class="small">Run it, fix one thing, and run it again, to watch the errors arrive in the order you predicted. Trace in your head or on paper, following the code as typed. Trace comments are optional now. The <a href="../reference/python-rules.html">Python rules</a> page has new entries for every slip in your Lesson 18 retry.</p>
+
+  <h2>Warm-up 2: index or value?</h2>
+  <p>Your Maximum Subarray first attempt had <code>for n in range(...)</code>, then <code>sum = n</code>. Your Top K attempt had <code>for v, key in freq.items()</code>. Both mix up which thing a name holds.</p>
+  <pre><code>nums = [7, 2, 9]
+best = 0
+for n in range(len(nums)):
+    if n &gt; best:
+        best = n
+print(best)</code></pre>
+  <div class="quiz" data-skill="index-vs-value">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="range(len(nums)) gives the indices 0, 1, 2, not the numbers. So n is a position, and the biggest position is 2. Calling it n hides the bug. Call indices i and use nums[i], or loop for n in nums when you only need the values.">2</button>
+      <button data-why="9 is the biggest number, but n never holds a number. range(len(nums)) gives positions: 0, 1, 2.">9</button>
+      <button data-why="n is never 7. range(len(nums)) gives positions 0, 1, 2, so best ends at 2.">7</button>
+      <button data-why="range(3) stops before 3, so n is never 3. The biggest position is 2.">3</button>
+    </div>
+  </div>
+  <pre><code>freq = {"a": 3, "b": 1}
+for count, key in freq.items():
+    print(count)</code></pre>
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why=".items() hands out (key, value) pairs, key first. The first name gets the key, whatever you call it. So count holds &quot;a&quot;, then &quot;b&quot;. No error, just misleading names. Write for key, count in freq.items().">a, then b</button>
+      <button data-why="It would, if items() gave the value first. It gives the key first, so the name count gets the keys.">3, then 1</button>
+      <button data-why="Two names unpack the pair, so each one gets one part. The first part is the key.">('a', 3), then ('b', 1)</button>
+      <button data-why="Python doesn't check your names. It unpacks each (key, value) pair into whatever names you give it.">An error</button>
+    </div>
+  </div>
+
+  <h2>Warm-up 3: counting backwards with range</h2>
+  <p>Problem 3 needs a loop from the right end of a list. Predict first.</p>
+  <pre><code>print(list(range(3, -1, -1)))</code></pre>
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="range(start, stop, step) starts at 3 and steps by −1, stopping before −1. So it gives 3, 2, 1, 0. To loop over a list backwards, write range(len(nums) - 1, -1, -1): start at the last index and stop before −1, so 0 is included.">[3, 2, 1, 0]</button>
+      <button data-why="The stop is −1, not 0, and range stops just before the stop. So 0 is included.">[3, 2, 1]</button>
+      <button data-why="range never includes its stop value. It stops before −1.">[3, 2, 1, 0, -1]</button>
+      <button data-why="With a negative step, range counts down, so starting at 3 and stopping before −1 gives values. It's empty only if the step goes the wrong way.">[]</button>
+    </div>
+  </div>
+  <div class="pg" data-code='nums = [10, 20, 30, 40]
+print(list(range(3, -1, -1)))
+for i in range(len(nums) - 1, -1, -1):
+    print(i, nums[i])
+print([1] * 4)    # a list of four 1s, ready to fill in'></div>
+
+  <h2>Problem 1: Longest Palindrome</h2>
+  <div id="timer-1"></div>
+  <p class="small"><a href="https://leetcode.com/problems/longest-palindrome/">LeetCode 409</a>, Easy. Statement written from memory, as LeetCode blocks automated reading.</p>
+  <p>Given a string <code>s</code> of uppercase and lowercase letters, return the length of the longest palindrome you can <strong>build</strong> from those letters. You can rearrange them and don't have to use them all. Case matters: <code>"Aa"</code> isn't a palindrome.</p>
+  <p><strong>Examples:</strong> <code>"abccccdd"</code> gives <code>7</code> (one is <code>"dccaccd"</code>). <code>"a"</code> gives <code>1</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which pattern fits best?</p>
+    <div class="options">
+      <button data-correct data-why="Order doesn't matter, because you can rearrange. What matters is how many of each letter you have: pairs go on both sides, and one odd letter can sit in the middle. That's a frequency count.">Frequency count</button>
+      <button data-why="Two pointers check whether a string already is a palindrome. Here you build one, in any order, so only the counts matter.">Two pointers</button>
+      <button data-why="A window looks at letters next to each other. You can rearrange freely here, so position doesn't matter.">Sliding window</button>
+      <button data-why="A seen map answers yes or no. Here you need how many of each letter: 4 c's make 2 pairs.">Seen map</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">Your count dict is keyed by the letters of <code>s</code>. How much space does it use as <code>s</code> gets longer?</p>
+    <div class="options">
+      <button data-correct data-why="The keys can only be the 52 upper and lowercase letters. However long s gets, the dict never passes 52 keys. A fixed cap is O(1).">O(1)</button>
+      <button data-why="s grows, but its keys are letters, and there are only 52 of them. Size a dict by what its keys can be, not by the input length.">O(n)</button>
+      <button data-why="Nothing here is squared. Each letter gets one key and one count.">O(n²)</button>
+      <button data-why="The dict has at most 52 keys, a fixed number. That doesn't grow with s at all.">O(log n)</button>
+    </div>
+  </div>
+  <div id="preflight-1"></div>
+  <div id="ex-1"></div>
+  <details data-solution="longest-palindrome-hint">
+    <summary>Stuck for 6 minutes? Show a hint</summary>
+    <p>Count each letter. Every count gives <code>count // 2 * 2</code> letters, using pairs only. If any count is odd, one leftover letter can go in the middle, so add 1, but only once in total. For <code>"abccccdd"</code>: c gives 4, d gives 2, and a and b give 0 each. That's 6, plus 1 for the middle, so 7.</p>
+  </details>
+
+  <h2>Problem 2: Move Zeroes</h2>
+  <div id="timer-2"></div>
+  <p class="small"><a href="https://leetcode.com/problems/move-zeroes/">LeetCode 283</a>, Easy. Statement written from memory.</p>
+  <p>Given a list <code>nums</code>, move every <code>0</code> to the end, keeping the non-zero numbers in their original order. Do it <strong>in place</strong>, changing <code>nums</code> itself with O(1) extra space and no new list. LeetCode's version returns nothing. Here, end with <code>return nums</code> so the tests can see it.</p>
+  <p><strong>Examples:</strong> <code>[0, 1, 0, 3, 12]</code> gives <code>[1, 3, 12, 0, 0]</code>. <code>[0]</code> gives <code>[0]</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which pattern fits best?</p>
+    <div class="options">
+      <button data-correct data-why="In place with O(1) space, in one pass: one pointer reads every number, and a slower one marks where the next non-zero goes. Both move left to right, but it's still two pointers into the same list.">Two pointers</button>
+      <button data-why="A frequency count can count the zeros, but you'd still need a way to shift the non-zeros left in place. That shifting is the real work.">Frequency count</button>
+      <button data-why="A seen map uses extra space, and nothing here asks &quot;have I seen it?&quot;.">Seen map</button>
+      <button data-why="A window covers a block of neighbours. Here you move items to new positions.">Sliding window</button>
+    </div>
+  </div>
+  <div id="preflight-2"></div>
+  <div id="ex-2"></div>
+  <details data-solution="move-zeroes-hint">
+    <summary>Stuck for 6 minutes? Show a hint</summary>
+    <p>Keep <code>write = 0</code>, the spot for the next non-zero. Loop <code>for read in range(len(nums))</code>. When <code>nums[read] != 0</code>, swap: <code>nums[write], nums[read] = nums[read], nums[write]</code>, then <code>write += 1</code>. The swap carries the zeros backwards for free. Trace <code>[0, 1, 0, 3, 12]</code> and write <code>write</code>, <code>read</code> and the list on each line.</p>
+  </details>
+
+  <h2>Problem 3: Product of Array Except Self</h2>
+  <div id="timer-3"></div>
+  <p class="small"><a href="https://leetcode.com/problems/product-of-array-except-self/">LeetCode 238</a>, Medium. Statement written from memory.</p>
+  <p>Given a list <code>nums</code> (length 2 or more), return a list <code>answer</code> where <code>answer[i]</code> is the product of every number <strong>except</strong> <code>nums[i]</code>. You may <strong>not</strong> use division, and it must run in O(n) time.</p>
+  <p><strong>Examples:</strong> <code>[1, 2, 3, 4]</code> gives <code>[24, 12, 8, 6]</code>. <code>[-1, 1, 0, -3, 3]</code> gives <code>[0, 0, 9, 0, 0]</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which pattern fits best?</p>
+    <div class="options">
+      <button data-correct data-why="answer[i] is (everything to the left of i) × (everything to the right of i). Carry a running product from the left in one pass, then another running product from the right in a second pass. It's the running value from Best Trade and Pivot Index, done twice.">Running value</button>
+      <button data-why="A window covers a block of neighbours. Here each answer needs everything except one item, the whole list on both sides.">Sliding window</button>
+      <button data-why="Two pointers walk in from both ends looking for a pair. Here every index needs its own answer, built from its left and right sides.">Two pointers</button>
+      <button data-why="Nothing needs looking up. You need products of everything to the left and to the right.">Seen map</button>
+    </div>
+  </div>
+  <div id="preflight-3"></div>
+  <div id="ex-3"></div>
+  <details data-solution="product-except-self-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p><code>answer = [1] * len(nums)</code>. Left pass: <code>left = 1</code>. For each i from the left, set <code>answer[i] = left</code>, <em>then</em> <code>left *= nums[i]</code>. The order matters, because answer[i] must not include nums[i]. Right pass: <code>right = 1</code>. For i from the right (warm-up's range), <code>answer[i] *= right</code>, then <code>right *= nums[i]</code>. For <code>[1, 2, 3, 4]</code>, the left pass gives <code>[1, 1, 2, 6]</code>.</p>
+  </details>
+
+  <h2>Problem 4: Minimum Size Subarray Sum</h2>
+  <div id="timer-4"></div>
+  <p class="small"><a href="https://leetcode.com/problems/minimum-size-subarray-sum/">LeetCode 209</a>, Medium. Statement written from memory.</p>
+  <p>Given a list of <strong>positive</strong> integers <code>nums</code> and a positive int <code>target</code>, return the length of the shortest block of neighbours (a subarray) whose sum is at least <code>target</code>. If there isn't one, return <code>0</code>.</p>
+  <p><strong>Examples:</strong> <code>7, [2, 3, 1, 2, 4, 3]</code> gives <code>2</code> (the block <code>[4, 3]</code>). <code>4, [1, 4, 4]</code> gives <code>1</code>. <code>11, [1, 1, 1, 1, 1, 1, 1, 1]</code> gives <code>0</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which pattern fits best?</p>
+    <div class="options">
+      <button data-correct data-why="A block of neighbours whose length isn't fixed: grow it on the right until the sum is big enough, then shrink it from the left while it still is, recording the length. A variable-size sliding window, like Lesson 19's Longest Substring. It works because every number is positive.">Sliding window</button>
+      <button data-why="A running value tracks one best number, but this needs a block with both a start and an end. Moving both ends to the right is a window.">Running value</button>
+      <button data-why="Two pointers walking in from both ends needs sorted data. These numbers aren't sorted, and both ends of the block move right.">Two pointers</button>
+      <button data-why="Counting how often each number appears ignores which numbers are next to each other, and that's the whole question.">Frequency count</button>
+    </div>
+  </div>
+  <div id="preflight-4"></div>
+  <div id="ex-4"></div>
+  <details data-solution="min-subarray-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p><code>left = 0</code>, <code>total = 0</code>, <code>best = len(nums) + 1</code> (bigger than any real answer). For each <code>right</code>, add <code>nums[right]</code> to the total. Then <code>while total &gt;= target:</code> record <code>right - left + 1</code> if it's smaller, take <code>nums[left]</code> out of the total, and move <code>left</code> one step. At the end, return <code>0</code> if best never changed, otherwise <code>best</code>.</p>
+  </details>
+
+  <h2>After the set: say it like an interview</h2>
+  <p>For any problem you passed, explain it out loud in under a minute, as if to an interviewer: the idea, why it works, the time and space, and one edge case you checked. The <a href="https://www.techinterviewhandbook.org/coding-interview-techniques/">Tech Interview Handbook's coding interview techniques</a> page is the primary source for this. Read its sections on talking through your approach and on "can we do better?". Then submit each problem on LeetCode.</p>
+  <p>Want more after this? The <a href="../reference/practice-queue.html">practice queue</a> has about 20 more, grouped by pattern, including Container With Most Water. Review: <a href="../reference/glossary.html">glossary</a>, <a href="../reference/hash-map-cheatsheet.html">hash map</a>, <a href="../reference/two-pointers-cheatsheet.html">two pointers</a>, <a href="../reference/sliding-window-cheatsheet.html">sliding window</a>. Previous: <a href="0021-stacks.html">Lesson 21, Stacks</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat. Your first and last code, including your trace comments, are in it.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a hidden test fails and you can't see why, paste your code and I'll tell you which kind of case broke it, without giving away the fix.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/python-playground.js"></script>
+<script src="../assets/progress.js"></script>
+<script src="../assets/preflight.js"></script>
+<script>
+  document.querySelectorAll(".pg").forEach((el) => mountPlayground(el, { code: el.dataset.code }));
+  mountResults(document.getElementById("results"), { lesson: "Lesson 22: Mixed interview set" });
+  [[1, 15], [2, 15], [3, 30], [4, 30]].forEach(([n, m]) =>
+    mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: m }));
+  const checks = [
+    "Python names only: <code>append</code>, <code>x in y</code>, <code>len(x)</code>, <code>i += 1</code>. No <code>push</code>, <code>.contains</code>, <code>.len()</code> or <code>++</code>",
+    "Every <code>range</code> gets a number, as in <code>range(len(nums))</code>, never <code>range(nums)</code>",
+    "No <code>[i]</code> or <code>[-1]</code> on a list that might be empty or too short",
+    "Each name is spelled the same everywhere, and each loop name holds what I think (index or value)",
+    "I ran the first example through my code in my head and got the expected answer",
+  ];
+  [1, 2, 3, 4].forEach((n) => mountPreflight(n, checks));
+
+  const bigLetters = Array.from({ length: 6000 }, (_, i) => String.fromCharCode(65 + (i % 26))).join("") + "z";
+  const bigZeroes = Array.from({ length: 6000 }, (_, i) => (i % 2 ? i : 0));
+  const bigZeroesAnswer = bigZeroes.filter((n) => n !== 0).concat(Array(3000).fill(0));
+  const bigOnes = Array(6000).fill(1);
+
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def longest_palindrome(s):\n    ",
+    skill: "implement-longest-palindrome",
+    fn: "longest_palindrome",
+    cases: [
+      { label: '"abccccdd"', args: ["abccccdd"], expected: 7 },
+      { label: '"a"', args: ["a"], expected: 1 },
+      { label: 'case matters, "Aa"', args: ["Aa"], expected: 1, hidden: true },
+      { label: 'all pairs, no middle, "aabb"', args: ["aabb"], expected: 4, hidden: true },
+      { label: 'odd count of 3 still gives a pair, "aaabbbc"', args: ["aaabbbc"], expected: 5, hidden: true },
+      { label: "6,001 letters", args: [bigLetters], expected: 5981, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def move_zeroes(nums):\n    \n    return nums",
+    skill: "implement-move-zeroes",
+    fn: "move_zeroes",
+    cases: [
+      { label: "[0, 1, 0, 3, 12]", args: [[0, 1, 0, 3, 12]], expected: [1, 3, 12, 0, 0] },
+      { label: "[0]", args: [[0]], expected: [0] },
+      { label: "no zeros, [4, 5]", args: [[4, 5]], expected: [4, 5], hidden: true },
+      { label: "all zeros, [0, 0, 0]", args: [[0, 0, 0]], expected: [0, 0, 0], hidden: true },
+      { label: "negatives keep their order, [-1, 0, -2, 0, 3]", args: [[-1, 0, -2, 0, 3]], expected: [-1, -2, 3, 0, 0], hidden: true },
+      { label: "6,000 numbers, every other one zero", args: [bigZeroes], expected: bigZeroesAnswer, maxMs: 150, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def product_except_self(nums):\n    ",
+    skill: "implement-product-except-self",
+    fn: "product_except_self",
+    cases: [
+      { label: "[1, 2, 3, 4]", args: [[1, 2, 3, 4]], expected: [24, 12, 8, 6] },
+      { label: "[-1, 1, 0, -3, 3]", args: [[-1, 1, 0, -3, 3]], expected: [0, 0, 9, 0, 0] },
+      { label: "two numbers, [2, 3]", args: [[2, 3]], expected: [3, 2], hidden: true },
+      { label: "two zeros, [0, 4, 0]", args: [[0, 4, 0]], expected: [0, 0, 0], hidden: true },
+      { label: "one zero at the start, [0, 2, 5]", args: [[0, 2, 5]], expected: [10, 0, 0], hidden: true },
+      { label: "6,000 ones", args: [bigOnes], expected: bigOnes, maxMs: 150, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-4"), {
+    starter: "def min_subarray_len(target, nums):\n    ",
+    skill: "implement-min-subarray-len",
+    fn: "min_subarray_len",
+    cases: [
+      { label: "7, [2, 3, 1, 2, 4, 3]", args: [7, [2, 3, 1, 2, 4, 3]], expected: 2 },
+      { label: "4, [1, 4, 4]", args: [4, [1, 4, 4]], expected: 1 },
+      { label: "11, [1, 1, 1, 1, 1, 1, 1, 1]", args: [11, [1, 1, 1, 1, 1, 1, 1, 1]], expected: 0 },
+      { label: "needs the whole list, 15, [1, 2, 3, 4, 5]", args: [15, [1, 2, 3, 4, 5]], expected: 5, hidden: true },
+      { label: "one big number at the end, 10, [1, 1, 1, 10]", args: [10, [1, 1, 1, 10]], expected: 1, hidden: true },
+      { label: "must shrink more than once, 8, [5, 1, 1, 1, 8]", args: [8, [5, 1, 1, 1, 8]], expected: 1, hidden: true },
+      { label: "6,000 ones, target 3000", args: [3000, bigOnes], expected: 3000, maxMs: 150, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

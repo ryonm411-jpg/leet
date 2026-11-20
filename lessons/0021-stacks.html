@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stacks</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 21 · New pattern · Stacks</p>
+  <h1>The newest unfinished thing goes first</h1>
+  <p class="meta">About 70 minutes · Three LeetCode problems (two Easy, one Medium bonus) · Your win: Valid Parentheses passes on the first or second run</p>
+
+  <p class="lede">In a live interview you can't run your code, so today's target is <strong>one run</strong> per problem. The Run gate from Lessons 19 and 20 is still on. The new pattern is the <strong>stack</strong>: Valid Parentheses is one of the two essential stack questions on the <a href="https://www.techinterviewhandbook.org/algorithms/stack/">Tech Interview Handbook's stack page</a>, and Daily Temperatures is on its practice list.</p>
+
+  <h2>Warm-up: one name, one thing (due review)</h2>
+  <p>You've missed this one three times, so predict before you run.</p>
+  <pre><code>def clear_and_add(stack):
+    stack = []
+    stack.append(1)
+    return len(stack)
+
+s = [5, 6]
+print(clear_and_add(s), s)</code></pre>
+  <div class="quiz" data-skill="python-shadow-builtins">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="stack = [] makes the name stack point at a brand new empty list. From then on, stack and s are different lists. append(1) changes the new list, so len is 1, and s is never touched. Assigning to a name never changes the old object. It just moves the name.">1 [5, 6]</button>
+      <button data-why="After stack = [], the name stack no longer points at s's list. The append goes to the new empty list, so len is 1 and s stays [5, 6].">3 [5, 6, 1]</button>
+      <button data-why="len is 1, right. But s still points at the original list. stack = [] moved the name stack, it didn't empty the list that s points at.">1 [1]</button>
+      <button data-why="stack = [] doesn't empty s's list. It makes a new list. To really empty the caller's list you'd write stack.clear().">1 []</button>
+    </div>
+  </div>
+  <div class="pg" data-code='def clear_and_add(stack):
+    stack = []            # new list; s is untouched
+    stack.append(1)
+    return len(stack)
+
+def clear_for_real(stack):
+    stack.clear()         # empties the SAME list s points at
+    stack.append(1)
+    return len(stack)
+
+s = [5, 6]
+print(clear_and_add(s), s)
+print(clear_for_real(s), s)'></div>
+
+  <h2>What a stack is</h2>
+  <p>A stack is a pile you only touch at the top: the last thing in is the first thing out (<a href="../reference/glossary.html">LIFO</a>). Python has no separate stack type. A plain list is the stack, as the <a href="https://docs.python.org/3/tutorial/datastructures.html#using-lists-as-stacks">Python tutorial</a> shows: "To add an item to the top of the stack, use <code>append()</code>", and to take it back, "use <code>pop()</code> without an explicit index". Both are O(1).</p>
+  <table>
+    <tr><th>Do this</th><th>Write this</th></tr>
+    <tr><td>Push x on top</td><td><code>stack.append(x)</code></td></tr>
+    <tr><td>Take the top off and use it</td><td><code>top = stack.pop()</code></td></tr>
+    <tr><td>Look at the top without removing it</td><td><code>stack[-1]</code></td></tr>
+    <tr><td>Is it empty?</td><td><code>if not stack:</code></td></tr>
+  </table>
+  <p><strong>When to reach for it:</strong> each new item has to be checked against the most recent one that's still waiting. Brackets are the classic case: a <code>)</code> must close the most recent <code>(</code> that hasn't been closed yet.</p>
+
+  <pre><code>stack = []
+for c in "abc":
+    stack.append(c)
+stack.pop()
+print("".join(stack))</code></pre>
+  <div class="quiz" data-skill="stack-basics">
+    <p class="q">What does this print?</p>
+    <div class="options">
+      <button data-correct data-why="Pushing a, b, c gives ['a', 'b', 'c'], with c on top. pop() takes the top, c. join glues what's left: ab. &quot;&quot;.join(list) is how you turn a stack of characters back into a string.">ab</button>
+      <button data-why="pop() with no index takes from the end, the top, which is c. It doesn't take from the front.">bc</button>
+      <button data-why="pop() removes c and returns it, but that return value is thrown away here. The print shows what's still on the stack.">c</button>
+      <button data-why="pop() really removes the top item, so the stack is shorter afterwards.">abc</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="stack-basics">
+    <p class="q">What happens with <code>stack = []</code> and then <code>stack[-1]</code>?</p>
+    <div class="options">
+      <button data-correct data-why="An empty list has no last item, so Python raises IndexError. pop() on an empty list does too. This is the Handbook's number one stack corner case: always check if stack: before you look at or take the top.">IndexError</button>
+      <button data-why="Lists don't return None for a missing item. Only dict.get does that. An empty list raises IndexError.">None</button>
+      <button data-why="There's no default value. Indexing an empty list raises IndexError.">0</button>
+      <button data-why="stack[-1] is one item, not a list. On an empty list it raises IndexError.">[]</button>
+    </div>
+  </div>
+  <div class="pg" data-code='stack = []
+stack.append("(")
+stack.append("[")
+print(stack, stack[-1])
+print(stack.pop(), stack)
+print(bool(stack), bool([]))
+stack.pop()
+stack.pop()    # empty now: what happens?'></div>
+
+  <h2>Name the pattern</h2>
+  <p>Mixed with the patterns you know. Choose before reading the problems.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">"An editor's Undo reverses the most recent action that hasn't been undone yet."</p>
+    <div class="options">
+      <button data-correct data-why="&quot;Most recent, not yet undone&quot; is LIFO: push each action, pop to undo. That's a stack.">Stack</button>
+      <button data-why="A seen map answers &quot;have I seen it?&quot;. Undo needs the most recent action, in order.">Seen map</button>
+      <button data-why="Two pointers walk sorted data from both ends. Undo always works at one end: the newest.">Two pointers</button>
+      <button data-why="A window covers neighbours in a row. Undo needs the newest item each time, and the list shrinks as you go.">Sliding window</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">"Return the length of the longest substring with no repeated character."</p>
+    <div class="options">
+      <button data-correct data-why="A block of neighbours that grows, and shrinks from the left when a repeat appears: a variable-size sliding window (Lesson 19's Longest Substring).">Sliding window</button>
+      <button data-why="You'll use a set or dict inside the window, but the shape is a growing and shrinking block of neighbours.">Seen map</button>
+      <button data-why="Nothing here needs matching the most recent item. You need a block of neighbours.">Stack</button>
+      <button data-why="Both ends move the same way here, left to right, so it's a window, not walking in from both ends.">Two pointers</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">"In a sorted list, find two numbers that add up to a target, using O(1) extra space."</p>
+    <div class="options">
+      <button data-correct data-why="Sorted, a pair, and O(1) space: start at both ends and move the pointer that fixes the sum (Lesson 7).">Two pointers</button>
+      <button data-why="A seen map works, but it uses O(n) space. Sorted input plus O(1) space points to two pointers.">Seen map</button>
+      <button data-why="Nothing needs the newest unfinished item. The input is sorted, which is the two pointers clue.">Stack</button>
+      <button data-why="The two numbers don't have to be next to each other, so a window doesn't fit.">Sliding window</button>
+    </div>
+  </div>
+
+  <h2>Problem 1: Remove All Adjacent Duplicates In String</h2>
+  <div id="timer-1"></div>
+  <p class="small"><a href="https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/">LeetCode 1047</a>, Easy. Statement written from memory, as LeetCode blocks automated reading.</p>
+  <p>Given a lowercase string <code>s</code>, repeatedly remove two equal letters that sit next to each other, until none are left. Return the final string. The answer is unique.</p>
+  <p><strong>Examples:</strong> <code>"abbaca"</code> gives <code>"ca"</code>: removing <code>bb</code> leaves <code>"aaca"</code>, then removing <code>aa</code> leaves <code>"ca"</code>. <code>"azxxzy"</code> gives <code>"ay"</code>.</p>
+  <p class="small">Think: when a new letter arrives, which letter could it cancel? Only the one just before it that's still standing.</p>
+  <div class="gate">
+    <label><input type="checkbox" id="read-1"> I traced the example in comments and read my code top to bottom</label>
+    <p class="gate-msg" id="gate-msg-1" aria-live="polite"></p>
+  </div>
+  <div id="ex-1"></div>
+  <details data-solution="adjacent-duplicates-hint">
+    <summary>Stuck for 6 minutes? Show a hint</summary>
+    <p>Loop over each <code>c</code>. If the stack isn't empty and its top equals <code>c</code>, pop (they cancel). Otherwise push <code>c</code>. At the end, <code>return "".join(stack)</code>. The <code>if stack</code> check comes first, so <code>stack[-1]</code> never runs on an empty stack.</p>
+  </details>
+
+  <h2>Problem 2: Valid Parentheses</h2>
+  <div id="timer-2"></div>
+  <p class="small"><a href="https://leetcode.com/problems/valid-parentheses/">LeetCode 20</a>, Easy. Statement written from memory.</p>
+  <p>Given a string <code>s</code> made only of <code>()[]{}</code>, return <code>True</code> if it's valid: every opener is closed by the same type of bracket, closers come in the right order, and every closer has a matching opener. <code>s</code> has at least 1 character.</p>
+  <p><strong>Examples:</strong> <code>"()"</code> True. <code>"()[]{}"</code> True. <code>"(]"</code> False. <code>"([)]"</code> False. <code>"{[]}"</code> True.</p>
+  <div class="quiz" data-skill="dict-key-direction">
+    <p class="q">You push openers onto the stack. When you reach a closer <code>c</code>, you want the opener it needs in one lookup. Which dict?</p>
+    <div class="options">
+      <button data-correct data-why="You're holding a closer and want its opener, so the closer is the key: pairs[c] gives the opener to compare with stack[-1]. Ask &quot;what will I have in hand?&quot;. (Opener to closer also works if you look up the popped top instead, but then the lookup goes the other way.)">{")": "(", "]": "[", "}": "{"}</button>
+      <button data-why="With this one, pairs[c] for a closer c is a KeyError, because its keys are openers. You have a closer in hand, so the closer should be the key.">{"(": ")", "[": "]", "{": "}"}</button>
+      <button data-why="Counts can't see order: &quot;([)]&quot; has one of each pair and is still invalid. You need which opener, not how many.">{"(": 0, "[": 0, "{": 0}</button>
+      <button data-why="Positions don't help. The question is which opener a closer needs, so key by the closer.">{0: "(", 1: "[", 2: "{"}</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">That <code>pairs</code> dict, with its 3 entries. How much space does it use as <code>s</code> gets longer?</p>
+    <div class="options">
+      <button data-correct data-why="It always has exactly 3 keys, however long s is. A fixed cap on the keys is O(1). (The stack is different: &quot;((((((&quot; pushes every character, so the stack is O(n), and that makes the whole solution O(n) space.)">O(1)</button>
+      <button data-why="s grows, but the dict never does. It's built once with 3 keys. Size a dict by what its keys can be: 3 bracket types.">O(n)</button>
+      <button data-why="Nothing here is squared. The dict has 3 keys, whatever happens.">O(n²)</button>
+      <button data-why="The dict has 3 keys, a fixed cap, so it doesn't grow with s at all: O(1).">O(log n)</button>
+    </div>
+  </div>
+  <div class="gate">
+    <label><input type="checkbox" id="read-2"> I traced the example in comments and read my code top to bottom</label>
+    <p class="gate-msg" id="gate-msg-2" aria-live="polite"></p>
+  </div>
+  <div id="ex-2"></div>
+  <details data-solution="valid-parentheses-hint">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p>For each <code>c</code>: if it's an opener, push it. If it's a closer, there are two ways to fail. Either the stack is empty (nothing to close), or <code>stack.pop() != pairs[c]</code> (wrong type). Either way, <code>return False</code>. After the loop, the string is valid only if nothing is left open: <code>return not stack</code>. Trace <code>"]"</code> and <code>"(("</code> before you run.</p>
+  </details>
+
+  <h2>Before the bonus: a stack that stays sorted</h2>
+  <p>Problem 3 asks, for each day, how long until a warmer one. The trick is a <strong>monotonic stack</strong>: a stack of the days still <em>waiting</em> for a warmer day. They're always coolest on top. When a warm day arrives, it answers every waiting day it beats. Pop them, then push itself. The stack holds <strong>indices</strong>, because the answer is a distance in days. Step through it with temperatures <code>[70, 68, 71, 69, 72]</code>:</p>
+  <div id="mono-trace"></div>
+  <p class="small">Each day is pushed once and popped at most once, so the whole thing is O(n) time, even with a loop inside a loop. Checking every later day for every day would be O(n²).</p>
+
+  <h2>Bonus, Problem 3: Daily Temperatures</h2>
+  <div id="timer-3"></div>
+  <p class="small"><a href="https://leetcode.com/problems/daily-temperatures/">LeetCode 739</a>, Medium. Statement written from memory.</p>
+  <p>Given a list <code>temperatures</code>, return a list <code>answer</code> where <code>answer[i]</code> is how many days you wait after day <code>i</code> for a <strong>strictly warmer</strong> day. If there isn't one, it's <code>0</code>.</p>
+  <p><strong>Examples:</strong> <code>[73, 74, 75, 71, 69, 72, 76, 73]</code> gives <code>[1, 1, 4, 2, 1, 1, 0, 0]</code>. <code>[30, 40, 50, 60]</code> gives <code>[1, 1, 1, 0]</code>.</p>
+  <div class="gate">
+    <label><input type="checkbox" id="read-3"> I traced the example in comments and read my code top to bottom</label>
+    <p class="gate-msg" id="gate-msg-3" aria-live="polite"></p>
+  </div>
+  <div id="ex-3"></div>
+  <details data-solution="daily-temperatures-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Start with <code>answer = [0] * len(temperatures)</code> and <code>stack = []</code>. For each <code>i, t</code> in <code>enumerate(temperatures)</code>: <code>while stack and temperatures[stack[-1]] &lt; t:</code> pop <code>j</code> and set <code>answer[j] = i - j</code>. After the while loop, push <code>i</code>. Days still on the stack at the end keep their 0. Use <code>&lt;</code>, not <code>&lt;=</code>, because an equal day isn't warmer.</p>
+  </details>
+
+  <h2>Go deeper</h2>
+  <p><strong>Primary source:</strong> the <a href="https://www.techinterviewhandbook.org/algorithms/stack/">Tech Interview Handbook, Stack</a>. Read its corner cases ("Empty stack. Popping from an empty stack", a stack with one item, with two items), and use its practice list once these three feel easy. Python's side is in the <a href="https://docs.python.org/3/tutorial/datastructures.html#using-lists-as-stacks">tutorial, Using Lists as Stacks</a>.</p>
+  <p>After this lesson, submit all three on LeetCode. In an interview you'd say the complexity out loud, so write it as a comment first. Review: <a href="../reference/stack-cheatsheet.html">stack cheat sheet</a> (new), <a href="../reference/glossary.html">glossary</a>, <a href="../reference/practice-queue.html">practice queue</a>. Previous: <a href="0020-real-amazon-oa-questions.html">Lesson 20</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat. If you did Lessons 19 or 20, paste their results panels too. They're still saved on those pages.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a hidden test fails and you can't see why, paste your code and I'll tell you which kind of case broke it, without giving away the fix.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/trace.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/python-playground.js"></script>
+<script src="../assets/progress.js"></script>
+<script src="../assets/run-gate.js"></script>
+<script>
+  document.querySelectorAll(".pg").forEach((el) => mountPlayground(el, { code: el.dataset.code }));
+  mountResults(document.getElementById("results"), { lesson: "Lesson 21: Stacks" });
+  [[1, 15], [2, 20], [3, 30]].forEach(([n, m]) =>
+    mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: m }));
+  [1, 2, 3].forEach(mountRunGate);
+
+  mountTrace(document.getElementById("mono-trace"), {
+    cells: [70, 68, 71, 69, 72],
+    steps: [
+      { active: [], state: "stack = []    answer = [0, 0, 0, 0, 0]", note: "The stack will hold indices of days still waiting for a warmer day." },
+      { active: 0, state: "stack = [0]    answer = [0, 0, 0, 0, 0]", note: "Day 0 (70). Nothing is waiting, so push 0." },
+      { active: 1, state: "stack = [0, 1]    answer = [0, 0, 0, 0, 0]", note: "Day 1 (68). The top is day 0 (70), and 68 isn't warmer. Push 1. Coolest is on top." },
+      { active: [2, 1], state: "stack = [0]    answer = [0, 1, 0, 0, 0]", note: "Day 2 (71). The top is day 1 (68), and 71 is warmer. Pop 1: answer[1] = 2 − 1 = 1." },
+      { active: [2, 0], state: "stack = [2]    answer = [2, 1, 0, 0, 0]", note: "Still day 2. The new top is day 0 (70), and 71 beats it too. Pop 0: answer[0] = 2 − 0 = 2. The stack is empty, so push 2." },
+      { active: 3, state: "stack = [2, 3]    answer = [2, 1, 0, 0, 0]", note: "Day 3 (69). Not warmer than day 2 (71). Push 3." },
+      { active: [4, 3, 2], state: "stack = [4]    answer = [2, 1, 2, 1, 0]", note: "Day 4 (72) beats day 3 (69): answer[3] = 1. Then it beats day 2 (71): answer[2] = 2. Push 4." },
+      { active: [], state: "answer = [2, 1, 2, 1, 0]", note: "The loop ends. Day 4 is still waiting, so it keeps its 0. Five pushes and four pops in total." },
+    ],
+  });
+
+  const traceHeader = "\n    # Trace the example here, one line per step:\n    ";
+  const half = Array.from({ length: 3000 }, (_, i) => String.fromCharCode(97 + (i % 26))).join("");
+  const bigMirror = half + half.split("").reverse().join("");
+  const bigNested = "(".repeat(3000) + ")".repeat(3000);
+  const bigCooling = Array.from({ length: 6000 }, (_, i) => 6000 - i).concat([7000]);
+  const bigCoolingAnswer = Array.from({ length: 6000 }, (_, i) => 6000 - i).concat([0]);
+
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def remove_duplicates(s):\n    " + traceHeader,
+    skill: "implement-adjacent-duplicates",
+    fn: "remove_duplicates",
+    cases: [
+      { label: '"abbaca"', args: ["abbaca"], expected: "ca" },
+      { label: '"azxxzy"', args: ["azxxzy"], expected: "ay" },
+      { label: 'one letter, "a"', args: ["a"], expected: "a", hidden: true },
+      { label: 'everything cancels, "abba"', args: ["abba"], expected: "", hidden: true },
+      { label: 'three in a row, "aaa"', args: ["aaa"], expected: "a", hidden: true },
+      { label: "6,000 letters that all cancel", args: [bigMirror], expected: "", maxMs: 200, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def is_valid(s):\n    " + traceHeader,
+    skill: "implement-valid-parentheses",
+    fn: "is_valid",
+    cases: [
+      { label: '"()"', args: ["()"], expected: true },
+      { label: '"()[]{}"', args: ["()[]{}"], expected: true },
+      { label: '"(]"', args: ["(]"], expected: false },
+      { label: '"([)]"', args: ["([)]"], expected: false },
+      { label: '"{[]}"', args: ["{[]}"], expected: true },
+      { label: 'starts with a closer, "]"', args: ["]"], expected: false, hidden: true },
+      { label: 'left open, "(("', args: ["(("], expected: false, hidden: true },
+      { label: 'closer first, then fine, ")()"', args: [")()"], expected: false, hidden: true },
+      { label: 'counts match but order wrong, "){"', args: ["){"], expected: false, hidden: true },
+      { label: "3,000 nested pairs", args: [bigNested], expected: true, maxMs: 200, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def daily_temperatures(temperatures):\n    " + traceHeader,
+    skill: "implement-daily-temperatures",
+    fn: "daily_temperatures",
+    cases: [
+      { label: "[73, 74, 75, 71, 69, 72, 76, 73]", args: [[73, 74, 75, 71, 69, 72, 76, 73]], expected: [1, 1, 4, 2, 1, 1, 0, 0] },
+      { label: "[30, 40, 50, 60]", args: [[30, 40, 50, 60]], expected: [1, 1, 1, 0] },
+      { label: "only cooling, [5, 4, 3]", args: [[5, 4, 3]], expected: [0, 0, 0], hidden: true },
+      { label: "equal isn't warmer, [50, 50, 51]", args: [[50, 50, 51]], expected: [2, 1, 0], hidden: true },
+      { label: "one day, [40]", args: [[40]], expected: [0], hidden: true },
+      { label: "6,000 cooling days, then one hot day", args: [bigCooling], expected: bigCoolingAnswer, maxMs: 300, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

@@ -39,7 +39,46 @@
       <td>Check the best value once more after the loop, or on every step</td>
       <td>Updating <code>best</code> only when a streak breaks. A streak that runs to the last day is never counted</td>
     </tr>
+    <tr>
+      <td>Python has no <code>++</code> (<a href="https://docs.python.org/3/reference/simple_stmts.html#augmented-assignment-statements">docs</a>)</td>
+      <td><code>i += 1</code></td>
+      <td><code>i++</code> is a SyntaxError. It's Java, C and JavaScript</td>
+    </tr>
+    <tr>
+      <td>You can't assign to an index that doesn't exist yet (<a href="https://docs.python.org/3/library/exceptions.html#IndexError">docs</a>)</td>
+      <td><code>arr = [0] * n</code>, then <code>arr[i] = x</code>. Or <code>arr.append(x)</code></td>
+      <td><code>arr = []</code>, then <code>arr[4] = x</code> raises IndexError: list assignment index out of range</td>
+    </tr>
+    <tr>
+      <td><code>.items()</code> gives key first, then value (<a href="https://docs.python.org/3/library/stdtypes.html#dict.items">docs</a>)</td>
+      <td><code>for key, count in freq.items():</code></td>
+      <td><code>for count, key in freq.items():</code> runs without an error, but the names are lying</td>
+    </tr>
+    <tr>
+      <td><code>continue</code> jumps straight back to the loop's test (<a href="https://docs.python.org/3/tutorial/controlflow.html#break-and-continue-statements">docs</a>)</td>
+      <td><code>break</code> when you're done with the loop. Make sure every path through a <code>while</code> loop changes its counter</td>
+      <td><code>continue</code> before <code>i += 1</code> in a <code>while</code> loop skips the increment, so the loop never ends</td>
+    </tr>
+    <tr>
+      <td>An index isn't a value. Name them differently</td>
+      <td><code>for i in range(len(nums)):</code>, then <code>nums[i]</code>. Or <code>for n in nums:</code> when you don't need the index</td>
+      <td><code>for n in range(...)</code>, then <code>total = n</code>, which stores the position, not the number</td>
+    </tr>
   </table>
+
+  <h2>If your fingers type Java or JavaScript</h2>
+  <p>Lessons 18 and 21 had all of these. Python doesn't error until the line runs, so in an interview nobody will catch them for you.</p>
+  <table>
+    <tr><th>You typed</th><th>Python</th></tr>
+    <tr><td><code>stack.push(x)</code></td><td><code>stack.append(x)</code> (<a href="https://docs.python.org/3/tutorial/datastructures.html#using-lists-as-stacks">docs</a>)</td></tr>
+    <tr><td><code>d.values().contains(x)</code>, <code>list.contains(x)</code></td><td><code>x in d.values()</code>, <code>x in items</code></td></tr>
+    <tr><td><code>stack.len()</code>, <code>s.length</code></td><td><code>len(stack)</code>, <code>len(s)</code></td></tr>
+    <tr><td><code>i++</code></td><td><code>i += 1</code></td></tr>
+    <tr><td><code>else if</code></td><td><code>elif</code></td></tr>
+    <tr><td><code>for (t of temps)</code> style, written as <code>range(temps)</code></td><td><code>for t in temps:</code> for values, <code>for i in range(len(temps)):</code> for indices, <code>for i, t in enumerate(temps):</code> for both</td></tr>
+    <tr><td><code>stack.pop[-1]</code> or <code>stack(-1)</code></td><td><code>stack.pop()</code> calls with round brackets, and <code>stack[-1]</code> indexes with square ones</td></tr>
+  </table>
+  <p>And one Python-only trap: <code>[][-1]</code> isn't <code>[]</code> or <code>None</code>. It raises IndexError, so write <code>if stack and stack[-1] == c:</code>.</p>
 
   <h2>Read before your first Run</h2>
   <ol class="steps">
@@ -47,6 +86,8 @@
     <li>Every <code>def</code>, <code>if</code>, <code>elif</code>, <code>else</code>, <code>for</code> and <code>while</code> line ends with <code>:</code>.</li>
     <li>No variable is called <code>max</code>, <code>min</code>, <code>sum</code>, <code>list</code>, <code>dict</code> or <code>id</code>.</li>
     <li>There's a <code>return</code> after the loop, and it returns the right thing when the answer is at the very end.</li>
+    <li>Every name is spelled the same way everywhere. <code>numLeft</code> and <code>numleft</code> are two different names.</li>
+    <li>Trace the <em>code as typed</em>, one executed line at a time, not the plan in your head.</li>
   </ol>
 </main>
 </body>

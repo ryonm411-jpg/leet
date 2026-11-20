@@ -66,8 +66,22 @@
   </ul>
   <p class="small">The question names come from the repo's folder names. Where a LeetCode number is given, it's the well-known match for that title. The repo's own wording wasn't checked against LeetCode.</p>
 
+  <h2>Mixed sets</h2>
+  <p>Once a pattern is learned, practise it mixed with the others, so you have to recognise it yourself. <a href="../lessons/0022-mixed-interview-set.html">Lesson 22</a> covers Longest Palindrome, Move Zeroes, Product of Array Except Self and Minimum Size Subarray Sum. To make your own mixed set, take one problem from each section below, in random order, and name the pattern before you open the problem's tag list.</p>
+
+  <h2>Stacks (Lesson 21)</h2>
+  <p>Lesson 21 covers Remove All Adjacent Duplicates, Valid Parentheses and Daily Temperatures. These are next, from the <a href="https://www.techinterviewhandbook.org/algorithms/stack/">Handbook's stack list</a>. See the <a href="stack-cheatsheet.html">stack cheat sheet</a>.</p>
+  <table>
+    <tr><th>Pattern</th><th>Problem</th><th>Twist to notice</th></tr>
+    <tr><td>Stack</td><td><a href="https://leetcode.com/problems/baseball-game/">Baseball Game</a> (Easy)</td><td>"C" pops, "D" reads <code>stack[-1]</code>, "+" reads the top two</td></tr>
+    <tr><td>Stack</td><td><a href="https://leetcode.com/problems/implement-queue-using-stacks/">Implement Queue using Stacks</a> (Easy)</td><td>Two stacks. Pour one into the other only when the out-stack is empty</td></tr>
+    <tr><td>Stack</td><td><a href="https://leetcode.com/problems/min-stack/">Min Stack</a> (Medium)</td><td>Push the current minimum alongside each value</td></tr>
+    <tr><td>Stack</td><td><a href="https://leetcode.com/problems/evaluate-reverse-polish-notation/">Evaluate Reverse Polish Notation</a> (Medium)</td><td>Pop two, apply, push. Pop order matters for <code>-</code> and <code>/</code></td></tr>
+    <tr><td>Stack</td><td><a href="https://leetcode.com/problems/asteroid-collision/">Asteroid Collision</a> (Medium)</td><td>Only a left-mover hitting a right-mover on top collides</td></tr>
+  </table>
+
   <h2>After the OA: new patterns</h2>
-  <p>Follow the <a href="https://neetcode.io/practice">NeetCode 150</a> order from here. Next up are variable-size sliding windows, such as <a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</a>, then stacks, binary search, linked lists and trees.</p>
+  <p>Follow the <a href="https://neetcode.io/practice">NeetCode 150</a> order from here. Next up are variable-size sliding windows, such as <a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</a>, then stacks (now Lesson 21), binary search, linked lists and trees.</p>
 
   <p class="small">Links and difficulty labels come from LeetCode's public problem URLs. LeetCode blocks automated reading, so the problem statements weren't checked. More: <a href="oa-checklist.html">OA checklist</a>, <a href="glossary.html">glossary</a>.</p>
 </main>
