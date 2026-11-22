@@ -48,6 +48,9 @@
 - [Talk: Andy Jassy on the Leadership Principles](https://www.amazon.jobs/content/en/our-workplace/leadership-principles)
   The user pasted transcripts of Jassy explaining each principle, including two-way doors, owners vs renters, and "follow the anecdotes". The original page wasn't confirmed, so the link goes to the official principles page. Use for: Work Style and behavioural prep (Lesson 16, `reference/leadership-principles.html`).
 
+- [Python docs: bisect](https://docs.python.org/3/library/bisect.html)
+  Official docs for binary search on sorted lists. `bisect_left` will "Locate the insertion point for x in a to maintain sorted order". The Tech Interview Handbook has no binary search page (404 on 2026-11-22). Its [array page](https://www.techinterviewhandbook.org/algorithms/array/) covers it in one line ("Is the array sorted or partially sorted? If it is, some form of binary search should be possible"). Use for: Lesson 23 and `reference/binary-search-cheatsheet.html`.
+
 ## Wisdom (Communities)
 
 - [Exponent Practice (peer mock interviews, formerly Pramp)](https://www.tryexponent.com/blog/introducing-exponent-practice)

@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Binary Search</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 23 · New pattern · Binary search, plus a cold retry</p>
+  <h1>Throw away half, every time</h1>
+  <p class="meta">About 60 minutes · Python recall reps, then three LeetCode problems and a bonus · Your win: Binary Search passes on the first run</p>
+
+  <p class="lede">Most of your extra runs in Lesson 21 came from Java and JavaScript names, such as <code>push</code>, <code>.len()</code> and <code>++</code>, not from wrong ideas. So this lesson opens with fast typed recall: no options to pick from, just type the Python. Then comes a new pattern, <strong>binary search</strong>, and a cold retry of Valid Parentheses from Lesson 21, with no hint for the first 8 minutes.</p>
+
+  <h2>Part 1: say it in Python (about 5 minutes)</h2>
+  <p>Each line is something you'd write in Java or JavaScript. Type the Python version from memory and press Enter. Spaces don't matter. Your first answer is the one that counts, so don't look anything up.</p>
+
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>stack.push(x);</code>" data-answers="stack.append(x)" data-why="A Python list is the stack. Push is append."></div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>s.length()</code>" data-answers="len(s)" data-why="len is a built-in function that takes the thing, not a method on it. Same for lists and dicts."></div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>i++;</code>" data-answers="i += 1" data-why="Python has no ++. i++ is a SyntaxError."></div>
+  <div class="recall" data-skill="stack-empty-check" data-prompt="Java: <code>if (stack.isEmpty())</code>" data-answers="if not stack: || if len(stack) == 0: || if not stack || if len(stack) == 0" data-why="An empty list counts as false, so not stack is True exactly when it's empty."></div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>stack.peek()</code> (look at the top, don't remove it)" data-answers="stack[-1]" data-why="Index -1 is the last item, the top. On an empty list it raises IndexError, so check the stack first."></div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>map.containsKey(k)</code>, where the dict is called <code>d</code>" data-answers="k in d" data-why="in checks the keys of a dict in O(1). There's no .contains or .containsKey."></div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>map.put(c, map.getOrDefault(c, 0) + 1);</code>, where the dict is called <code>counts</code>" data-answers="counts[c] = counts.get(c, 0) + 1" data-why="get reads with a default. You assign through counts[c], never through get(...)."></div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>for (int i = 0; i &lt; nums.length; i++)</code>" data-answers="for i in range(len(nums)): || for i in range(len(nums))" data-why="range takes a number, so it's range(len(nums)), never range(nums). It stops before len(nums)."></div>
+  <div class="recall" data-skill="index-vs-value" data-prompt="Java: <code>for (var e : counts.entrySet())</code>, using the names <code>key</code> and <code>count</code>" data-answers="for key, count in counts.items(): || for key, count in counts.items()" data-why=".items() gives (key, value) pairs, key first."></div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>else if (x &gt; 0) {</code>" data-answers="elif x > 0:" data-why="One word, elif, and a colon instead of braces."></div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>int mid = (lo + hi) / 2;</code>" data-answers="mid = (lo + hi) // 2" data-why="In Python, / always gives a float, even 4 / 2 = 2.0, and a float can't be a list index. // divides and rounds down to an int. You'll need this line in a minute."></div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="JavaScript: <code>!found &amp;&amp; x !== null</code>" data-answers="not found and x is not None || not found and x != None" data-why="Python spells it out: not, and, or. null is None, and you compare to it with is not."></div>
+
+  <p class="small">Missed some? They're all in the <a href="../reference/python-rules.html">Python rules</a> table. Come back tomorrow and do this part again without looking. It takes two minutes.</p>
+
+  <h2>Part 2: one empty-stack trap</h2>
+  <pre><code>stack = []
+c = ")"
+if stack and stack[-1] == "(":          # line A
+    stack.pop()
+if stack[-1] == "(" and stack:          # line B
+    stack.pop()</code></pre>
+  <div class="quiz" data-skill="stack-empty-check">
+    <p class="q">Which line crashes on the empty stack?</p>
+    <div class="options">
+      <button data-correct data-why="and stops as soon as one side is False. Line A checks stack first: it's empty, so False, and stack[-1] is never read. Line B reads stack[-1] first, and an empty list has no last item, so IndexError. Put the emptiness check on the left.">Only line B</button>
+      <button data-why="Line A checks stack first. It's empty, so and stops there and never reads stack[-1]. Line B reads stack[-1] before checking, so B crashes.">Only line A</button>
+      <button data-why="Line A is safe: and stops at the first False, so stack[-1] is never read. Only B reads it first.">Both lines</button>
+      <button data-why="stack[-1] on an empty list raises IndexError. It doesn't return [] or None. Line B reads it before checking.">Neither line</button>
+    </div>
+  </div>
+
+  <h2>Part 3: binary search</h2>
+  <p>If a list is <strong>sorted</strong>, you don't have to look at every item. Check the middle one. If it's too small, the answer can only be to its right, so throw the left half away. If it's too big, throw the right half away. Every check halves what's left. The Tech Interview Handbook puts it as a question to ask yourself: "Is the array sorted or partially sorted? If it is, some form of binary search should be possible" (<a href="https://www.techinterviewhandbook.org/algorithms/array/">Handbook, arrays</a>). Its table gives search on a sorted array as O(log(n)).</p>
+  <p>You keep two indices, <code>lo</code> and <code>hi</code>, for the part of the list that could still hold the answer. Step through searching for <strong>9</strong>, then for <strong>2</strong>, which isn't there.</p>
+  <div id="trace-9"></div>
+  <div id="trace-2"></div>
+  <p>Look at the last step of the search for 2: when it gives up, <code>lo</code> is 2, which is exactly where 2 would go to keep the list sorted. Python's own <a href="https://docs.python.org/3/library/bisect.html"><code>bisect</code> module</a> is built on this: <code>bisect_left</code> will "Locate the insertion point for x in a to maintain sorted order". You'll use that fact in Problem 2.</p>
+
+  <div class="quiz" data-skill="binary-search-move">
+    <p class="q">The middle number is smaller than the target. Which line comes next?</p>
+    <div class="options">
+      <button data-correct data-why="The target is bigger than nums[mid], so it can only be to the right of mid. mid itself was just checked, so skip it too: lo = mid + 1. Skipping mid is also what makes the range shrink every time, so the loop can't get stuck.">lo = mid + 1</button>
+      <button data-why="That throws away the right half, but the target is bigger than nums[mid], so the right half is exactly where it must be.">hi = mid - 1</button>
+      <button data-why="Close, but mid was already checked and isn't the answer. Keeping it can leave lo stuck on the same value, and the loop never ends.">lo = mid    </button>
+      <button data-why="That keeps the left half, but the target is bigger than nums[mid], so it can't be on the left.">hi = mid    </button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="binary-search-bounds">
+    <p class="q">Someone writes <code>while lo &lt; hi:</code> instead of <code>while lo &lt;= hi:</code>. With <code>nums = [5]</code> and target 5, what does their search return?</p>
+    <div class="options">
+      <button data-correct data-why="lo and hi both start at 0, and 0 &lt; 0 is False, so the loop never runs and the function falls through to return -1. With one item left, lo equals hi, and that item still needs checking. That's why it's lo &lt;= hi.">-1</button>
+      <button data-why="It would, if the loop ran once. But lo = hi = 0, and 0 &lt; 0 is False, so the loop body never runs.">0 </button>
+      <button data-why="No index is ever read, because the loop body never runs. It returns -1.">An IndexError</button>
+      <button data-why="The loop doesn't even start: 0 &lt; 0 is False. It returns -1 straight away.">It never ends</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="complexity-analysis">
+    <p class="q">A sorted list has 1,000,000 numbers. At most how many middles does binary search check?</p>
+    <div class="options">
+      <button data-correct data-why="Each check halves what's left: a million, half a million, 250,000 and so on. 2 to the 20th is about a million, so about 20 halvings reach one item. That's O(log n) time, and lo, hi and mid are O(1) space.">About 20</button>
+      <button data-why="That's the square root of a million. Halving shrinks it much faster: 2 to the 20th is about a million, so about 20 checks.">About 1,000</button>
+      <button data-why="That's one halving, then checking everything that's left. Binary search keeps halving: about 20 checks in all.">About 500,000</button>
+      <button data-why="That's a full scan, O(n). Binary search halves the range every check, so about 20.">About 1,000,000</button>
+    </div>
+  </div>
+
+  <h2>Problem 1: Binary Search</h2>
+  <div id="timer-1"></div>
+  <p class="small"><a href="https://leetcode.com/problems/binary-search/">LeetCode 704</a>, Easy. Statement written from memory, as LeetCode blocks automated reading.</p>
+  <p>Given a list <code>nums</code> sorted in ascending order with no repeats, and an int <code>target</code>, return the index of <code>target</code>, or <code>-1</code> if it isn't there. It must run in O(log n) time.</p>
+  <p><strong>Examples:</strong> <code>[-1, 0, 3, 5, 9, 12], 9</code> gives <code>4</code>. <code>[-1, 0, 3, 5, 9, 12], 2</code> gives <code>-1</code>.</p>
+  <div id="preflight-1"></div>
+  <div id="ex-1"></div>
+  <details data-solution="binary-search-hint">
+    <summary>Stuck for 6 minutes? Show a hint</summary>
+    <p>Start with <code>lo = 0</code> and <code>hi = len(nums) - 1</code>. Loop while <code>lo &lt;= hi</code>. Work out <code>mid</code> with <code>//</code>. Three cases: found it, so return <code>mid</code>. Too small, so <code>lo = mid + 1</code>. Too big, so <code>hi = mid - 1</code>. After the loop, return <code>-1</code>.</p>
+  </details>
+
+  <h2>Problem 2: Search Insert Position</h2>
+  <div id="timer-2"></div>
+  <p class="small"><a href="https://leetcode.com/problems/search-insert-position/">LeetCode 35</a>, Easy. Statement written from memory.</p>
+  <p>Given a sorted list <code>nums</code> of distinct ints and a <code>target</code>, return the index of <code>target</code> if it's there. If not, return the index where it <strong>would be inserted</strong> to keep the list sorted. O(log n) time.</p>
+  <p><strong>Examples:</strong> <code>[1, 3, 5, 6], 5</code> gives <code>2</code>. <code>[1, 3, 5, 6], 2</code> gives <code>1</code>. <code>[1, 3, 5, 6], 7</code> gives <code>4</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which pattern fits best?</p>
+    <div class="options">
+      <button data-correct data-why="Sorted input and an O(log n) limit: binary search. It's Problem 1 with one change to the last line, because of what lo holds when the loop gives up.">Binary search</button>
+      <button data-why="Two pointers walking in from both ends look for a pair. Here you look for one position, and O(log n) rules out walking.">Two pointers</button>
+      <button data-why="A seen map has to read every number to build, which is O(n). The limit is O(log n).">Seen map    </button>
+      <button data-why="A window covers a block of neighbours. Here you want a single position in a sorted list.">Sliding window</button>
+    </div>
+  </div>
+  <div id="preflight-2"></div>
+  <div id="ex-2"></div>
+  <details data-solution="search-insert-hint">
+    <summary>Stuck for 6 minutes? Show a hint</summary>
+    <p>Copy your Problem 1 code. Change only the very last line. Go back to the search for 2 in Part 3: when the loop stopped, which index held the spot where 2 belonged?</p>
+  </details>
+
+  <h2>Problem 3: Valid Parentheses, cold</h2>
+  <div id="timer-3"></div>
+  <p class="small"><a href="https://leetcode.com/problems/valid-parentheses/">LeetCode 20</a>, Easy. You met it in <a href="0021-stacks.html">Lesson 21</a>, where it took 6 runs and the hint. Don't reopen that page. This is the spaced retry: same problem, from a blank editor, two days later.</p>
+  <p>Given a string <code>s</code> of only <code>()[]{}</code>, return <code>True</code> if every bracket is closed by the same type, in the right order, and every closer has an opener. Otherwise return <code>False</code>.</p>
+  <p><strong>Examples:</strong> <code>"()[]{}"</code> gives <code>True</code>. <code>"(]"</code> gives <code>False</code>. <code>"([])"</code> gives <code>True</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">Which pattern fits best?</p>
+    <div class="options">
+      <button data-correct data-why="Each closer must match the most recent opener still waiting. Most recent still waiting is a stack. Push openers, and on a closer, pop and compare.">Stack       </button>
+      <button data-why="Counting openers and closers passes &quot;([)]&quot;, which has matching counts but the wrong order. Order matters, so a count isn't enough.">Frequency count</button>
+      <button data-why="Walking in from both ends fails on &quot;()[]&quot;, where the outer ends are ( and ], which don't match, but the string is valid.">Two pointers</button>
+      <button data-why="A seen map answers &quot;have I seen it?&quot;, but here you need the most recent unclosed opener, and that changes as you go.">Seen map    </button>
+    </div>
+  </div>
+  <div id="preflight-3"></div>
+  <div id="ex-3"></div>
+  <details data-solution="valid-parentheses-hint">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p>A dict from closer to opener: <code>{")": "(", "]": "[", "}": "{"}</code>. Openers get pushed. On a closer: if the stack is empty <em>or</em> its top isn't the matching opener, return False. Otherwise pop. At the end, leftover openers mean False, so return whether the stack is empty.</p>
+  </details>
+
+  <h2>Bonus: Sqrt(x)</h2>
+  <div id="timer-4"></div>
+  <p class="small"><a href="https://leetcode.com/problems/sqrtx/">LeetCode 69</a>, Easy. Statement written from memory.</p>
+  <p>Given an int <code>x &gt;= 0</code>, return its square root rounded <strong>down</strong> to an int. You may not use <code>** 0.5</code> or <code>math.sqrt</code>.</p>
+  <p><strong>Examples:</strong> <code>4</code> gives <code>2</code>. <code>8</code> gives <code>2</code> (the real root is 2.83…).</p>
+  <p class="small">There's no list here, so what's sorted? Think about the numbers 0, 1, 2, … x and what happens to their squares.</p>
+  <div id="preflight-4"></div>
+  <div id="ex-4"></div>
+  <details data-solution="sqrt-hint">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p>Binary search the <em>answer</em>: <code>lo = 0</code>, <code>hi = x</code>. If <code>mid * mid &lt;= x</code>, mid might be the answer, so remember it and try bigger with <code>lo = mid + 1</code>. Otherwise <code>hi = mid - 1</code>. Return the last mid you remembered.</p>
+  </details>
+
+  <h2>After the set</h2>
+  <p>Explain Problem 1 out loud in under a minute: the idea, why <code>lo &lt;= hi</code>, why <code>mid + 1</code>, and its time and space. Then submit each problem on LeetCode. The new <a href="../reference/binary-search-cheatsheet.html">binary search cheat sheet</a> has the template and the traps. Read it <em>after</em> the problems, not before.</p>
+  <p><strong>Primary source:</strong> the <a href="https://docs.python.org/3/library/bisect.html">Python <code>bisect</code> docs</a>. They're short. Read the description of <code>bisect_left</code> ("Locate the insertion point for x in a to maintain sorted order"), and notice it returns the insertion point, just like Problem 2.</p>
+  <p>Previous: <a href="0022-mixed-interview-set.html">Lesson 22, Mixed set</a>. Review: <a href="../reference/stack-cheatsheet.html">stacks</a>, <a href="../reference/python-rules.html">Python rules</a>, <a href="../reference/glossary.html">glossary</a>, <a href="../reference/practice-queue.html">practice queue</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat. One extra line would help: <strong>did you do Lessons 19, 20 and 22?</strong> If so, paste their results too.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> Not sure why <code>lo</code> ends up at the insertion point, or why a test fails? Ask, and I'll walk through it with you.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/recall.js"></script>
+<script src="../assets/trace.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/progress.js"></script>
+<script src="../assets/preflight.js"></script>
+<script>
+  const cells = [-1, 0, 3, 5, 9, 12];
+  mountTrace(document.getElementById("trace-9"), {
+    cells,
+    steps: [
+      { active: [0, 1, 2, 3, 4, 5], state: "target 9 · lo = 0, hi = 5", note: "Searching for 9. The whole list could hold it, so lo is the first index and hi is the last." },
+      { active: 2, state: "lo = 0, hi = 5 · mid = (0 + 5) // 2 = 2 · nums[2] = 3", note: "3 is smaller than 9. Since the list is sorted, everything at index 2 or left of it is too small too." },
+      { active: [3, 4, 5], state: "lo = 3, hi = 5", note: "Throw away indices 0 to 2: lo moves to mid + 1 = 3. Half the list gone in one check." },
+      { active: 4, state: "lo = 3, hi = 5 · mid = (3 + 5) // 2 = 4 · nums[4] = 9", note: "Found it. Return 4. Two checks instead of five." },
+    ],
+  });
+  mountTrace(document.getElementById("trace-2"), {
+    cells,
+    steps: [
+      { active: [0, 1, 2, 3, 4, 5], state: "target 2 · lo = 0, hi = 5", note: "Now searching for 2, which isn't in the list." },
+      { active: 2, state: "mid = 2 · nums[2] = 3", note: "3 is bigger than 2, so the answer can only be left of index 2: hi = mid - 1 = 1." },
+      { active: 0, state: "lo = 0, hi = 1 · mid = 0 · nums[0] = -1", note: "-1 is smaller than 2, so lo = mid + 1 = 1." },
+      { active: 1, state: "lo = 1, hi = 1 · mid = 1 · nums[1] = 0", note: "lo equals hi: one item left, and it still gets checked. 0 is smaller than 2, so lo = mid + 1 = 2." },
+      { active: [], state: "lo = 2, hi = 1 · lo > hi, so stop", note: "Nothing left to search, so return -1. But look at lo: 2 is exactly where 2 would slot in, between 0 and 3." },
+    ],
+  });
+
+  mountResults(document.getElementById("results"), { lesson: "Lesson 23: Binary search" });
+  [[1, 15], [2, 15], [3, 15], [4, 20]].forEach(([n, m]) =>
+    mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: m }));
+  const checks = [
+    "Python names only: <code>append</code>, <code>x in y</code>, <code>len(x)</code>, <code>i += 1</code>, <code>elif</code>. No <code>push</code>, <code>.contains</code>, <code>.len()</code>, <code>++</code> or <code>else if</code>",
+    "Division for an index uses <code>//</code>, never <code>/</code>",
+    "The emptiness check comes first, on the left of <code>and</code>, before any <code>[-1]</code> or <code>pop()</code>",
+    "Each name is spelled the same everywhere, and none is called <code>dict</code>, <code>list</code>, <code>sum</code>, <code>max</code> or <code>min</code>",
+    "I ran the first example through my code in my head, line by line, and got the expected answer",
+  ];
+  [1, 2, 3, 4].forEach((n) => mountPreflight(n, checks));
+
+  const big = Array.from({ length: 300000 }, (_, i) => i * 2);
+
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def search(nums, target):\n    ",
+    skill: "implement-binary-search",
+    fn: "search",
+    cases: [
+      { label: "[-1, 0, 3, 5, 9, 12], 9", args: [[-1, 0, 3, 5, 9, 12], 9], expected: 4 },
+      { label: "[-1, 0, 3, 5, 9, 12], 2", args: [[-1, 0, 3, 5, 9, 12], 2], expected: -1 },
+      { label: "one item, found, [5], 5", args: [[5], 5], expected: 0, hidden: true },
+      { label: "one item, missing, [5], -5", args: [[5], -5], expected: -1, hidden: true },
+      { label: "last of two, [1, 3], 3", args: [[1, 3], 3], expected: 1, hidden: true },
+      { label: "smaller than everything, [2, 4, 6], 1", args: [[2, 4, 6], 1], expected: -1, hidden: true },
+      { label: "bigger than everything, [2, 4, 6], 7", args: [[2, 4, 6], 7], expected: -1, hidden: true },
+      { label: "first item, [2, 4, 6, 8], 2", args: [[2, 4, 6, 8], 2], expected: 0, hidden: true },
+      { label: "300,000 numbers, target near the end (must not scan)", args: [big, 599998], expected: 299999, maxMs: 3, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def search_insert(nums, target):\n    ",
+    skill: "implement-search-insert",
+    fn: "search_insert",
+    cases: [
+      { label: "[1, 3, 5, 6], 5", args: [[1, 3, 5, 6], 5], expected: 2 },
+      { label: "[1, 3, 5, 6], 2", args: [[1, 3, 5, 6], 2], expected: 1 },
+      { label: "[1, 3, 5, 6], 7", args: [[1, 3, 5, 6], 7], expected: 4 },
+      { label: "before everything, [1, 3, 5, 6], 0", args: [[1, 3, 5, 6], 0], expected: 0, hidden: true },
+      { label: "one item, found, [1], 1", args: [[1], 1], expected: 0, hidden: true },
+      { label: "one item, goes after, [1], 2", args: [[1], 2], expected: 1, hidden: true },
+      { label: "negatives, [-5, -2, 4], -3", args: [[-5, -2, 4], -3], expected: 1, hidden: true },
+      { label: "300,000 numbers, odd target (must not scan)", args: [big, 599997], expected: 299999, maxMs: 3, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def is_valid(s):\n    ",
+    skill: "implement-stack",
+    fn: "is_valid",
+    cases: [
+      { label: '"()[]{}"', args: ["()[]{}"], expected: true },
+      { label: '"(]"', args: ["(]"], expected: false },
+      { label: '"([])"', args: ["([])"], expected: true },
+      { label: 'starts with a closer, "]"', args: ["]"], expected: false, hidden: true },
+      { label: 'opener left over, "(("', args: ["(("], expected: false, hidden: true },
+      { label: 'right counts, wrong order, "([)]"', args: ["([)]"], expected: false, hidden: true },
+      { label: 'closer after everything matched, "())"', args: ["())"], expected: false, hidden: true },
+      { label: 'deep nesting, "{[()()]}"', args: ["{[()()]}"], expected: true, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-4"), {
+    starter: "def my_sqrt(x):\n    ",
+    skill: "implement-sqrt-binary-search",
+    fn: "my_sqrt",
+    cases: [
+      { label: "4", args: [4], expected: 2 },
+      { label: "8", args: [8], expected: 2 },
+      { label: "0", args: [0], expected: 0, hidden: true },
+      { label: "1", args: [1], expected: 1, hidden: true },
+      { label: "just under a square, 15", args: [15], expected: 3, hidden: true },
+      { label: "a square, 16", args: [16], expected: 4, hidden: true },
+      { label: "biggest 32-bit int, 2147483647", args: [2147483647], expected: 46340, maxMs: 3, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

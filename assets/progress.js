@@ -1,10 +1,10 @@
 // Builds a results summary the learner can paste to their teacher agent.
 // Results are saved in localStorage, so they survive a refresh.
-// Quizzes need data-skill. Solution <details> need data-solution.
+// Quizzes and recall cards need data-skill. Solution <details> need data-solution.
 // mountResults(element, { lesson: "Lesson 1: Two Sum" })
 function mountResults(root, { lesson }) {
   const storageKey = "lesson-results:" + lesson;
-  const quizzes = [...document.querySelectorAll(".quiz[data-skill]")];
+  const quizzes = [...document.querySelectorAll(".quiz[data-skill], .recall[data-skill]")];
   let quizResults = {}; // quiz position in the page -> { correct, answer }
   let exercises = {}; // skill -> { runs, passed, problems, firstCode, lastCode }
   let solutionsOpened = []; // data-solution values, "" when the attribute has no value

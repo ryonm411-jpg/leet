@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Binary Search Cheatsheet</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Reference</p>
+  <h1>Binary search cheatsheet</h1>
+  <p class="meta">Learned in <a href="../lessons/0023-binary-search.html">Lesson 23</a> · Terms in the <a href="glossary.html">glossary</a> · Sources: <a href="https://www.techinterviewhandbook.org/algorithms/array/">Tech Interview Handbook, Array</a>, <a href="https://docs.python.org/3/library/bisect.html">Python bisect docs</a></p>
+
+  <h2>When to reach for it</h2>
+  <p>The input is <strong>sorted</strong> (or partly sorted), or the problem asks for O(log n). Also when the <em>answers</em> are sorted: "the biggest k where k × k ≤ x" can be searched over k, even with no list.</p>
+
+  <h2>Template: find the target</h2>
+  <pre><code>def search(nums, target):
+    lo, hi = 0, len(nums) - 1
+    while lo &lt;= hi:                 # one item left still gets checked
+        mid = (lo + hi) // 2        # // gives an int index
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] &lt; target:
+            lo = mid + 1            # answer is right of mid
+        else:
+            hi = mid - 1            # answer is left of mid
+    return -1                       # here lo is the insertion point</code></pre>
+  <p>Time O(log n): a million items take about 20 checks. Space O(1).</p>
+
+  <h2>Variants</h2>
+  <table>
+    <tr><th>Problem asks for</th><th>Change</th></tr>
+    <tr><td>Where target would be inserted (LeetCode 35)</td><td>Return <code>lo</code> instead of <code>-1</code>. Python's <code>bisect.bisect_left</code> does the same.</td></tr>
+    <tr><td>Biggest value that still passes a test (Sqrt(x))</td><td>Search over possible answers. When <code>mid</code> passes, save it and go right with <code>lo = mid + 1</code>.</td></tr>
+  </table>
+
+  <h2>Traps</h2>
+  <table>
+    <tr><th>Trap</th><th>Fix</th></tr>
+    <tr><td><code>while lo &lt; hi</code> skips the last item, so <code>[5]</code>, 5 gives -1</td><td>Use <code>lo &lt;= hi</code> with this template.</td></tr>
+    <tr><td><code>lo = mid</code> or <code>hi = mid</code> can loop forever</td><td>Move past mid: <code>mid + 1</code>, <code>mid - 1</code>.</td></tr>
+    <tr><td><code>(lo + hi) / 2</code> is a float, so indexing raises TypeError</td><td>Use <code>//</code>.</td></tr>
+    <tr><td><code>hi = len(nums)</code> reads past the end</td><td><code>hi = len(nums) - 1</code>, the last index.</td></tr>
+    <tr><td>Using it on unsorted input</td><td>Check that it's sorted first. If not, it's probably a hash map.</td></tr>
+  </table>
+</main>
+</body>
+</html>
