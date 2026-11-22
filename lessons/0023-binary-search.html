@@ -10,7 +10,7 @@
 <main>
   <p class="kicker">Lesson 23 · New pattern · Binary search, plus a cold retry</p>
   <h1>Throw away half, every time</h1>
-  <p class="meta">About 60 minutes · Python recall reps, then three LeetCode problems and a bonus · Your win: Binary Search passes on the first run</p>
+  <p class="meta">About 60 minutes · 14 Python recall reps, then three LeetCode problems and a bonus · Your win: Binary Search passes on the first run</p>
 
   <p class="lede">Most of your extra runs in Lesson 21 came from Java and JavaScript names, such as <code>push</code>, <code>.len()</code> and <code>++</code>, not from wrong ideas. So this lesson opens with fast typed recall: no options to pick from, just type the Python. Then comes a new pattern, <strong>binary search</strong>, and a cold retry of Valid Parentheses from Lesson 21, with no hint for the first 8 minutes.</p>
 
@@ -27,10 +27,12 @@
   <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>for (int i = 0; i &lt; nums.length; i++)</code>" data-answers="for i in range(len(nums)): || for i in range(len(nums))" data-why="range takes a number, so it's range(len(nums)), never range(nums). It stops before len(nums)."></div>
   <div class="recall" data-skill="index-vs-value" data-prompt="Java: <code>for (var e : counts.entrySet())</code>, using the names <code>key</code> and <code>count</code>" data-answers="for key, count in counts.items(): || for key, count in counts.items()" data-why=".items() gives (key, value) pairs, key first."></div>
   <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>else if (x &gt; 0) {</code>" data-answers="elif x > 0:" data-why="One word, elif, and a colon instead of braces."></div>
+  <div class="recall" data-skill="end-index-bounds" data-prompt="Java: <code>nums[nums.length - 1]</code> (the last item). Give the short Python way" data-answers="nums[-1]" data-why="Index -1 counts from the end. The last index is len(nums) - 1. nums[len(nums)] is always one past the end: IndexError."></div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="JavaScript: <code>nums.slice(k, n + 1)</code>" data-answers="nums[k:n + 1] || nums[k:n+1]" data-why="Slices use square brackets and a colon. Like range, the end is left out, so this includes index n. Slicing copies, so it's O(length), which is too slow to repeat inside a loop."></div>
   <div class="recall" data-skill="python-builtins-recall" data-prompt="Java: <code>int mid = (lo + hi) / 2;</code>" data-answers="mid = (lo + hi) // 2" data-why="In Python, / always gives a float, even 4 / 2 = 2.0, and a float can't be a list index. // divides and rounds down to an int. You'll need this line in a minute."></div>
   <div class="recall" data-skill="python-builtins-recall" data-prompt="JavaScript: <code>!found &amp;&amp; x !== null</code>" data-answers="not found and x is not None || not found and x != None" data-why="Python spells it out: not, and, or. null is None, and you compare to it with is not."></div>
 
-  <p class="small">Missed some? They're all in the <a href="../reference/python-rules.html">Python rules</a> table. Come back tomorrow and do this part again without looking. It takes two minutes.</p>
+  <p class="small">The two cards before the <code>mid</code> one come from your Lesson 22 code: <code>nums[len(nums)]</code> and <code>nums(k: n+1)</code>. Missed some? They're all in the <a href="../reference/python-rules.html">Python rules</a> table. Come back tomorrow and do this part again without looking. It takes two minutes.</p>
 
   <h2>Part 2: one empty-stack trap</h2>
   <pre><code>stack = []
@@ -157,7 +159,7 @@ if stack[-1] == "(" and stack:          # line B
   <p>Previous: <a href="0022-mixed-interview-set.html">Lesson 22, Mixed set</a>. Review: <a href="../reference/stack-cheatsheet.html">stacks</a>, <a href="../reference/python-rules.html">Python rules</a>, <a href="../reference/glossary.html">glossary</a>, <a href="../reference/practice-queue.html">practice queue</a>.</p>
 
   <h2>Your results</h2>
-  <p>Paste this into the chat. One extra line would help: <strong>did you do Lessons 19, 20 and 22?</strong> If so, paste their results too.</p>
+  <p>Paste this into the chat. One extra line would help: <strong>did you do Lessons 19 and 20?</strong> If so, paste their results too.</p>
   <div id="results"></div>
 
   <p class="next"><strong>Ask me anything.</strong> Not sure why <code>lo</code> ends up at the insertion point, or why a test fails? Ask, and I'll walk through it with you.</p>
@@ -198,6 +200,7 @@ if stack[-1] == "(" and stack:          # line B
   const checks = [
     "Python names only: <code>append</code>, <code>x in y</code>, <code>len(x)</code>, <code>i += 1</code>, <code>elif</code>. No <code>push</code>, <code>.contains</code>, <code>.len()</code>, <code>++</code> or <code>else if</code>",
     "Division for an index uses <code>//</code>, never <code>/</code>",
+    "Every index stays between 0 and <code>len(x) - 1</code>: no <code>nums[len(nums)]</code>, no <code>&lt;= len(...)</code> in a loop condition",
     "The emptiness check comes first, on the left of <code>and</code>, before any <code>[-1]</code> or <code>pop()</code>",
     "Each name is spelled the same everywhere, and none is called <code>dict</code>, <code>list</code>, <code>sum</code>, <code>max</code> or <code>min</code>",
     "I ran the first example through my code in my head, line by line, and got the expected answer",
