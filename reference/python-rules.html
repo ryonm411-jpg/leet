@@ -67,7 +67,7 @@
   </table>
 
   <h2>If your fingers type Java or JavaScript</h2>
-  <p>Lessons 18 and 21 had all of these. Python doesn't error until the line runs, so in an interview nobody will catch them for you.</p>
+  <p>Lessons 18, 21, 22 and 23 had all of these. Python doesn't error until the line runs, so in an interview nobody will catch them for you.</p>
   <table>
     <tr><th>You typed</th><th>Python</th></tr>
     <tr><td><code>stack.push(x)</code></td><td><code>stack.append(x)</code> (<a href="https://docs.python.org/3/tutorial/datastructures.html#using-lists-as-stacks">docs</a>)</td></tr>
@@ -76,6 +76,9 @@
     <tr><td><code>i++</code></td><td><code>i += 1</code></td></tr>
     <tr><td><code>else if</code></td><td><code>elif</code></td></tr>
     <tr><td><code>for (t of temps)</code> style, written as <code>range(temps)</code></td><td><code>for t in temps:</code> for values, <code>for i in range(len(temps)):</code> for indices, <code>for i, t in enumerate(temps):</code> for both</td></tr>
+    <tr><td><code>map.containsKey(k)</code> written as <code>d[k]</code></td><td><code>k in d</code>. <code>d[k]</code> reads the value and raises KeyError when k is missing</td></tr>
+    <tr><td><code>nums(k: n+1)</code>, <code>nums.slice(k, n+1)</code></td><td><code>nums[k:n+1]</code>, with square brackets. The end is left out, as with range</td></tr>
+    <tr><td><code>(lo + hi) / 2</code>, or <code>lo + hi // 2</code></td><td><code>(lo + hi) // 2</code>. <code>/</code> gives a float, and without the brackets only hi is halved</td></tr>
     <tr><td><code>stack.pop[-1]</code> or <code>stack(-1)</code></td><td><code>stack.pop()</code> calls with round brackets, and <code>stack[-1]</code> indexes with square ones</td></tr>
   </table>
   <p>And one Python-only trap: <code>[][-1]</code> isn't <code>[]</code> or <code>None</code>. It raises IndexError, so write <code>if stack and stack[-1] == c:</code>.</p>
