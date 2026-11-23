@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Topics Map</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Reference</p>
+  <h1>What gets asked, and how to prepare</h1>
+  <p class="meta">For intern and new-grad SWE loops · Sources: <a href="https://www.techinterviewhandbook.org/system-design/">Tech Interview Handbook, system design</a>, <a href="https://www.techinterviewhandbook.org/behavioral-interview/">behavioural</a>, <a href="https://amazon.jobs/content/en/how-we-hire/interview-prep/software-development-topics">Amazon, software development topics</a></p>
+
+  <table>
+    <tr><th>Topic</th><th>Likelihood</th><th>What a good answer looks like</th><th>Lessons</th></tr>
+    <tr><td>Coding</td><td>Every round</td><td>Clarify, give a brute-force idea, optimise, code, trace, then state the time and space</td><td>1 to 24, <a href="practice-queue.html">queue</a></td></tr>
+    <tr><td>Behavioural</td><td>Every loop</td><td>STAR stories. The Handbook's "Big Three": tell me about yourself, your favourite or most impactful project, and a conflict you resolved</td><td><a href="../lessons/0016-work-style-and-leadership-principles.html">16</a>, <a href="leadership-principles.html">LPs</a></td></tr>
+    <tr><td>Your resume and projects</td><td>Very common</td><td>What you built, your own part, one hard bug, one trade-off, and what you'd change</td><td>Planned</td></tr>
+    <tr><td>Object-oriented design</td><td>Sometimes</td><td>Classes with clear jobs, fields in <code>__init__</code>, small methods, and say what you'd extend</td><td><a href="../lessons/0025-system-design-first-steps.html">25</a> (Shortener class)</td></tr>
+    <tr><td>System design</td><td>"Interns aren't typically given" it. Light for new grads</td><td>Lead the four steps, give rough numbers, name one bottleneck and its trade-off</td><td><a href="../lessons/0025-system-design-first-steps.html">25</a>, <a href="system-design-cheatsheet.html">cheat sheet</a></td></tr>
+    <tr><td>Internet basics</td><td>Follow-up questions</td><td>What happens when you open a URL: DNS, TCP and TLS, HTTP request and response, status codes</td><td>Planned</td></tr>
+    <tr><td>Databases</td><td>Follow-up questions</td><td>SQL vs key-value, what an index buys you, and why you'd pick each</td><td>Planned</td></tr>
+    <tr><td>OS and concurrency</td><td>Occasional</td><td>Process vs thread, and what a race condition is</td><td>Planned</td></tr>
+  </table>
+  <p class="small">Amazon: interviewers "won't be evaluating your ability to memorize all of the details for each of these topics". Know the ideas well enough to explain the trade-offs.</p>
+</main>
+</body>
+</html>

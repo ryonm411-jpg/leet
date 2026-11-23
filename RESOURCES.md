@@ -51,6 +51,13 @@
 - [Python docs: bisect](https://docs.python.org/3/library/bisect.html)
   Official docs for binary search on sorted lists. `bisect_left` will "Locate the insertion point for x in a to maintain sorted order". The Tech Interview Handbook has no binary search page (404 on 2026-11-22). Its [array page](https://www.techinterviewhandbook.org/algorithms/array/) covers it in one line ("Is the array sorted or partially sorted? If it is, some form of binary search should be possible"). Use for: Lesson 23 and `reference/binary-search-cheatsheet.html`.
 
+- [System Design Primer (donnemartin, GitHub)](https://github.com/donnemartin/system-design-primer)
+  The most widely used free system design guide. Its four steps: use cases, constraints and assumptions, then high-level design, then core components, then scale. Its [Pastebin / Bit.ly solution](https://github.com/donnemartin/system-design-primer/blob/master/solutions/system_design/pastebin/README.md) works through scope, numbers (10M writes and 100M reads a month), a 7-character Base 62 code, a cache and read replicas. Use for: Lesson 25 and `reference/system-design-cheatsheet.html`.
+- [Tech Interview Handbook: system design](https://www.techinterviewhandbook.org/system-design/) and [behavioural interviews](https://www.techinterviewhandbook.org/behavioral-interview/)
+  The design page says "Interns aren't typically given system design questions". The behavioural page names the "Big Three": tell me about yourself, your favourite project, and a conflict you resolved. Use for: weighting topics (`reference/interview-topics.html`).
+- [Amazon: software development interview topics](https://amazon.jobs/content/en/how-we-hire/interview-prep/software-development-topics) (redirects to atoz.amazon)
+  Lists programming language, data structures, algorithms, coding, object-oriented design, databases, distributed computing, operating systems, internet topics, and ML and AI. Use for: the topic map.
+
 ## Wisdom (Communities)
 
 - [Exponent Practice (peer mock interviews, formerly Pramp)](https://www.tryexponent.com/blog/introducing-exponent-practice)

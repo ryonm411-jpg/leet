@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Design First Steps</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 25 · Beyond LeetCode · System design, part 1</p>
+  <h1>Design a link shortener, in four steps</h1>
+  <p class="meta">About 45 minutes · Quizzes, two estimates, one Python class, one worksheet · Your win: you can lead the first five minutes of a design question and build its core in Python</p>
+
+  <p class="lede">A design question has no single right answer, and that's what makes it feel scary. But it does have a <em>shape</em>, and the shape can be learned. This lesson teaches the shape on the classic first question, "Design bit.ly", and then has you build its heart in Python. That heart turns out to be two hash maps, which you already know.</p>
+
+  <h2>First, how much of this will you actually get?</h2>
+  <p>Be realistic about where your time goes. The Tech Interview Handbook says plainly: "Interns aren't typically given system design questions", and design rounds are "typically given to more senior candidates" (<a href="https://www.techinterviewhandbook.org/system-design/">Handbook, system design</a>). New-grad loops sometimes include a light one. Amazon's own prep page says most technical interviews include "coding and system design white boarding exercises". It lists topics such as object-oriented design, databases, distributed computing, operating systems and internet topics, and adds that interviewers "won't be evaluating your ability to memorize all of the details" (<a href="https://amazon.jobs/content/en/how-we-hire/interview-prep/software-development-topics">Amazon, software development topics</a>). So:</p>
+  <table>
+    <tr><th>Topic</th><th>How likely for intern or new grad</th><th>Where you are</th></tr>
+    <tr><td>Coding (LeetCode style)</td><td>Every round</td><td>Lessons 1 to 24, still the main track</td></tr>
+    <tr><td>Behavioural ("tell me about a time")</td><td>Every loop, every Amazon round</td><td><a href="0016-work-style-and-leadership-principles.html">Lesson 16</a> and your story bank</td></tr>
+    <tr><td>Your projects and resume</td><td>Very common</td><td>Coming soon</td></tr>
+    <tr><td>Object-oriented design (classes)</td><td>Sometimes</td><td>Starts today (Part 4)</td></tr>
+    <tr><td>System design (boxes and arrows)</td><td>Rare for interns, light for new grads</td><td>Starts today</td></tr>
+    <tr><td>CS basics: web, databases, OS</td><td>As follow-up questions</td><td>Coming soon</td></tr>
+  </table>
+  <p>The full map, with what to say for each, is on the new <a href="../reference/interview-topics.html">interview topics</a> page.</p>
+
+  <h2>Part 1: the four steps</h2>
+  <p>The most widely used free guide, the <a href="https://github.com/donnemartin/system-design-primer#how-to-approach-a-system-design-interview-question">System Design Primer</a>, opens with: "The system design interview is an open-ended conversation. You are expected to lead it." It gives four steps:</p>
+  <ol class="steps">
+    <li><strong>Outline use cases, constraints, and assumptions.</strong> Ask what it must do, for whom, and how much traffic it gets. Say out loud what you're leaving out.</li>
+    <li><strong>Create a high level design.</strong> The main boxes (client, server, database) and the arrows between them.</li>
+    <li><strong>Design core components.</strong> Zoom into the most important part: here, how a long URL becomes a short code and back.</li>
+    <li><strong>Scale the design.</strong> Find what breaks when traffic grows, and fix that one thing.</li>
+  </ol>
+  <div class="quiz" data-skill="sd-framework">
+    <p class="q">The interviewer says "Design bit.ly." What do you do first?</p>
+    <div class="options">
+      <button data-correct data-why="Step 1. You can't size anything until you know what it must do and how busy it is. Asking also shows you lead the conversation, which the Primer says is expected. For example: Can users choose their own code? Do links expire? How many new links a day?">Ask what it must do</button>
+      <button data-why="Boxes come in Step 2. Drawn before you know the use cases, they're a guess, and the interviewer will wonder what problem they solve.">Draw the main servers</button>
+      <button data-why="The database choice depends on the data and the traffic, which you haven't asked about yet. That's Steps 2 and 3.">Pick the right database</button>
+      <button data-why="A design round is a conversation about trade-offs. Code, if any, comes after the shape is agreed.">Start writing the code</button>
+    </div>
+  </div>
+
+  <h2>Part 2: Step 1, scope and numbers</h2>
+  <p>The Primer's worked answer to this question (its <a href="https://github.com/donnemartin/system-design-primer/blob/master/solutions/system_design/pastebin/README.md">Pastebin / Bit.ly solution</a>) scopes it to: a user submits something and "gets a randomly generated link"; a user enters a link and views the contents; users are anonymous; links can expire; and the service tracks visit analytics. It puts these <strong>out of scope</strong>: accounts and login, editing, and choosing your own link. Then it assumes numbers: <strong>10 million new links a month, 100 million reads a month</strong>, a 10:1 read-to-write ratio.</p>
+  <p>Next comes a back-of-the-envelope estimate. The Primer's shortcut is that a month has about <strong>2.5 million seconds</strong>. Divide by that to turn "per month" into "per second". Type your answers.</p>
+  <div class="recall" data-skill="sd-estimation" data-prompt="10 million new links a month is about how many writes per second? (a whole number)" data-answers="4 || 4/s || 4 per second || about 4" data-why="10,000,000 ÷ 2,500,000 = 4 writes a second on average. The Primer gets the same. Tiny. A single database handles that easily."></div>
+  <div class="recall" data-skill="sd-estimation" data-prompt="100 million reads a month is about how many reads per second?" data-answers="40 || 40/s || 40 per second || about 40" data-why="100,000,000 ÷ 2,500,000 = 40 a second on average. The Primer's rule: 40 requests a second is about 100 million a month. Peaks are higher, because traffic isn't even."></div>
+  <div class="quiz" data-skill="sd-scaling">
+    <p class="q">Reads outnumber writes 10 to 1, and a few links go viral. What helps most?</p>
+    <div class="options">
+      <button data-correct data-why="Most requests are reads, and popular links get read again and again. A cache keeps hot short-code-to-URL pairs in memory, so most reads never touch the database. The Primer adds a memory cache for exactly this, and uses read replicas for cache misses.">A cache for hot links</button>
+      <button data-why="Writes are about 4 a second, which one database handles easily. The pressure is on reads.">A faster write database</button>
+      <button data-why="Longer codes don't make anything faster. They just make links longer. The load is repeated reads of popular links.">Longer short codes here</button>
+      <button data-why="Accounts were scoped out in Step 1, and they don't reduce read load anyway.">Requiring user accounts</button>
+    </div>
+  </div>
+
+  <h2>Part 3: Steps 2 and 3, the boxes and the core</h2>
+  <pre><code>Client ──► Web server ──► Write API ──► Database  (short code → long URL)
+                    └───► Read API ──► Cache ──► Database</code></pre>
+  <p>That's roughly the Primer's high-level design: a web server in front, separate write and read paths, and a store that maps each short code to its content. <strong>The core is a key-value lookup</strong>: given a code, find the URL. In memory that's a Python dict. At scale it's a database table with the code as its indexed key, or a key-value store.</p>
+  <p><strong>Making the code.</strong> The Primer hashes the input with MD5, then uses <strong>Base 62</strong>, the characters <code>[a-zA-Z0-9]</code>, and takes the first 7 characters, giving 62<sup>7</sup> (about 3.5 trillion) possible codes. It checks the database for a clash and regenerates if one exists. A simpler approach that interviewers also accept: give each new URL the next number, 1, 2, 3, …, and write that number in base 62. No clashes are possible, but codes become guessable. That's a trade-off worth saying out loud.</p>
+  <div class="quiz" data-skill="sd-core">
+    <p class="q">Why Base 62 and not Base 64, which packs in more per character?</p>
+    <div class="options">
+      <button data-correct data-why="Base 64 adds + and /, and both mean something in a URL (/ separates path parts). The Primer says Base 64 is worse for URLs for this reason. Base 62 is just letters and digits, safe anywhere in a link.">Its characters are all URL safe</button>
+      <button data-why="Speed isn't the issue: both are simple arithmetic. The problem is that Base 64's + and / break URLs.">Base 62 is faster to compute</button>
+      <button data-why="It's the other way round: Base 64 is slightly shorter, with more symbols per character. Base 62 wins because + and / aren't URL safe.">Base 62 makes shorter codes</button>
+      <button data-why="Neither one prevents clashes. Clashes come from how you pick the number or hash. You still check the database.">Base 62 avoids all collisions</button>
+    </div>
+  </div>
+
+  <h2>Part 4: build the core (object-oriented design, in Python)</h2>
+  <p>Some interviews, especially for new grads, ask you to code the heart of a design as a class. Build <code>Shortener</code> with the counter-and-base-62 approach:</p>
+  <ul>
+    <li><code>shorten(url)</code>: if this URL was shortened before, return <strong>the same code</strong>. Otherwise give it the next number (the first URL gets 1) and return that number in base 62, using <code>ALPHABET</code>, where <code>"0"</code> is 0, <code>"a"</code> is 10 and <code>"Z"</code> is 61.</li>
+    <li><code>expand(code)</code>: return the original URL, or <code>None</code> if the code was never handed out.</li>
+  </ul>
+  <p>Python classes, for Java habits: there are no field declarations, so set fields in <code>__init__</code> as <code>self.name = ...</code>. Every method takes <code>self</code> first, and you write <code>self.</code> every time you use a field (<a href="https://docs.python.org/3/tutorial/classes.html#a-first-look-at-classes">Python tutorial, classes</a>). No <code>this</code>, no <code>new</code>. The tests call <code>run_ops</code>, which is already written. Leave it as it is.</p>
+  <div class="quiz" data-skill="sd-core">
+    <p class="q">Base 62 of 62, with this alphabet, is…</p>
+    <div class="options">
+      <button data-correct data-why="Just like 10 in base 10: one 62 and zero 1s. So &quot;10&quot;. To convert, repeat n, r = divmod(n, 62), take ALPHABET[r] as the next digit from the right, and stop when n is 0.">"10"</button>
+      <button data-why="&quot;Z&quot; is 61, the last single digit. 62 needs two digits, like 10 in base 10.">"Z" </button>
+      <button data-why="Digits only run from 0 to 61, so a single digit can't be 62. It rolls over to two digits: &quot;10&quot;.">"62"</button>
+      <button data-why="Base 62 reads like base 10 with more digits. One 62 and zero 1s is &quot;10&quot;.">"00"</button>
+    </div>
+  </div>
+  <div id="ex-1"></div>
+  <details data-solution="shortener-hint">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p>Three fields in <code>__init__</code>: <code>self.next_id = 1</code>, <code>self.code_of = {}</code> (url → code) and <code>self.url_of = {}</code> (code → url). Two dicts, one for each direction: the seen map, twice. In <code>shorten</code>, check <code>url in self.code_of</code> first. For base 62, <code>n, r = divmod(n, 62)</code> in a loop, adding <code>ALPHABET[r]</code> to the <em>front</em> of the code. <code>expand</code> is a single <code>.get</code>.</p>
+  </details>
+  <div class="quiz" data-skill="sd-scaling">
+    <p class="q">Your class keeps everything in one process's memory. What breaks first in production?</p>
+    <div class="options">
+      <button data-correct data-why="A dict lives in one process. Restart it and every link is gone, and a second server can't see the first one's dict. That's why the real design puts the code → URL map in a database (Step 2), with a cache in front for speed (Step 4).">Restarts lose every link</button>
+      <button data-why="Dict lookups are O(1) on average, so lookups stay fast. The real problem is that memory vanishes on restart and isn't shared between servers.">Lookups get too slow</button>
+      <button data-why="62 to the 7th is trillions of codes, so the alphabet isn't the limit. Losing everything on restart is.">The alphabet runs out</button>
+      <button data-why="Base 62 conversion is a few divisions, which is nothing. The problem is where the data lives: in one process's memory.">Base 62 is too slow</button>
+    </div>
+  </div>
+
+  <h2>Part 5: say it out loud</h2>
+  <p>Fill this in as if speaking to an interviewer, in two or three lines each. It saves as you type. Copy it and paste it to me for feedback.</p>
+  <div id="ws"></div>
+
+  <h2>Read and watch</h2>
+  <p><strong>Primary source:</strong> the System Design Primer's <a href="https://github.com/donnemartin/system-design-primer#how-to-approach-a-system-design-interview-question">"How to approach a system design interview question"</a> section, then skim its <a href="https://github.com/donnemartin/system-design-primer/blob/master/solutions/system_design/pastebin/README.md">Pastebin / Bit.ly solution</a> and compare it with your worksheet. Cheat sheet: <a href="../reference/system-design-cheatsheet.html">system design</a>. New terms (cache, load balancer, read replica, Base 62) are in the <a href="../reference/glossary.html">glossary</a>.</p>
+  <p>Previous: <a href="0024-bug-hunt-and-boundaries.html">Lesson 24</a>.</p>
+
+  <h2>Your results</h2>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> Design questions are conversations, so ask me to play the interviewer. Say "interview me on design bit.ly" and I'll ask the follow-ups a real interviewer would.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/recall.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/worksheet.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  mountResults(document.getElementById("results"), { lesson: "Lesson 25: System design first steps" });
+  mountWorksheet(document.getElementById("ws"), {
+    key: "design-bitly",
+    title: "Design bit.ly: my first five minutes",
+    fields: [
+      { label: "Clarifying questions I'd ask", hint: "Three questions about what it must do or how big it is.", rows: 3 },
+      { label: "In scope and out of scope", hint: "What you'll build, and what you'll say you're skipping.", rows: 3 },
+      { label: "Numbers", hint: "Writes and reads per second, and roughly how much storage after a year.", rows: 2 },
+      { label: "Boxes and arrows", hint: "Describe the high-level design in words.", rows: 3 },
+      { label: "One trade-off", hint: "Counter vs hash for codes, or cache or no cache. Which one, and why?", rows: 3 },
+    ],
+  });
+
+  const urls = Array.from({ length: 62 }, (_, i) => ["shorten", "https://site.com/" + i]);
+  mountExercise(document.getElementById("ex-1"), {
+    starter:
+`ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+class Shortener:
+    def __init__(self):
+
+
+    def shorten(self, url):
+
+
+    def expand(self, code):
+
+
+
+# Leave this as it is: the tests call it.
+def run_ops(ops):
+    s = Shortener()
+    return [s.shorten(arg) if op == "shorten" else s.expand(arg) for op, arg in ops]
+`,
+    skill: "implement-shortener-class",
+    fn: "run_ops",
+    cases: [
+      { label: "shorten a, shorten b, expand 2", args: [[["shorten", "a.com"], ["shorten", "b.com"], ["expand", "2"]]], expected: ["1", "2", "b.com"] },
+      { label: "same URL twice gives the same code", args: [[["shorten", "a.com"], ["shorten", "a.com"], ["shorten", "c.com"]]], expected: ["1", "1", "2"] },
+      { label: "unknown code gives None", args: [[["shorten", "a.com"], ["expand", "zz"]]], expected: ["1", null], hidden: true },
+      { label: "expand before anything is shortened", args: [[["expand", "1"]]], expected: [null], hidden: true },
+      { label: "10th URL is 'a', 62nd is '10'", args: [urls.concat([["expand", "a"], ["expand", "10"]])], expected: Array.from({ length: 62 }, (_, i) => "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"[i + 1] || "10").concat(["https://site.com/9", "https://site.com/61"]), hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

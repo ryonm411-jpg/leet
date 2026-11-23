@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bug Hunt and Boundaries</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 24 · Interview practice · Binary search, sliding window, running products</p>
+  <h1>Predict it, then run it</h1>
+  <p class="meta">About 60 minutes · One cold retry, one new problem, and a bonus retry · Your win: at least 2 of your first-run predictions match what your code really does</p>
+
+  <p class="lede">In Lesson 23 every checklist box was ticked, and every first run still failed on a slip the list named. Ticking a box doesn't make you trace. So the checklist is gone. Before your first run, you'll <strong>type what your code will return</strong> for the first example. The page then compares that with what the code really did. In an interview, your trace is the only test you get, so this checks the trace itself.</p>
+
+  <h2>Warm-up: your own first attempts</h2>
+  <p>Each snippet below is your own code from Lesson 23, before you fixed it. Don't run anything. Read each one as typed, line by line.</p>
+
+  <pre><code>def search(nums, target):
+    lo = 0
+    hi = len(nums)-1
+    mid = lo+high//2
+    while nums and lo &lt;= high:
+        ...</code></pre>
+  <div class="quiz" data-skill="trace-before-run">
+    <p class="q">What happens on the first call?</p>
+    <div class="options">
+      <button data-correct data-why="Line 4 reads high, but only hi was ever assigned. NameError, before the loop even starts. When you read your code, check that every name you read was assigned somewhere above it.">NameError on line 4</button>
+      <button data-why="The code never reaches nums[mid]. Line 4 reads high, which was never assigned, so it stops there with a NameError.">IndexError in the loop</button>
+      <button data-why="// on two ints is fine. The problem is the name high: only hi exists. NameError.">TypeError on line 4</button>
+      <button data-why="It never gets far enough to return anything. Line 4 raises NameError on high.">Returns a wrong index</button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">You fix the name, so the line is now <code>mid = lo+hi//2</code>. With lo = 3 and hi = 5, what is mid?</p>
+    <div class="options">
+      <button data-correct data-why="// comes before +, just as × comes before + in maths. So it's 3 + (5 // 2) = 3 + 2 = 5. You wanted (3 + 5) // 2 = 4. Brackets: mid = (lo + hi) // 2.">5</button>
+      <button data-why="4 is what you meant, (3 + 5) // 2. Without brackets, // goes first: 3 + 5 // 2 = 3 + 2 = 5.">4</button>
+      <button data-why="That's 3 + 5 with no division. The // still happens, on hi alone: 3 + 2 = 5.">8</button>
+      <button data-why="5 // 2 is 2, but then lo is added: 3 + 2 = 5.">2</button>
+    </div>
+  </div>
+
+  <pre><code>def is_valid(s):
+    dict = {")": "(", "}": "{", "]": "["}
+    stack = []
+    for c in s:
+        if stack and c in dict:
+            if stack[-1] != dict[s]:
+                return False
+            stack.pop()
+            continue
+        elif c not in dict.values():
+            return False
+        stack.append(c)
+    return True</code></pre>
+  <div class="quiz" data-skill="index-vs-value">
+    <p class="q">What does <code>is_valid("()")</code> do?</p>
+    <div class="options">
+      <button data-correct data-why="&quot;(&quot; gets pushed. Then &quot;)&quot; is a closer and the stack isn't empty, so it reads dict[s], and s is the whole string &quot;()&quot;, not the character. That isn't a key: KeyError: '()'. You meant dict[c]. This is the same mix-up as Lesson 21's s vs c. Ask yourself: is this name the whole thing, or one item?">Raises KeyError: '()'</button>
+      <button data-why="It would return True with dict[c]. But it reads dict[s], and s is the whole string &quot;()&quot;, so KeyError.">Returns True        </button>
+      <button data-why="stack[-1] is safe here, because &quot;(&quot; was pushed first. The crash is dict[s]: KeyError.">Raises IndexError   </button>
+      <button data-why="It never gets to compare. dict[s] looks up the whole string, which isn't a key, so KeyError.">Returns False       </button>
+    </div>
+  </div>
+  <div class="quiz" data-skill="implement-stack">
+    <p class="q">Now say <code>dict[s]</code> is fixed to <code>dict[c]</code>. What does <code>is_valid("((")</code> return?</p>
+    <div class="options">
+      <button data-correct data-why="Both &quot;(&quot; are pushed and nothing ever pops them. Then the last line returns True regardless. Leftover openers mean it's invalid, so the last line must be return not stack. You made this exact bug on 11-20 too.">True </button>
+      <button data-why="It should be False, but the code never looks at what's left on the stack. The last line always returns True.">False</button>
+      <button data-why="Nothing reads stack[-1] while it's empty. Openers skip the first if (c in dict is False) and get pushed.">IndexError</button>
+      <button data-why="&quot;(&quot; is in dict.values(), so the elif doesn't fire, and no key is ever looked up for an opener.">KeyError</button>
+    </div>
+  </div>
+
+  <pre><code>def my_sqrt(x):
+    lo, hi = 0, x
+    while x and lo &lt;= hi:
+        mid = (lo+hi)//2
+        if mid*mid == x:
+            return mid
+        elif mid*mid &gt; x:
+            hi=mid-1
+        else:
+            lo=mid+1
+        return hi</code></pre>
+  <div class="quiz" data-skill="trace-before-run">
+    <p class="q">What does <code>my_sqrt(8)</code> return?</p>
+    <div class="options">
+      <button data-correct data-why="mid = 4, and 16 &gt; 8, so hi = 3. Then return hi runs, because it's indented inside the while. So it returns 3 after one pass. Dedent the return one level so it runs after the loop. When you trace, watch which block each line belongs to.">3</button>
+      <button data-why="2 is the right answer, and you'd get it with the return after the loop. Here return hi is inside the loop, so it fires after the first pass, when hi is 3.">2</button>
+      <button data-why="hi starts at 8, but the first pass sets hi = 3 before the return runs.">8</button>
+      <button data-why="The loop body runs (x is 8, and 0 &lt;= 8), and the return inside it fires on the first pass.">None</button>
+    </div>
+  </div>
+
+  <h2>Problem 1: Minimum Size Subarray Sum, cold</h2>
+  <div id="timer-1"></div>
+  <p class="small"><a href="https://leetcode.com/problems/minimum-size-subarray-sum/">LeetCode 209</a>, Medium. You did it in <a href="0022-mixed-interview-set.html">Lesson 22</a> with the hint. This is the spaced retry from a blank editor. Don't look back.</p>
+  <p>Given a list of <strong>positive</strong> ints <code>nums</code> and a positive int <code>target</code>, return the length of the shortest block of neighbours whose sum is at least <code>target</code>, or <code>0</code> if there's none. It must be O(n).</p>
+  <p><strong>Examples:</strong> <code>7, [2, 3, 1, 2, 4, 3]</code> gives <code>2</code>. <code>4, [1, 4, 4]</code> gives <code>1</code>. <code>11, [1, 1, 1, 1, 1, 1, 1, 1]</code> gives <code>0</code>.</p>
+  <div id="predict-1"></div>
+  <div id="ex-1"></div>
+  <details data-solution="min-subarray-hint-2">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Never call <code>sum</code> on a slice inside the loop. Keep one running <code>total</code>. Add <code>nums[right]</code> as the window grows. While the total is big enough, record the length, then subtract <code>nums[left]</code> and move <code>left</code> on.</p>
+  </details>
+
+  <h2>Problem 2: First Bad Version</h2>
+  <div id="timer-2"></div>
+  <p class="small"><a href="https://leetcode.com/problems/first-bad-version/">LeetCode 278</a>, Easy. Statement written from memory, as LeetCode blocks automated reading. Here <code>is_bad</code> is defined in the starter so the page can test it. On LeetCode it's called <code>isBadVersion</code>.</p>
+  <p>Versions <code>1</code> to <code>n</code> were released in order. Once a version is bad, every later one is bad too. Using only <code>is_bad(v)</code>, find the <strong>first</strong> bad version, calling <code>is_bad</code> as few times as you can.</p>
+  <p><strong>Examples:</strong> <code>n = 5</code> with version 4 the first bad one gives <code>4</code> (False, False, False, True, True). <code>n = 1</code>, first bad 1, gives <code>1</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">n can be 2,147,483,647. Which pattern fits best?</p>
+    <div class="options">
+      <button data-correct data-why="The answers line up as False, False, …, True, True. That's sorted, so you can throw away half each time. Unlike Lesson 23, you're not looking for one exact value. You want the first True. When is_bad(mid) is True, mid might be the answer, so remember it and look left.">Binary search </button>
+      <button data-why="Walking in from both ends still checks about n versions, and n is over two billion. Each check has to halve the range.">Two pointers  </button>
+      <button data-why="A window over two billion versions still checks every one. The False-then-True order lets you halve the range instead.">Sliding window</button>
+      <button data-why="Nothing needs counting. Each version is bad or not, in sorted order, so halve the range.">Frequency count</button>
+    </div>
+  </div>
+  <div id="predict-2"></div>
+  <div id="ex-2"></div>
+  <details data-solution="first-bad-hint">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p>Same loop as Sqrt(x) in Lesson 23. <code>lo, hi = 1, n</code>. If <code>is_bad(mid)</code>, save <code>mid</code> as the best so far and go left with <code>hi = mid - 1</code>. Otherwise go right with <code>lo = mid + 1</code>. Return the saved value. (Or notice that <code>lo</code> lands on it, as in Search Insert.)</p>
+  </details>
+
+  <h2>Bonus: Product of Array Except Self, cold</h2>
+  <div id="timer-3"></div>
+  <p class="small"><a href="https://leetcode.com/problems/product-of-array-except-self/">LeetCode 238</a>, Medium, from <a href="0022-mixed-interview-set.html">Lesson 22</a>. A blank-editor retry.</p>
+  <p>Return a list where <code>answer[i]</code> is the product of every number except <code>nums[i]</code>. No division, O(n) time.</p>
+  <p><strong>Examples:</strong> <code>[1, 2, 3, 4]</code> gives <code>[24, 12, 8, 6]</code>. <code>[-1, 1, 0, -3, 3]</code> gives <code>[0, 0, 9, 0, 0]</code>.</p>
+  <div id="predict-3"></div>
+  <div id="ex-3"></div>
+  <details data-solution="product-hint-2">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>answer[i] = (product of everything left of i) × (product of everything right of i). One pass from the left, then one from the right, each carrying a running product that starts at 1.</p>
+  </details>
+
+  <h2>After the set</h2>
+  <p>Say Problem 2 out loud as if to an interviewer: why it's sorted, what you do when <code>is_bad(mid)</code> is True, and why it's O(log n). Then submit all three on LeetCode. Cheat sheets: <a href="../reference/binary-search-cheatsheet.html">binary search</a>, <a href="../reference/sliding-window-cheatsheet.html">sliding window</a>. <strong>Primary source:</strong> the <a href="https://www.techinterviewhandbook.org/coding-interview-techniques/">Tech Interview Handbook's coding interview techniques</a>. Read the part on testing your code by tracing small inputs yourself before you call it done.</p>
+  <p>Next: <a href="0025-system-design-first-steps.html">Lesson 25, your first system design question</a>. Previous: <a href="0023-binary-search.html">Lesson 23</a>.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat. The "predicted … code gave …" lines show how close your traces are.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If your prediction and your code disagree and you can't see where they split, paste both and I'll point to the line, without giving away the fix.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/predict.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  // Predictions must be mounted before mountResults, so the results panel can list them.
+  mountPredict(1, { skill: "implement-variable-window", example: "7, [2, 3, 1, 2, 4, 3]", expected: 2 });
+  mountPredict(2, { skill: "implement-first-bad-version", example: "n = 5, first bad 4", expected: 4 });
+  mountPredict(3, { skill: "implement-prefix-suffix", example: "[1, 2, 3, 4]", expected: [24, 12, 8, 6] });
+  mountResults(document.getElementById("results"), { lesson: "Lesson 24: Bug hunt and boundaries" });
+  [[1, 25], [2, 15], [3, 25]].forEach(([n, m]) =>
+    mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: m }));
+
+  const bigOnes = Array(6000).fill(1);
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def min_subarray_len(target, nums):\n    ",
+    skill: "implement-variable-window",
+    fn: "min_subarray_len",
+    cases: [
+      { label: "7, [2, 3, 1, 2, 4, 3]", args: [7, [2, 3, 1, 2, 4, 3]], expected: 2 },
+      { label: "4, [1, 4, 4]", args: [4, [1, 4, 4]], expected: 1 },
+      { label: "11, [1, 1, 1, 1, 1, 1, 1, 1]", args: [11, [1, 1, 1, 1, 1, 1, 1, 1]], expected: 0 },
+      { label: "needs the whole list, 15, [1, 2, 3, 4, 5]", args: [15, [1, 2, 3, 4, 5]], expected: 5, hidden: true },
+      { label: "answer at the very end, 6, [1, 1, 1, 1, 6]", args: [6, [1, 1, 1, 1, 6]], expected: 1, hidden: true },
+      { label: "must shrink more than once, 8, [5, 1, 1, 1, 8]", args: [8, [5, 1, 1, 1, 8]], expected: 1, hidden: true },
+      { label: "one number, too small, 3, [2]", args: [3, [2]], expected: 0, hidden: true },
+      { label: "6,000 ones, target 3000", args: [3000, bigOnes], expected: 3000, maxMs: 150, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def first_bad_version(n, bad):\n    def is_bad(v):          # given: only call this, never use bad directly\n        return v >= bad\n\n    ",
+    skill: "implement-first-bad-version",
+    fn: "first_bad_version",
+    cases: [
+      { label: "n = 5, first bad 4", args: [5, 4], expected: 4 },
+      { label: "n = 1, first bad 1", args: [1, 1], expected: 1 },
+      { label: "all bad, n = 2, first bad 1", args: [2, 1], expected: 1, hidden: true },
+      { label: "only the last, n = 2, first bad 2", args: [2, 2], expected: 2, hidden: true },
+      { label: "n = 10, first bad 7", args: [10, 7], expected: 7, hidden: true },
+      { label: "huge n, first bad 1", args: [2147483647, 1], expected: 1, maxMs: 5, hidden: true },
+      { label: "huge n, only the last is bad", args: [2147483647, 2147483647], expected: 2147483647, maxMs: 5, hidden: true },
+    ],
+  });
+
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def product_except_self(nums):\n    ",
+    skill: "implement-prefix-suffix",
+    fn: "product_except_self",
+    cases: [
+      { label: "[1, 2, 3, 4]", args: [[1, 2, 3, 4]], expected: [24, 12, 8, 6] },
+      { label: "[-1, 1, 0, -3, 3]", args: [[-1, 1, 0, -3, 3]], expected: [0, 0, 9, 0, 0] },
+      { label: "two numbers, [2, 3]", args: [[2, 3]], expected: [3, 2], hidden: true },
+      { label: "two zeros, [0, 4, 0]", args: [[0, 4, 0]], expected: [0, 0, 0], hidden: true },
+      { label: "one zero at the start, [0, 2, 5]", args: [[0, 2, 5]], expected: [10, 0, 0], hidden: true },
+      { label: "6,000 ones", args: [bigOnes], expected: bigOnes, maxMs: 150, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

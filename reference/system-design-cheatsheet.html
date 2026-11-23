@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Design Cheatsheet</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Reference</p>
+  <h1>System design cheatsheet</h1>
+  <p class="meta">Learned in <a href="../lessons/0025-system-design-first-steps.html">Lesson 25</a> · Terms in the <a href="glossary.html">glossary</a> · Source: <a href="https://github.com/donnemartin/system-design-primer">System Design Primer</a></p>
+
+  <h2>The four steps (you lead the conversation)</h2>
+  <ol class="steps">
+    <li><strong>Use cases, constraints, assumptions.</strong> Ask before drawing: what must it do, for whom, and how much traffic? Say what's out of scope.</li>
+    <li><strong>High-level design.</strong> Client, server(s), database: boxes and arrows.</li>
+    <li><strong>Core components.</strong> Zoom into the one part that makes this system special.</li>
+    <li><strong>Scale.</strong> Find the bottleneck, fix it, name the trade-off, and repeat.</li>
+  </ol>
+
+  <h2>Back-of-the-envelope</h2>
+  <table>
+    <tr><th>Fact</th><th>Use</th></tr>
+    <tr><td>A month is about 2.5 million seconds</td><td>Per month ÷ 2.5M = per second</td></tr>
+    <tr><td>40 requests a second ≈ 100 million a month</td><td>Quick sense check</td></tr>
+    <tr><td>Storage = items × size × time</td><td>10M links a month × about 1.27 KB ≈ 12.7 GB a month</td></tr>
+  </table>
+
+  <h2>Scaling tools: what each one fixes</h2>
+  <table>
+    <tr><th>Tool</th><th>Fixes</th><th>Cost</th></tr>
+    <tr><td>Cache (in memory)</td><td>Repeated reads of hot data</td><td>Can serve stale data, and it's limited by memory</td></tr>
+    <tr><td>Load balancer</td><td>One web server can't take all the requests</td><td>Servers should be stateless</td></tr>
+    <tr><td>Read replicas</td><td>Too many database reads</td><td>Replicas lag slightly behind</td></tr>
+    <tr><td>CDN</td><td>Static files far from users</td><td>Cost, and invalidating stale copies</td></tr>
+    <tr><td>Sharding</td><td>Too much data or too many writes for one database</td><td>Cross-shard queries are hard</td></tr>
+  </table>
+
+  <h2>Worked example: link shortener</h2>
+  <ul>
+    <li><strong>Scope:</strong> shorten, expand, expiry, analytics. Out of scope: login, editing, custom codes.</li>
+    <li><strong>Numbers:</strong> 10M writes and 100M reads a month, which is about 4 and 40 a second, 10:1 read-heavy.</li>
+    <li><strong>Core:</strong> a code → URL key-value lookup. The code is 7 Base 62 characters (62<sup>7</sup> options), from a hash with a clash check, or from a counter (no clashes, but guessable).</li>
+    <li><strong>Scale:</strong> cache hot links, with read replicas for misses. Writes at 4 a second fit one primary database.</li>
+  </ul>
+</main>
+</body>
+</html>

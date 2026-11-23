@@ -4,7 +4,7 @@
 // mountResults(element, { lesson: "Lesson 1: Two Sum" })
 function mountResults(root, { lesson }) {
   const storageKey = "lesson-results:" + lesson;
-  const quizzes = [...document.querySelectorAll(".quiz[data-skill], .recall[data-skill]")];
+  const quizzes = [...document.querySelectorAll(".quiz[data-skill], .recall[data-skill], .predict[data-skill]")];
   let quizResults = {}; // quiz position in the page -> { correct, answer }
   let exercises = {}; // skill -> { runs, passed, problems, firstCode, lastCode }
   let solutionsOpened = []; // data-solution values, "" when the attribute has no value

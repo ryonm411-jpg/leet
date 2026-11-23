@@ -18,6 +18,10 @@
     <dd>A string with exactly the same letters as another, each the same number of times, possibly in a different order.</dd>
     <dt>Average case</dt>
     <dd>The typical cost of an operation, rather than its rare worst outcome. Dict lookups are O(1) on average.</dd>
+    <dt>Back-of-the-envelope</dt>
+    <dd>A rough estimate done in your head, such as per month ÷ 2.5 million = per second. Used in design Step 1.</dd>
+    <dt>Base 62</dt>
+    <dd>Writing a number with the 62 characters 0-9, a-z and A-Z. Every character is safe in a URL.</dd>
     <dt>Big O</dt>
     <dd>A way to describe how cost grows as the input size, n, grows. O(n²) means that doubling n roughly quadruples the work.</dd>
     <dt>Binary search</dt>
@@ -26,6 +30,8 @@
     <dd>A marker on a line of code. When the debugger reaches it, the program pauses so you can look at the real values of variables.</dd>
     <dt>Brute force</dt>
     <dd>The direct approach that tries every possibility. It's a good starting point to state aloud before you improve on it.</dd>
+    <dt>Cache</dt>
+    <dd>A fast in-memory copy of data that gets read often, so most reads skip the database.</dd>
     <dt>Collision</dt>
     <dd>When two different keys land in the same hash table bucket. Many collisions make lookups slower.</dd>
     <dt>Complement</dt>
@@ -42,12 +48,16 @@
     <dd>Last in, first out: the item added most recently is the first one taken back. It's the rule a stack follows.</dd>
     <dt>Insertion point</dt>
     <dd>The index where a value would go to keep a sorted list sorted. Binary search leaves <code>lo</code> there when the value is missing.</dd>
+    <dt>Load balancer</dt>
+    <dd>Spreads incoming requests across several servers.</dd>
     <dt>Monotonic stack</dt>
     <dd>A stack kept in sorted order, for example cooler days only. Before pushing a new item, pop everything it beats. Each pop answers a question about the popped item, such as "when is the next warmer day?".</dd>
     <dt>Palindrome</dt>
     <dd>A string that reads the same forwards and backwards, like <code>"racecar"</code>.</dd>
     <dt>Pointer</dt>
     <dd>In this course, a variable holding an index into a list or string. It isn't a memory address, as it would be in C.</dd>
+    <dt>Read replica</dt>
+    <dd>A copy of a database that serves reads, taking load off the main one. It may lag slightly behind.</dd>
     <dt>Running value</dt>
     <dd>One number, or a few, carried forward through a single pass and updated at each item, such as the cheapest price so far or the current streak length. It gives O(n) time and O(1) space.</dd>
     <dt>Scope</dt>
@@ -60,6 +70,8 @@
     <dd>A technique that keeps a total or other summary of a window and updates it as the window moves, instead of recomputing it from scratch.</dd>
     <dt>Stack</dt>
     <dd>A list you only touch at one end, the top. In Python: <code>stack.append(x)</code> pushes, <code>stack.pop()</code> removes and returns the top, and <code>stack[-1]</code> looks at it. Reach for one when the newest unfinished thing must be dealt with first, such as matching brackets.</dd>
+    <dt>System design interview</dt>
+    <dd>An open-ended conversation you lead: scope, high-level design, core components, then scale.</dd>
     <dt>Space-time trade-off</dt>
     <dd>Using more memory to reduce running time, or the reverse.</dd>
     <dt>Two pointers</dt>

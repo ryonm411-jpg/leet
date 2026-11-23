@@ -8,6 +8,7 @@ Land a software engineering internship or new-grad job. Be ready for live coding
 - Two tracks from now on:
   1. LeetCode-style coding for live interviews. Amazon's own example says about 25 minutes, in a text editor with no running code.
   2. Amazon's Leadership Principles, for the Work Style assessment and for behavioural "tell me about a time" questions (a STAR story bank).
+  3. Added 2026-11-23, at the user's request ("begin to include some system design and other topics that are likely to show up"): the rest of the interview. This means intro system design and object-oriented design at intern or new-grad level, resume and project talk, and CS basics asked as follow-ups (internet, databases). Each is weighted by how likely it is (`reference/interview-topics.html`). Coding stays the main track.
 - The Amazon SDE Intern OA invitation (2026-11-05, deadline about 2026-11-12) still exists, but no more OA-format drills unless the user asks.
 
 ## Success looks like
@@ -24,6 +25,6 @@ Land a software engineering internship or new-grad job. Be ready for live coding
 
 ## Out of scope
 - OA-format drills such as the repository task and timed OA rehearsals, unless the user asks again
-- System design interviews
+- Senior-level distributed system design (deep dives into sharding, consensus and so on). Intro design is now in scope (track 3)
 - LeetCode Hard problems, for now
 - Company-specific question lists, until the core patterns are solid

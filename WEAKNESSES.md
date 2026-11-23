@@ -101,3 +101,7 @@ Read this before choosing or designing any lesson. Update it whenever there is n
 - `stack-empty-check`, `implement-stack`: tracked from Lesson 21's code and its empty-stack quiz
 - `freq-count-tie-rule`: applying the tie rule after counting (seen in code)
 - `speed-under-timer`: time used against the limit, from the `timer` lines in the results
+- `implement-first-bad-version`: binary search for the first True (Lesson 24)
+- `sd-framework`, `sd-estimation`, `sd-scaling`, `sd-core`: system design steps, per-second estimates, scaling tools, and core mechanics (Lesson 25)
+- `implement-shortener-class`: the Lesson 25 Python class (two dicts plus base 62)
+- Prediction gates (`assets/predict.js`) report under `trace-before-run`: "predicted X, code gave Y"
