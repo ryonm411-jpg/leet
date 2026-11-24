@@ -104,4 +104,5 @@ Read this before choosing or designing any lesson. Update it whenever there is n
 - `implement-first-bad-version`: binary search for the first True (Lesson 24)
 - `sd-framework`, `sd-estimation`, `sd-scaling`, `sd-core`: system design steps, per-second estimates, scaling tools, and core mechanics (Lesson 25)
 - `implement-shortener-class`: the Lesson 25 Python class (two dicts plus base 62)
+- `implement-monotonic-array`, `implement-sorted-squares`, `implement-next-letter`, `implement-search-range`: Lesson 26's problems (896, 977 cold, 744, 34). Squares also feeds `two-pointers-move-direction`; 744 and 34 feed `implement-binary-search` (first-True boundary)
 - Prediction gates (`assets/predict.js`) report under `trace-before-run`: "predicted X, code gave Y"

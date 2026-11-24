@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First and Last Value</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Lesson 26 · Interview practice · Loop bounds, two pointers, binary search for a boundary</p>
+  <h1>First and last value</h1>
+  <p class="meta">About 60-75 minutes · Bounds reps, then three problems and a bonus · Your win: at least 3 of your predictions match what your code really does</p>
+
+  <p class="lede">In Lesson 22 your loops went one past the end (<code>&lt;= len(nums)</code>). In Lesson 24 they stopped one short (<code>range(len(nums) - 1)</code>). Your ideas were right both times. Only the bounds were off. So this lesson drills one habit: <strong>for every <code>range</code> and every <code>while</code>, say the first value and the last value before you move on.</strong> Then you predict what your code returns on the <em>smallest</em> input, where off-by-ones show up first.</p>
+
+  <h2>Warm-up 1: say the bounds</h2>
+  <p>Type the first and last value the loop variable takes, as <code>first, last</code>. In every card, <code>nums</code> has <strong>5 items</strong>. Don't run anything.</p>
+  <div class="recall" data-skill="end-index-bounds" data-prompt="<code>for i in range(len(nums)):</code>" data-answers="0, 4 || 0,4 || 0 to 4" data-why="range(5) is 0, 1, 2, 3, 4. It stops before 5, so it already covers every index. No - 1 needed."></div>
+  <div class="recall" data-skill="end-index-bounds" data-prompt="<code>for i in range(1, len(nums)):</code>" data-answers="1, 4 || 1,4 || 1 to 4" data-why="It starts at 1 and still stops before 5, so 4 is the last. Use this when each step looks back at nums[i - 1]."></div>
+  <div class="recall" data-skill="end-index-bounds" data-prompt="<code>for i in range(len(nums) - 1):</code>" data-answers="0, 3 || 0,3 || 0 to 3" data-why="range(4) is 0 to 3, so index 4 is skipped. That's right only when the body also reads nums[i + 1]. Then i = 3 reads nums[4], the last one."></div>
+  <div class="recall" data-skill="end-index-bounds" data-prompt="<code>for i in range(len(nums) - 1, -1, -1):</code>" data-answers="4, 0 || 4,0 || 4 to 0" data-why="It starts at the last index, 4, and stops before -1, so 0 is the last. Here - 1 belongs, because the start names the last index itself."></div>
+  <div class="recall" data-skill="end-index-bounds" data-prompt="<code>lo, hi = 0, len(nums) - 1</code> then <code>while lo &lt;= hi:</code>. What are lo and hi on the first pass?" data-answers="0, 4 || 0,4 || 0 to 4" data-why="hi names the last index, so - 1 belongs. With &lt;=, a range of one item (lo == hi) still gets checked."></div>
+
+  <div class="callout">
+    <p><strong>When does <code>- 1</code> belong?</strong> Only in two places:</p>
+    <ul>
+      <li>You are <strong>naming the last index</strong> itself: <code>hi = len(nums) - 1</code>, or the start of a backwards <code>range</code>.</li>
+      <li>The body reads <strong><code>nums[i + 1]</code></strong>, so <code>i</code> must stop one early.</li>
+    </ul>
+    <p>Everywhere else, <code>range(len(nums))</code> already reaches every index. Don't add <code>- 1</code> by reflex.</p>
+  </div>
+
+  <h2>Warm-up 2: read it as typed</h2>
+  <pre><code>def total_pairs(nums):
+    total = 0
+    for i in range(len(nums)):
+        total += nums[i] * nums[i + 1]
+    return total</code></pre>
+  <div class="quiz" data-skill="end-index-bounds">
+    <p class="q">What does <code>total_pairs([1, 2, 3])</code> do?</p>
+    <div class="options">
+      <button data-correct data-why="i goes 0, 1, 2. At i = 2 it reads nums[3], and the last index is 2. IndexError. The body reads i + 1, so this is one of the two places where - 1 belongs: range(len(nums) - 1).">Raises IndexError</button>
+      <button data-why="1×2 + 2×3 is 8, and that's what you'd get with range(len(nums) - 1). As typed, i reaches 2 and reads nums[3]: IndexError.">Returns 8</button>
+      <button data-why="It never gets to return. At i = 2 it reads nums[3], one past the end.">Returns 0</button>
+      <button data-why="Python doesn't wrap past the end. nums[3] on a 3-item list raises IndexError.">Returns 11, wrapping to nums[0]</button>
+    </div>
+  </div>
+
+  <pre><code>def running_sums(nums):
+    out = [0] * len(nums)
+    total = 0
+    for i in range(len(nums) - 1):
+        total += nums[i]
+        out[i] = total
+    return out</code></pre>
+  <div class="quiz" data-skill="end-index-bounds">
+    <p class="q">What does <code>running_sums([2, 2, 2])</code> return?</p>
+    <div class="options">
+      <button data-correct data-why="range(2) is 0 and 1, so index 2 is never filled and stays 0. The body never reads i + 1, so the - 1 shouldn't be there. This is your Lesson 24 Product bug, [24, 12, 8, 1], in a new form.">[2, 4, 0]</button>
+      <button data-why="[2, 4, 6] is the intent. But range(len(nums) - 1) stops at index 1, so the last slot keeps its starting 0.">[2, 4, 6]</button>
+      <button data-why="out[i] = total only writes indexes that exist, 0 and 1. No crash, just the last slot left at 0.">Raises IndexError</button>
+      <button data-why="The list keeps its length, 3. Index 2 is just never written, so it stays 0.">[2, 4]</button>
+    </div>
+  </div>
+
+  <div class="quiz" data-skill="python-builtins-recall">
+    <p class="q">With <code>n = 7</code>, what is <code>n - 1 // 2</code>?</p>
+    <div class="options">
+      <button data-correct data-why="// goes before -, so it's 7 - (1 // 2) = 7 - 0 = 7. Same rule as lo+hi//2 in Lesson 24. If you mean the middle, write (n - 1) // 2, which is 3.">7</button>
+      <button data-why="3 is (7 - 1) // 2. Without brackets, // goes first: 1 // 2 = 0, then 7 - 0 = 7.">3</button>
+      <button data-why="// is floor division, so it never gives a decimal on ints. And it runs before -: 7 - 0 = 7.">2.5</button>
+      <button data-why="That treats it as 7 - 1. But 1 // 2 is 0, and that runs first, so it's 7 - 0 = 7.">6</button>
+    </div>
+  </div>
+  <div class="recall" data-skill="python-builtins-recall" data-prompt="Type the binary search middle line: <code>mid</code> is the average of <code>lo</code> and <code>hi</code>, rounded down." data-answers="mid = (lo + hi) // 2 || mid = (hi + lo) // 2 || mid = lo + (hi - lo) // 2" data-why="Brackets first, then //. Without them, only hi gets divided."></div>
+
+  <pre><code>def first_upper(word):
+    for ch in word:
+        if word.isupper():
+            return ch
+    return ""</code></pre>
+  <div class="quiz" data-skill="index-vs-value">
+    <p class="q">What does <code>first_upper("hEllo")</code> return?</p>
+    <div class="options">
+      <button data-correct data-why="The check asks about word, the whole string. &quot;hEllo&quot;.isupper() is False, so nothing is ever returned in the loop, and it falls through to &quot;&quot;. You meant ch.isupper(). This is the s vs c slip from Lessons 21, 23 and 24 again. For every name in the loop body, ask: is it the whole thing, or one item?">"" (empty string)</button>
+      <button data-why="&quot;E&quot; is the intent. But the check is word.isupper(), about the whole word, and that's False on every pass.">"E"</button>
+      <button data-why="The check never passes, because word.isupper() is False for &quot;hEllo&quot;. So it reaches return &quot;&quot;.">"h"</button>
+      <button data-why="It has a return after the loop, so it gives &quot;&quot;, not None.">None</button>
+    </div>
+  </div>
+
+  <h2>How to work each problem</h2>
+  <ol>
+    <li>Say the plan out loud in one or two sentences.</li>
+    <li>Write the code. After each <code>range</code> or <code>while</code>, stop and say its first and last value for the example.</li>
+    <li>In the prediction box, type what your code returns on the <strong>smallest</strong> example (one or two items). Trace your code as typed, not your plan.</li>
+    <li>Then run. If it doesn't match, find the line where your trace and the code split before you run again.</li>
+  </ol>
+
+  <h2>Problem 1: Monotonic Array</h2>
+  <div id="timer-1"></div>
+  <p class="small"><a href="https://leetcode.com/problems/monotonic-array/">LeetCode 896</a>, Easy. New. Statement written from memory, as LeetCode blocks automated reading.</p>
+  <p>A list is <strong>monotonic</strong> if it never goes down (each item &gt;= the one before) or never goes up (each item &lt;= the one before). Return <code>True</code> if <code>nums</code> is monotonic, else <code>False</code>. O(n).</p>
+  <p><strong>Examples:</strong> <code>[7]</code> gives <code>True</code>. <code>[1, 2, 2, 3]</code> gives <code>True</code>. <code>[6, 5, 4, 4]</code> gives <code>True</code>. <code>[1, 3, 2]</code> gives <code>False</code>.</p>
+  <div id="predict-1"></div>
+  <div id="ex-1"></div>
+  <details data-solution="monotonic-hint">
+    <summary>Stuck for 6 minutes? Show a hint</summary>
+    <p>Keep two flags, <code>goes_up</code> and <code>goes_down</code>, both starting False. Compare each pair of neighbours. If a pair goes up, set one flag. If it goes down, set the other. At the end it's monotonic unless both are set. Which bound do you need, since you compare <code>i</code> with <code>i + 1</code>?</p>
+  </details>
+
+  <h2>Problem 2: Squares of a Sorted Array, cold</h2>
+  <div id="timer-2"></div>
+  <p class="small"><a href="https://leetcode.com/problems/squares-of-a-sorted-array/">LeetCode 977</a>, Easy. Spaced retry from a blank editor. You did it in <a href="0018-four-more-leetcode.html">Lesson 18</a> twice. Both first attempts swapped in place and only ever moved <code>right</code>. Don't look back.</p>
+  <p><code>nums</code> is sorted, smallest first, and may hold negatives. Return a new list of each number squared, also sorted smallest first. It must be O(n), so no <code>sorted()</code>.</p>
+  <p><strong>Examples:</strong> <code>[-3, 1]</code> gives <code>[1, 9]</code>. <code>[-4, -1, 0, 3, 10]</code> gives <code>[0, 1, 9, 16, 100]</code>. <code>[-7, -3, 2, 3, 11]</code> gives <code>[4, 9, 9, 49, 121]</code>.</p>
+  <div class="quiz" data-skill="two-pointers-move-direction">
+    <p class="q">You fill the answer from the back. The biggest square left is always at one of the two ends. After you write <code>nums[left] ** 2</code> into the answer, what moves?</p>
+    <div class="options">
+      <button data-correct data-why="You used the left value, so it's done. Move left inward with left += 1, and move the write position back one. Move whichever pointer you just took from.">left moves right by 1</button>
+      <button data-why="right's value hasn't been used yet. Move the pointer whose square you just took: left.">right moves left by 1</button>
+      <button data-why="Only one value was used. Moving both would skip nums[right] without writing it.">Both move inward</button>
+      <button data-why="Swapping in place was the Lesson 18 plan, and it broke the order. Write into a new list from the back, and move the pointer you took from.">Swap nums[left] and nums[right]</button>
+    </div>
+  </div>
+  <div id="predict-2"></div>
+  <div id="ex-2"></div>
+  <details data-solution="squares-hint-2">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p><code>out = [0] * len(nums)</code>. Put <code>left</code> at index 0, <code>right</code> at the last index, and <code>write</code> at the last index. While <code>left &lt;= right</code>: compare the two squares, put the bigger one at <code>out[write]</code>, move that pointer inward, and do <code>write -= 1</code>.</p>
+  </details>
+
+  <h2>Problem 3: Find Smallest Letter Greater Than Target</h2>
+  <div id="timer-3"></div>
+  <p class="small"><a href="https://leetcode.com/problems/find-smallest-letter-greater-than-target/">LeetCode 744</a>, Easy. New. Statement written from memory. It's the "first True" search from First Bad Version, on a new problem.</p>
+  <p><code>letters</code> is a list of lowercase letters sorted smallest first, with at least two different letters, and maybe repeats. Return the smallest letter that is <strong>strictly greater</strong> than <code>target</code>. If there isn't one, wrap around and return <code>letters[0]</code>. O(log n).</p>
+  <p><strong>Examples:</strong> <code>["c", "f"], "c"</code> gives <code>"f"</code>. <code>["c", "f", "j"], "a"</code> gives <code>"c"</code>. <code>["c", "f", "j"], "d"</code> gives <code>"f"</code>. <code>["x", "x", "y", "y"], "z"</code> gives <code>"x"</code>.</p>
+  <div class="quiz" data-skill="pattern-recognition">
+    <p class="q">For each letter, ask "is it greater than target?" Down the sorted list, the answers look like False, False, True, True. What are you looking for?</p>
+    <div class="options">
+      <button data-correct data-why="Same shape as First Bad Version: find the first True. Python compares letters like numbers, so &quot;f&quot; &gt; &quot;c&quot; is True. If no letter is greater, the first True would be past the end, and that's when you wrap to letters[0].">The first True, with binary search</button>
+      <button data-why="There's no single exact value to match. You want where False turns into True, which is a boundary search.">An exact match, with binary search</button>
+      <button data-why="It's already sorted, so there's nothing to count. Halve the range to find where False turns into True.">Frequency count of the letters</button>
+      <button data-why="A walk from both ends still checks about n letters. The question asks for O(log n).">Two pointers from both ends</button>
+    </div>
+  </div>
+  <div id="predict-3"></div>
+  <div id="ex-3"></div>
+  <details data-solution="next-letter-hint">
+    <summary>Stuck for 8 minutes? Show a hint</summary>
+    <p><code>lo, hi = 0, len(letters)</code>. Note there's no <code>- 1</code>: <code>hi = len(letters)</code> stands for "no letter is greater". While <code>lo &lt; hi</code>: if <code>letters[mid] &gt; target</code>, then <code>hi = mid</code> (mid might be the answer), else <code>lo = mid + 1</code>. When the loop ends, <code>lo</code> is the first True. If <code>lo == len(letters)</code>, return <code>letters[0]</code>.</p>
+  </details>
+
+  <h2>Bonus: Find First and Last Position of Element in Sorted Array</h2>
+  <div id="timer-4"></div>
+  <p class="small"><a href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/">LeetCode 34</a>, Medium. New. Statement written from memory.</p>
+  <p><code>nums</code> is sorted smallest first. Return <code>[first, last]</code>, the first and last index where <code>target</code> appears, or <code>[-1, -1]</code> if it isn't there. O(log n), so you can't find one copy and then walk outward.</p>
+  <p><strong>Examples:</strong> <code>[1], 1</code> gives <code>[0, 0]</code>. <code>[5, 7, 7, 8, 8, 10], 8</code> gives <code>[3, 4]</code>. <code>[5, 7, 7, 8, 8, 10], 6</code> gives <code>[-1, -1]</code>.</p>
+  <div id="predict-4"></div>
+  <div id="ex-4"></div>
+  <details data-solution="search-range-hint">
+    <summary>Stuck for 10 minutes? Show a hint</summary>
+    <p>Two "first True" searches. The first index is the first <code>i</code> with <code>nums[i] &gt;= target</code>. The first index of something <em>bigger</em> is the first <code>i</code> with <code>nums[i] &gt; target</code>, so the last copy is one before that. Write the search once as a helper and call it twice. Check that <code>first</code> is in range and that <code>nums[first] == target</code> before you trust it.</p>
+  </details>
+
+  <h2>After the set</h2>
+  <p>Say Problem 3 out loud as if to an interviewer: why <code>hi</code> starts at <code>len(letters)</code> and not <code>len(letters) - 1</code>, and what <code>lo</code> means when the loop ends. Then submit the problems on LeetCode. Cheat sheets: <a href="../reference/binary-search-cheatsheet.html">binary search</a>, <a href="../reference/two-pointers-cheatsheet.html">two pointers</a>, <a href="../reference/python-rules.html">Python rules</a>. <strong>Primary source:</strong> the <a href="https://www.techinterviewhandbook.org/coding-interview-techniques/">Tech Interview Handbook's coding interview techniques</a>. Reread the part on testing with small inputs and corner cases.</p>
+  <p>Next: First Bad Version cold is due about 11-26. Previous: <a href="0025-system-design-first-steps.html">Lesson 25 (system design)</a>. If you've done Lesson 25, paste its worksheet too.</p>
+
+  <h2>Your results</h2>
+  <p>Paste this into the chat. The "predicted … code gave …" lines show how close your traces are.</p>
+  <div id="results"></div>
+
+  <p class="next"><strong>Ask me anything.</strong> If a bound looks right to you and still fails, paste the loop and I'll ask you its first and last value, without giving away the fix.</p>
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/recall.js"></script>
+<script src="../assets/timer.js"></script>
+<script src="../assets/python-exercise.js"></script>
+<script src="../assets/predict.js"></script>
+<script src="../assets/progress.js"></script>
+<script>
+  // Predictions must be mounted before mountResults, so the results panel can list them.
+  // Each prediction uses the smallest visible example, where off-by-ones show up first.
+  mountPredict(1, { skill: "implement-monotonic-array", example: "[7]", expected: true });
+  mountPredict(2, { skill: "implement-sorted-squares", example: "[-3, 1]", expected: [1, 9] });
+  mountPredict(3, { skill: "implement-next-letter", example: "[\"c\", \"f\"], \"c\"", expected: "f" });
+  mountPredict(4, { skill: "implement-search-range", example: "[1], 1", expected: [0, 0] });
+  mountResults(document.getElementById("results"), { lesson: "Lesson 26: First and last value" });
+  [[1, 15], [2, 20], [3, 15], [4, 25]].forEach(([n, m]) =>
+    mountTimer(document.getElementById("timer-" + n), { label: "problem " + n, minutes: m }));
+
+  mountExercise(document.getElementById("ex-1"), {
+    starter: "def is_monotonic(nums):\n    ",
+    skill: "implement-monotonic-array",
+    fn: "is_monotonic",
+    cases: [
+      { label: "[7]", args: [[7]], expected: true },
+      { label: "[1, 2, 2, 3]", args: [[1, 2, 2, 3]], expected: true },
+      { label: "[6, 5, 4, 4]", args: [[6, 5, 4, 4]], expected: true },
+      { label: "[1, 3, 2]", args: [[1, 3, 2]], expected: false },
+      { label: "two items going down, [2, 1]", args: [[2, 1]], expected: true, hidden: true },
+      { label: "all equal, [5, 5, 5]", args: [[5, 5, 5]], expected: true, hidden: true },
+      { label: "only the last pair breaks it, [1, 2, 3, 4, 0]", args: [[1, 2, 3, 4, 0]], expected: false, hidden: true },
+      { label: "only the first pair breaks it, [3, 1, 2, 3]", args: [[3, 1, 2, 3]], expected: false, hidden: true },
+      { label: "flat then down, [4, 4, 4, 1]", args: [[4, 4, 4, 1]], expected: true, hidden: true },
+    ],
+  });
+
+  const wide = Array.from({ length: 2001 }, (_, i) => i - 1000);
+  const wideSquares = wide.map((x) => x * x).sort((a, b) => a - b);
+  mountExercise(document.getElementById("ex-2"), {
+    starter: "def sorted_squares(nums):\n    ",
+    skill: "implement-sorted-squares",
+    fn: "sorted_squares",
+    cases: [
+      { label: "[-3, 1]", args: [[-3, 1]], expected: [1, 9] },
+      { label: "[-4, -1, 0, 3, 10]", args: [[-4, -1, 0, 3, 10]], expected: [0, 1, 9, 16, 100] },
+      { label: "[-7, -3, 2, 3, 11]", args: [[-7, -3, 2, 3, 11]], expected: [4, 9, 9, 49, 121] },
+      { label: "one item, [0]", args: [[0]], expected: [0], hidden: true },
+      { label: "all negative, [-5, -3, -2, -1]", args: [[-5, -3, -2, -1]], expected: [1, 4, 9, 25], hidden: true },
+      { label: "all positive, [1, 2, 3]", args: [[1, 2, 3]], expected: [1, 4, 9], hidden: true },
+      { label: "equal squares, [-1, 1]", args: [[-1, 1]], expected: [1, 1], hidden: true },
+      { label: "-1000 to 1000", args: [wide], expected: wideSquares, hidden: true },
+    ],
+  });
+
+  const manyA = Array(100000).fill("a").concat(Array(100000).fill("z"));
+  mountExercise(document.getElementById("ex-3"), {
+    starter: "def next_greatest_letter(letters, target):\n    ",
+    skill: "implement-next-letter",
+    fn: "next_greatest_letter",
+    cases: [
+      { label: "[\"c\", \"f\"], \"c\"", args: [["c", "f"], "c"], expected: "f" },
+      { label: "[\"c\", \"f\", \"j\"], \"a\"", args: [["c", "f", "j"], "a"], expected: "c" },
+      { label: "[\"c\", \"f\", \"j\"], \"d\"", args: [["c", "f", "j"], "d"], expected: "f" },
+      { label: "[\"x\", \"x\", \"y\", \"y\"], \"z\"", args: [["x", "x", "y", "y"], "z"], expected: "x" },
+      { label: "target is the last letter, wraps, [\"c\", \"f\", \"j\"], \"j\"", args: [["c", "f", "j"], "j"], expected: "c", hidden: true },
+      { label: "repeats equal to target, [\"e\", \"e\", \"g\", \"g\"], \"e\"", args: [["e", "e", "g", "g"], "e"], expected: "g", hidden: true },
+      { label: "answer is the last letter, [\"a\", \"b\"], \"a\"", args: [["a", "b"], "a"], expected: "b", hidden: true },
+      { label: "200,000 letters, target \"a\"", args: [manyA, "a"], expected: "z", maxMs: 10, hidden: true },
+    ],
+  });
+
+  const sevens = Array(200000).fill(7);
+  mountExercise(document.getElementById("ex-4"), {
+    starter: "def search_range(nums, target):\n    ",
+    skill: "implement-search-range",
+    fn: "search_range",
+    cases: [
+      { label: "[1], 1", args: [[1], 1], expected: [0, 0] },
+      { label: "[5, 7, 7, 8, 8, 10], 8", args: [[5, 7, 7, 8, 8, 10], 8], expected: [3, 4] },
+      { label: "[5, 7, 7, 8, 8, 10], 6", args: [[5, 7, 7, 8, 8, 10], 6], expected: [-1, -1] },
+      { label: "empty list, [], 0", args: [[], 0], expected: [-1, -1], hidden: true },
+      { label: "two copies, [2, 2], 2", args: [[2, 2], 2], expected: [0, 1], hidden: true },
+      { label: "at the very end, [1, 2, 3], 3", args: [[1, 2, 3], 3], expected: [2, 2], hidden: true },
+      { label: "bigger than everything, [1, 2, 3], 4", args: [[1, 2, 3], 4], expected: [-1, -1], hidden: true },
+      { label: "200,000 sevens", args: [sevens, 7], expected: [0, 199999], maxMs: 10, hidden: true },
+    ],
+  });
+</script>
+</body>
+</html>

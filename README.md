@@ -2,11 +2,13 @@
 
 A teaching workspace for LeetCode-style coding interviews in Python. The goal is SWE internship or new-grad interviews by about the end of January 2027. See [MISSION.md](MISSION.md).
 
-## Progress snapshot (2026-11-20)
+## Progress snapshot (2026-11-24)
 
-**Lessons done:** 1-18 (18 twice), 21. **Not done or not reported yet:** 19, 20, 22. Next: Lesson 22 (mixed set), then quick no-run Python recall reps.
+**Lessons done:** 1-18 (18 twice), 21-24. **Not done or not reported yet:** 19, 20, 25 (system design). **Next:** Lesson 26 (loop bounds, smallest-input predictions, cold Squares, "first True" binary search), then Lesson 25 if not done. First Bad Version cold is due about 11-26.
 
-**Patterns learned:** seen map, frequency count, two pointers, fixed and variable sliding window, running value, stack (including a monotonic stack). Next new patterns: binary search, linked lists, trees.
+**Patterns learned:** seen map, frequency count, two pointers, fixed and variable sliding window, running value, prefix/suffix products, stack (including a monotonic stack), binary search (exact match; boundary search in progress). Next new patterns: linked lists, trees. Started system design (Lesson 25).
+
+**Current focus:** off-by-one bounds (now adding `- 1` by reflex), and tracing fresh code as typed rather than as planned.
 
 **Strengths**
 - Usually picks the right approach, and solves Easies and some Mediums (Maximum Subarray, Squares of a Sorted Array, Isomorphic Strings) to a clean final solution.
